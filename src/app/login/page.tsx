@@ -72,8 +72,9 @@ export default function LoginPage() {
         if (error) throw error
         setMessage("Email de redefinição enviado!")
       }
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

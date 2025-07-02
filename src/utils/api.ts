@@ -41,11 +41,11 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
 // Convenience functions for common HTTP methods
 export const api = {
   get: (url: string) => apiRequest(url),
-  post: (url: string, data?: any) => apiRequest(url, {
+  post: (url: string, data?: Record<string, unknown>) => apiRequest(url, {
     method: 'POST',
     body: data ? JSON.stringify(data) : undefined,
   }),
-  put: (url: string, data?: any) => apiRequest(url, {
+  put: (url: string, data?: Record<string, unknown>) => apiRequest(url, {
     method: 'PUT',
     body: data ? JSON.stringify(data) : undefined,
   }),

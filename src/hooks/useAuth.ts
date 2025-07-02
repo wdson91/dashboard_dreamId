@@ -35,7 +35,7 @@ export function useAuth() {
     )
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase.auth, router])
 
   const signOut = async () => {
     await supabase.auth.signOut()
