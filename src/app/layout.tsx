@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 
 import ConditionalHeader from './components/ConditionalHeader'
 import ConditionalMain from './components/ConditionalMain'
+import { EstabelecimentoProvider } from './components/EstabelecimentoContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,10 +17,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR"> 
       <body className={inter.className}>
-        <ConditionalHeader />
-        <ConditionalMain>
-          {children}
-        </ConditionalMain>
+        <EstabelecimentoProvider>
+          <ConditionalHeader />
+          <ConditionalMain>
+            {children}
+          </ConditionalMain>
+        </EstabelecimentoProvider>
       </body>
     </html>
   )

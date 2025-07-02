@@ -49,6 +49,7 @@ export interface Fatura {
   data: string
   hora: string
   numero_fatura: string
+  nif_cliente: string
   total: number
 }
 

@@ -7,9 +7,10 @@ import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
+import { useApiNif } from "@/hooks/useApiNif"
 
-async function getData(filtro: string): Promise<FaturasResponse['dados']> {
-  const cacheKey = `dashboard_data_${filtro}`
+async function getData(filtro: string, nif: string): Promise<FaturasResponse['dados']> {
+  const cacheKey = `dashboard_data_${nif}_${filtro}`
   
   // Verificar cache
   const cached = localStorage.getItem(cacheKey)
@@ -22,7 +23,7 @@ async function getData(filtro: string): Promise<FaturasResponse['dados']> {
   }
   
   const urlPath = '/stats/resumo'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${APP_CONFIG.api.nif}&periodo=${filtro}`
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${filtro}`
   
   const response = await api.get(url)
   const dados = response[0]
@@ -42,15 +43,16 @@ export default function Component() {
   const [data, setData] = useState<FaturasResponse['dados'] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const apiNif = useApiNif()
 
   useEffect(() => {
     setLoading(true)
     setError(null)
-    getData(filtro)
+    getData(filtro, apiNif)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
-  }, [filtro])
+  }, [filtro, apiNif])
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
@@ -72,9 +74,9 @@ export default function Component() {
 
   
   return (
-    <div className="min-h-screen">
+    <div>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2">
+      <div className="bg-white border-b border-gray-200 px-4 py-2 mb-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-gray-800 text-xl font-semibold">S.Martino (Leix...</h1>
           <div className="flex items-center gap-2">

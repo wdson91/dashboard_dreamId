@@ -6,9 +6,10 @@ import { Calendar } from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG } from "@/lib/constants"
 import {  ProdutosResponse } from "@/app/types/faturas"
+import { useApiNif } from "@/hooks/useApiNif"
 
-async function getProdutos(periodo: string): Promise<ProdutosResponse> {
-  const cacheKey = `produtos_data_${periodo}`
+async function getProdutos(periodo: string, nif: string): Promise<ProdutosResponse> {
+  const cacheKey = `produtos_data_${nif}_${periodo}`
   
   // Verificar cache
   const cached = localStorage.getItem(cacheKey)
@@ -21,7 +22,7 @@ async function getProdutos(periodo: string): Promise<ProdutosResponse> {
   }
   
   const urlPath = '/products'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${APP_CONFIG.api.nif}&periodo=${periodo}`
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${periodo}`
   
   const response = await api.get(url)
   
@@ -41,15 +42,16 @@ export default function ProdutosPage() {
   const [data, setData] = useState<ProdutosResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const apiNif = useApiNif()
 
   useEffect(() => {
     setLoading(true)
     setError(null)
-    getProdutos(periodo)
+    getProdutos(periodo, apiNif)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
-  }, [periodo])
+  }, [periodo, apiNif])
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
