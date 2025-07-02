@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dashboard App
 
-## Getting Started
+Uma aplicação moderna de dashboard construída com Next.js 15, TypeScript, Tailwind CSS e Supabase para autenticação.
 
-First, run the development server:
+## 🚀 Funcionalidades
 
+- **Autenticação completa** com Supabase (login, signup, reset de senha)
+- **Dashboard interativo** com gráficos e métricas em tempo real
+- **Listagem de produtos** com filtros por período e formatação de dados
+- **Listagem de faturas** com cache inteligente
+- **Interface responsiva** com sidebar desktop e menu mobile
+- **Proteção de rotas** via middleware
+- **Cache de dados** para melhor performance
+
+## 🛠️ Tecnologias
+
+- **Next.js 15** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Supabase** - Autenticação e backend
+- **Recharts** - Gráficos interativos
+- **Lucide React** - Ícones
+- **Radix UI** - Componentes acessíveis
+
+## 📦 Instalação
+
+1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd my-next-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Adicione suas credenciais do Supabase:
+```
+NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+```
 
-## Learn More
+4. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Acesse [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏗️ Estrutura do Projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                    # App Router do Next.js
+│   ├── components/         # Componentes específicos da app
+│   ├── dashboard/          # Página do dashboard
+│   ├── faturas/           # Página de faturas
+│   ├── login/             # Página de autenticação
+│   ├── produtos/          # Página de produtos
+│   └── types/             # Tipos TypeScript
+├── components/            # Componentes UI reutilizáveis
+├── hooks/                 # Custom hooks
+├── lib/                   # Utilitários e constantes
+├── middleware.ts          # Middleware de autenticação
+└── utils/                 # Utilitários de API e Supabase
+```
 
-## Deploy on Vercel
+## 🔧 Configuração
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Supabase
+1. Crie um projeto no [Supabase](https://supabase.com)
+2. Configure autenticação por email/senha
+3. Adicione as variáveis de ambiente
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### API Externa
+A aplicação consome uma API externa para dados do dashboard. Configure as URLs em `src/lib/constants.ts`.
+
+## 🚀 Deploy
+
+### Vercel (Recomendado)
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático
+
+### Outras plataformas
+A aplicação é compatível com qualquer plataforma que suporte Next.js.
+
+## 📝 Scripts Disponíveis
+
+- `npm run dev` - Servidor de desenvolvimento
+- `npm run build` - Build de produção
+- `npm run start` - Servidor de produção
+- `npm run lint` - Verificação de código
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.

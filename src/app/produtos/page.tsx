@@ -1,0 +1,169 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Calendar } from "lucide-react"
+import { api } from "@/utils/api"
+import { APP_CONFIG, formatCurrency, formatPercentage } from "@/lib/constants"
+import { Produto, ProdutosResponse } from "@/app/types/faturas"
+
+async function getProdutos(periodo: string): Promise<ProdutosResponse> {
+  const cacheKey = `produtos_data_${periodo}`
+  
+  // Verificar cache
+  const cached = localStorage.getItem(cacheKey)
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached)
+    const now = Date.now()
+    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
+      return data
+    }
+  }
+  
+  // Fazer chamada da API com autenticação
+  const dados = await api.get(`${APP_CONFIG.api.baseUrl}/api/products?nif=${APP_CONFIG.api.nif}&periodo=${periodo}`)
+  
+  // Salvar no cache
+  localStorage.setItem(cacheKey, JSON.stringify({
+    data: dados,
+    timestamp: Date.now()
+  }))
+  
+  return dados
+}
+
+export default function ProdutosPage() {
+  const [periodo, setPeriodo] = useState("2") // Começa com "Esta Semana"
+  const [data, setData] = useState<ProdutosResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setLoading(true)
+    setError(null)
+    getProdutos(periodo)
+      .then(setData)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [periodo])
+
+  if (loading) return <div className="p-8 text-center">Carregando...</div>
+  if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
+  if (!data) return null
+
+  // Ordenar produtos por montante (maior para menor)
+  const produtosOrdenados = [...data.itens].sort((a, b) => b.montante - a.montante)
+
+  // Função para formatar valores monetários
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(value)
+  }
+
+  // Função para formatar porcentagens
+  const formatPercentage = (value: number) => {
+    return `${value.toFixed(1)}%`
+  }
+
+  return (
+    <div className="min-h-screen">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-gray-800 text-xl font-semibold">Produtos Vendidos</h1>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-gray-500" />
+            <select
+              className="border rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              value={periodo}
+              onChange={e => setPeriodo(e.target.value)}
+            >
+              <option value="0">Hoje</option>
+              <option value="1">Ontem</option>
+              <option value="2">Esta Semana</option>
+              <option value="3">Este Mês</option>
+              <option value="4">Este Trimestre</option>
+              <option value="5">Este Ano</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Resumo */}
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="text-sm text-gray-500">Período</div>
+              <div className="text-lg font-semibold text-gray-900">
+                {new Date(data.data_inicio).toLocaleDateString('pt-BR')} - {new Date(data.data_fim).toLocaleDateString('pt-BR')}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="text-sm text-gray-500">Total de Itens</div>
+              <div className="text-lg font-semibold text-gray-900">{data.total_itens}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="text-sm text-gray-500">Total de Vendas</div>
+              <div className="text-lg font-semibold text-gray-900">{formatCurrency(data.total_montante)}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabela de Produtos */}
+        <Card className="bg-white shadow-sm">
+          <CardContent className="p-4">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">#</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Produto</th>
+                    <th className="text-right py-3 px-4 font-medium text-gray-700">Quantidade</th>
+                    <th className="text-right py-3 px-4 font-medium text-gray-700">Montante</th>
+                    <th className="text-right py-3 px-4 font-medium text-gray-700">% do Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {produtosOrdenados.map((produto, index) => (
+                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4 text-gray-500 font-medium">
+                        {index + 1}
+                      </td>
+                      <td className="py-3 px-4 text-gray-900 font-medium">
+                        {produto.produto}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-700">
+                        {produto.quantidade.toLocaleString('pt-BR')}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-900 font-medium">
+                        {formatCurrency(produto.montante)}
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-700">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                          {formatPercentage(produto.porcentagem_montante)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {produtosOrdenados.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                Nenhum produto encontrado para o período selecionado.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+} 
