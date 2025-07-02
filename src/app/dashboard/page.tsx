@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 
-async function getData(filtro: string): Promise<FaturasResponse> {
+async function getData(filtro: string): Promise<FaturasResponse['dados']> {
   const cacheKey = `dashboard_data_${filtro}`
   
   // Verificar cache
@@ -21,8 +21,12 @@ async function getData(filtro: string): Promise<FaturasResponse> {
     }
   }
   
-  // Fazer chamada da API com autenticação
-  const dados = await api.get(`${APP_CONFIG.api.baseUrl}/api/stats/resumo?nif=${APP_CONFIG.api.nif}&periodo=${filtro}`)
+  const urlPath = '/stats/resumo'
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${APP_CONFIG.api.nif}&periodo=${filtro}`
+  
+  const response = await api.get(url)
+  const dados = response[0]
+
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({
@@ -35,7 +39,7 @@ async function getData(filtro: string): Promise<FaturasResponse> {
 
 export default function Component() {
   const [filtro, setFiltro] = useState("0")
-  const [data, setData] = useState<FaturasResponse | null>(null)
+  const [data, setData] = useState<FaturasResponse['dados'] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -52,15 +56,19 @@ export default function Component() {
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
   if (!data) return null
 
-  
+  // Verificar se todos os dados necessários existem
+  if (!data.total_vendas || !data.itens_vendidos || !data.numero_recibos || !data.ticket_medio || !data.comparativo_por_hora) {
+    return <div className="p-8 text-center text-red-500">Dados incompletos recebidos da API</div>
+  }
+
   const {
     comparativo_por_hora,
     itens_vendidos,
     numero_recibos,
     ticket_medio,
     total_vendas,
-   // periodo,
-  } = data.dados
+    periodo,
+  } = data
 
   
   return (
@@ -100,7 +108,7 @@ export default function Component() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas.valor)}</div>
+              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
               <div className="text-sm text-gray-500">Mesas em Aberto: 0</div>
             </div>
           </CardContent>
@@ -116,11 +124,11 @@ export default function Component() {
                 </div>
                 <span className="text-gray-700 font-medium">Vendas Consolidadas</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: total_vendas.cor }}>{total_vendas.variacao}</span>
+              <span className="text-sm font-medium " style={{ color: total_vendas?.cor || '#666' }}>{total_vendas?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas.valor)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(total_vendas.ontem)}</div>
+              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
               <div className="text-sm text-gray-400">Vendas do dia</div>
             </div>
           </CardContent>
@@ -136,11 +144,11 @@ export default function Component() {
                 </div>
                 <span className="text-gray-700 font-medium">Número de Faturas</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: numero_recibos.cor }}>{numero_recibos.variacao}</span>
+              <span className="text-sm font-medium " style={{ color: numero_recibos?.cor || '#666' }}>{numero_recibos?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">{numero_recibos.valor}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {numero_recibos.ontem}</div>
+              <div className="text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
+              <div className="text-sm text-gray-500">Período Anterior: {numero_recibos?.ontem || 0}</div>
               <div className="text-sm text-gray-400">Transações realizadas</div>
             </div>
           </CardContent>
@@ -156,11 +164,11 @@ export default function Component() {
                 </div>
                 <span className="text-gray-700 font-medium">Itens Vendidos</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: itens_vendidos.cor }}>{itens_vendidos.variacao}</span>
+              <span className="text-sm font-medium " style={{ color: itens_vendidos?.cor || '#666' }}>{itens_vendidos?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos.valor)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(itens_vendidos.ontem)}</div>
+              <div className="text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
+              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
               <div className="text-sm text-gray-400">Produtos vendidos</div>
             </div>
           </CardContent>
@@ -176,11 +184,11 @@ export default function Component() {
                 </div>
                 <span className="text-gray-700 font-medium">Ticket Médio</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: ticket_medio.cor }}>{ticket_medio.variacao}</span>
+              <span className="text-sm font-medium " style={{ color: ticket_medio?.cor || '#666' }}>{ticket_medio?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio.valor)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(ticket_medio.ontem)}</div>
+              <div className="text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
+              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
               <div className="text-sm text-gray-400">Valor por recibo</div>
             </div>
           </CardContent>
@@ -191,7 +199,7 @@ export default function Component() {
       <div className="p-4">
         <h2 className="text-lg font-semibold mb-2">Comparativo por Hora</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={comparativo_por_hora} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <LineChart data={comparativo_por_hora || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="hora" />
             <YAxis tickFormatter={v => `€${v}`} />

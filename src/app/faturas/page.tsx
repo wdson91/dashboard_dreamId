@@ -20,8 +20,13 @@ async function getFaturas(periodo: string): Promise<FaturasListResponse> {
     }
   }
   
-  // Fazer chamada da API com autenticação
-  const dados = await api.get(`${APP_CONFIG.api.baseUrl}/api/faturas/todas?nif=${APP_CONFIG.api.nif}&periodo=${periodo}`)
+  
+  const urlPath = '/faturas/todas'
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${APP_CONFIG.api.nif}&periodo=${periodo}`
+  
+  const response = await api.get(url)
+  
+  const dados = response[0]
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({

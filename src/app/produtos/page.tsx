@@ -20,8 +20,12 @@ async function getProdutos(periodo: string): Promise<ProdutosResponse> {
     }
   }
   
-  // Fazer chamada da API com autenticação
-  const dados = await api.get(`${APP_CONFIG.api.baseUrl}/api/products?nif=${APP_CONFIG.api.nif}&periodo=${periodo}`)
+  const urlPath = '/products'
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${APP_CONFIG.api.nif}&periodo=${periodo}`
+  
+  const response = await api.get(url)
+  
+  const dados = response[0]
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({
