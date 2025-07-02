@@ -12,7 +12,7 @@ export default function ConditionalMain({ children }: { children: React.ReactNod
   
   // Para outras páginas, aplicar o layout normal com sidebar
   return (
-    <main className="min-h-screen pt-16 lg:pt-0 lg:ml-64 px-4 lg:px-8">
+    <main className="min-h-screen pt-2 lg:pt-0 lg:ml-64 px-4 lg:px-8">
       <div className="max-w-7xl mx-auto py-6">
         {children}
       </div>
