@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar } from "lucide-react"
 import { api } from "@/utils/api"
-import { APP_CONFIG, formatCurrency, formatPercentage } from "@/lib/constants"
-import { Produto, ProdutosResponse } from "@/app/types/faturas"
+import { APP_CONFIG } from "@/lib/constants"
+import {  ProdutosResponse } from "@/app/types/faturas"
 
 async function getProdutos(periodo: string): Promise<ProdutosResponse> {
   const cacheKey = `produtos_data_${periodo}`

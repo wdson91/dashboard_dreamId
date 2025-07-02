@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Calendar } from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
-import { Fatura, FaturasListResponse } from "@/app/types/faturas"
+import {  FaturasListResponse } from "@/app/types/faturas"
 
 async function getFaturas(periodo: string): Promise<FaturasListResponse> {
   const cacheKey = `faturas_data_${periodo}`
@@ -51,11 +51,7 @@ export default function FaturasPage() {
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
   if (!data) return null
 
-  // Função para formatar data e hora
-  const formatDateTime = (data: string, hora: string) => {
-    const date = new Date(data)
-    return `${date.toLocaleDateString('pt-BR')} ${hora}`
-  }
+
 
   return (
     <div className="min-h-screen">

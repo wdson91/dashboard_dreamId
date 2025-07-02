@@ -52,10 +52,6 @@ export default function Component() {
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
   if (!data) return null
 
-  // Função para formatar porcentagens
-  const formatPercentage = (value: string) => {
-    return value.startsWith('-') ? value : `+${value}`
-  }
   
   const {
     comparativo_por_hora,
@@ -63,7 +59,7 @@ export default function Component() {
     numero_recibos,
     ticket_medio,
     total_vendas,
-    periodo,
+   // periodo,
   } = data.dados
 
   

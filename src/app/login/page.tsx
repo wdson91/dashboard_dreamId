@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Mail, Lock, Eye, EyeOff, User } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 
 type AuthMode = "login" | "signup" | "forgot"
 
