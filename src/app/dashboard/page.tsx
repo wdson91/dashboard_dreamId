@@ -67,7 +67,7 @@ export default function Component() {
     numero_recibos,
     ticket_medio,
     total_vendas,
-    periodo,
+    //periodo,
   } = data
 
   
