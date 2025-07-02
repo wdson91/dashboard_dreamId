@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Building2, Calendar, Copy, Check, MapPin, Phone, Mail, User, CheckCircle } from "lucide-react"
+import { Building2, Calendar, Copy, Check, MapPin, Phone, Mail, CheckCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
-import { Usuario, Estabelecimento } from "../types/estabelecimentos"
+import { Estabelecimento } from "../types/estabelecimentos"
 import { useEstabelecimento } from "../components/EstabelecimentoContext"
 import { useRouter } from "next/navigation"
 
@@ -102,6 +102,7 @@ export default function EstabelecimentosPage() {
               }
             } catch (err) {
               // Em caso de erro, adicionar apenas o NIF
+              console.log(err)
               estabelecimentosCompletos.push({
                 nif,
                 nome: `Estabelecimento ${nif}`,

@@ -6,7 +6,6 @@ import { Menu, X, LogOut, User, Building2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useEstabelecimento } from './EstabelecimentoContext'
 import LogoutModal from './LogoutModal'
-import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -14,7 +13,7 @@ export default function Header() {
   const { user, signOut } = useAuth()
   const { nifSelecionado } = useEstabelecimento()
   const [morada, setMorada] = useState<string | null>(null)
-  const pathname = usePathname()
+  
 
   // Buscar morada do estabelecimento selecionado
   useEffect(() => {
