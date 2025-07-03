@@ -2,7 +2,7 @@
 "use client"
 import Link from 'next/link' // Link do Next.js (evita reload da página)
 import { useState, useEffect } from 'react'
-import { Menu, X, LogOut, User, Building2, RefreshCw } from 'lucide-react'
+import { Menu, X, LogOut, User, Building2} from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useEstabelecimento } from './EstabelecimentoContext'
 import LogoutModal from './LogoutModal'
@@ -10,7 +10,7 @@ import LogoutModal from './LogoutModal'
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
-  const { user, signOut, refreshing } = useAuth()
+  const { user, signOut } = useAuth()
   const { nifSelecionado } = useEstabelecimento()
   const [morada, setMorada] = useState<string | null>(null)
   // Buscar morada do estabelecimento selecionado

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Building2, Calendar, Copy, Check, MapPin, Phone, Mail, CheckCircle } from "lucide-react"
+import { Building2, Copy, Check, MapPin, Phone, Mail, CheckCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
