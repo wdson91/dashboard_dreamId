@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, Search } from "lucide-react"
+import { Calendar, Search, FileText } from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import {  FaturasListResponse } from "@/app/types/faturas"
@@ -11,7 +11,7 @@ import { useApiNif } from "@/hooks/useApiNif"
 async function getFaturas(periodo: string, nif: string): Promise<FaturasListResponse> {
   const cacheKey = `faturas_data_${nif}_${periodo}`
   
-  // Verificar cache
+  // // Verificar cache
   const cached = localStorage.getItem(cacheKey)
   if (cached) {
     const { data, timestamp } = JSON.parse(cached)
@@ -22,12 +22,12 @@ async function getFaturas(periodo: string, nif: string): Promise<FaturasListResp
   }
   
   
-  const urlPath = '/faturas/todas'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${periodo}`
+  const urlPath = '/api/faturas/todas'
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${periodo}`
   
   const response = await api.get(url)
   
-  const dados = response[0]
+  const dados = response
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({
@@ -38,12 +38,80 @@ async function getFaturas(periodo: string, nif: string): Promise<FaturasListResp
   return dados
 }
 
+// Função para fazer download do PDF
+async function downloadPDF(numeroFatura: string) {
+  try {
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/faturas/pdf?numero_fatura=${numeroFatura}`
+    
+    // Obter token de autenticação
+    const { createClient } = await import('@/utils/supabase/client')
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.access_token) {
+      throw new Error('Usuário não autenticado')
+    }
+    
+    // Fazer a requisição para obter o PDF
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/pdf'
+      }
+    })
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Sessão expirada. Faça login novamente.')
+      }
+      throw new Error(`Erro ao baixar PDF: ${response.status} ${response.statusText}`)
+    }
+
+    // Verificar se a resposta é realmente um PDF
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('pdf')) {
+      throw new Error('Resposta não é um PDF válido')
+    }
+
+    // Obter o blob do PDF
+    const blob = await response.blob()
+    
+    // Criar URL do blob
+    const urlBlob = window.URL.createObjectURL(blob)
+    
+    // Criar link de download
+    const link = document.createElement('a')
+    link.href = urlBlob
+    link.download = `fatura_${numeroFatura}.pdf`
+    
+    // Simular clique para iniciar download
+    document.body.appendChild(link)
+    link.click()
+    
+    // Limpar
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(urlBlob)
+    
+    console.log(`PDF da fatura ${numeroFatura} baixado com sucesso`)
+    
+  } catch (error) {
+    console.error('Erro ao baixar PDF:', error)
+    if (error instanceof Error) {
+      alert(`Erro ao baixar o PDF: ${error.message}`)
+    } else {
+      alert('Erro ao baixar o PDF. Tente novamente.')
+    }
+  }
+}
+
 export default function FaturasPage() {
   const [periodo, setPeriodo] = useState("0")
   const [searchTerm, setSearchTerm] = useState("")
   const [data, setData] = useState<FaturasListResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [downloadingPDF, setDownloadingPDF] = useState<string | null>(null)
   const apiNif = useApiNif()
 
   useEffect(() => {
@@ -54,6 +122,15 @@ export default function FaturasPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [periodo, apiNif])
+
+  const handleDownloadPDF = async (numeroFatura: string) => {
+    setDownloadingPDF(numeroFatura)
+    try {
+      await downloadPDF(numeroFatura)
+    } finally {
+      setDownloadingPDF(null)
+    }
+  }
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
@@ -122,6 +199,7 @@ export default function FaturasPage() {
                     <th className="text-left py-3 px-4 font-medium text-gray-700">Número da Fatura</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-700">NIF Cliente</th>
                     <th className="text-right py-3 px-4 font-medium text-gray-700">Total</th>
+                    <th className="text-center py-3 px-4 font-medium text-gray-700">PDF</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -141,6 +219,20 @@ export default function FaturasPage() {
                       </td>
                       <td className="py-3 px-4 text-right text-gray-900 font-semibold">
                         {formatCurrency(fatura.total)}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => handleDownloadPDF(fatura.numero_fatura)}
+                          disabled={downloadingPDF === fatura.numero_fatura}
+                          className="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Baixar PDF da fatura"
+                        >
+                          {downloadingPDF === fatura.numero_fatura ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          ) : (
+                            <FileText className="h-4 w-4" />
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}
