@@ -15,7 +15,7 @@ export default function EstabelecimentosPage() {
   const [error, setError] = useState<string | null>(null)
   const [copiedNif, setCopiedNif] = useState<string | null>(null)
   const { user } = useAuth()
-  const { nifSelecionado, setNifSelecionado } = useEstabelecimento()
+  const { nifSelecionado, setNifSelecionado} = useEstabelecimento()
   const router = useRouter()
   const supabase = createClient()
 
@@ -47,10 +47,16 @@ export default function EstabelecimentosPage() {
           .from('usuarios')
           .select('nif')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
 
         if (fetchError) {
           throw new Error(fetchError.message)
+        }
+
+        if (!data) {
+          // Usuário não encontrado ou não tem NIFs cadastrados
+          setEstabelecimentos([])
+          return
         }
 
         // Processar a lista de NIFs
@@ -79,9 +85,17 @@ export default function EstabelecimentosPage() {
                 .from('faturas_empresa')
                 .select('*')
                 .eq('nif', nif)
-                .single()
+                .maybeSingle()
 
-              if (empresaError || !empresaData) {
+              if (empresaError) {
+                console.error(`Erro ao buscar dados do estabelecimento ${nif}:`, empresaError)
+                // Se houver erro, usar apenas o NIF
+                estabelecimentosCompletos.push({
+                  nif,
+                  nome: `Estabelecimento ${nif}`,
+                  created_at: new Date().toISOString()
+                })
+              } else if (!empresaData) {
                 // Se não encontrar dados completos, usar apenas o NIF
                 estabelecimentosCompletos.push({
                   nif,
@@ -102,7 +116,6 @@ export default function EstabelecimentosPage() {
               }
             } catch (err) {
               // Em caso de erro, adicionar apenas o NIF
-              //console.log(err)
               console.info(err)
               estabelecimentosCompletos.push({
                 nif,
@@ -113,24 +126,40 @@ export default function EstabelecimentosPage() {
           }
 
           setEstabelecimentos(estabelecimentosCompletos)
+          
+          // Se não há estabelecimento selecionado e há estabelecimentos disponíveis, selecionar o primeiro
+          if (!nifSelecionado && estabelecimentosCompletos.length > 0) {
+            setNifSelecionado(estabelecimentosCompletos[0].nif)
+          }
         } else {
           setEstabelecimentos([])
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao carregar estabelecimentos')
+        console.error('Erro ao carregar estabelecimentos:', err)
+        if (err instanceof Error) {
+          if (err.message.includes('JSON object requested, multiple (or no) rows returned')) {
+            setError('Erro na consulta: múltiplos registros ou nenhum registro encontrado. Entre em contato com o administrador.')
+          } else {
+            setError(`Erro ao carregar estabelecimentos: ${err.message}`)
+          }
+        } else {
+          setError('Erro inesperado ao carregar estabelecimentos')
+        }
       } finally {
         setLoading(false)
       }
     }
 
     fetchEstabelecimentos()
-  }, [user, supabase])
+  }, [user, supabase, nifSelecionado, setNifSelecionado])
 
   if (loading) {
     return (
       <div>
-        <div className="bg-white border-b border-gray-200 px-4 py-2 mb-4">
-          <h1 className="text-gray-800 text-xl font-semibold">Estabelecimentos</h1>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-gray-900 text-2xl font-semibold">Estabelecimentos</h1>
+          </div>
         </div>
         <div className="text-center py-8">Carregando estabelecimentos...</div>
       </div>
@@ -140,8 +169,10 @@ export default function EstabelecimentosPage() {
   if (error) {
     return (
       <div>
-        <div className="bg-white border-b border-gray-200 px-4 py-2 mb-4">
-          <h1 className="text-gray-800 text-xl font-semibold">Estabelecimentos</h1>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-gray-900 text-2xl font-semibold">Estabelecimentos</h1>
+          </div>
         </div>
         <div className="text-center py-8 text-red-500">Erro: {error}</div>
       </div>
@@ -151,11 +182,13 @@ export default function EstabelecimentosPage() {
   return (
     <div>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 mb-4">
-        <h1 className="text-gray-800 text-xl font-semibold">Estabelecimentos</h1>
-        <p className="text-gray-600 text-sm mt-1">
-          {estabelecimentos.length} estabelecimento{estabelecimentos.length !== 1 ? 's' : ''} encontrado{estabelecimentos.length !== 1 ? 's' : ''}
-        </p>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-gray-900 text-2xl font-semibold">Estabelecimentos</h1>
+          <p className="text-gray-600 text-sm">
+            {estabelecimentos.length} estabelecimento{estabelecimentos.length !== 1 ? 's' : ''} encontrado{estabelecimentos.length !== 1 ? 's' : ''}
+          </p>
+        </div>
       </div>
 
       {/* Content */}
@@ -164,7 +197,19 @@ export default function EstabelecimentosPage() {
           <div className="text-center py-12">
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum estabelecimento encontrado</h3>
-            <p className="text-gray-500">Você ainda não possui estabelecimentos cadastrados.</p>
+            <p className="text-gray-500 mb-4">
+              Não foram encontrados estabelecimentos associados à sua conta.
+            </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-md mx-auto">
+              <p className="text-sm text-yellow-800">
+                <strong>Possíveis causas:</strong>
+              </p>
+              <ul className="text-sm text-yellow-700 mt-2 space-y-1">
+                <li>• Sua conta não possui NIFs cadastrados</li>
+                <li>• Os estabelecimentos ainda não foram configurados</li>
+                <li>• Entre em contato com o administrador do sistema</li>
+              </ul>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

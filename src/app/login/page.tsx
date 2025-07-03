@@ -56,7 +56,12 @@ export default function LoginPage() {
       if (mode === "login") {
         const { error } = await signIn(email, password)
         if (error) throw error
-        router.push("/dashboard")
+        
+        // Aguardar um pouco para garantir que a sessão foi estabelecida
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Fazer refresh da página para garantir que todos os contextos sejam atualizados
+        window.location.href = "/dashboard"
       } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,

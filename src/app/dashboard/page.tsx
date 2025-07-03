@@ -50,6 +50,12 @@ export default function Component() {
   const apiNif = useApiNif()
 
   useEffect(() => {
+    // Se não há NIF selecionado, não fazer a chamada da API
+    if (!apiNif) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     getData(filtro, apiNif)
@@ -57,6 +63,26 @@ export default function Component() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [filtro, apiNif])
+
+  // Se não há NIF selecionado, mostrar mensagem
+  if (!apiNif) {
+    return (
+      <div className="p-8 text-center">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Nenhum estabelecimento selecionado</h2>
+          <p className="text-gray-600 mb-6">
+            Para visualizar o dashboard, você precisa selecionar um estabelecimento.
+          </p>
+          <a 
+            href="/estabelecimentos" 
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Ir para Estabelecimentos
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
@@ -80,14 +106,15 @@ export default function Component() {
   return (
     <div>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 mb-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-gray-800 text-xl font-semibold">S.Martino (Leix...</h1>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+        <div className="flex flex-col gap-3">
+        <h1 className="text-gray-800 text-xl font-semibold">Dashboard</h1>
+
+          <div className="flex items-center gap-3">
+            <Calendar className="h-5 w-5 text-blue-600" />
             <div className="relative">
               <select
-                className="appearance-none border rounded px-3 py-1 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
@@ -97,7 +124,7 @@ export default function Component() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -108,118 +135,138 @@ export default function Component() {
       </div>
 
       {/* Dashboard Content */}
-      <div className="p-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Vendas em Aberto */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Umbrella className="h-5 w-5 text-yellow-600" />
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-yellow-50 rounded-xl border border-yellow-200">
+                  <Umbrella className="h-6 w-6 text-yellow-600" />
                 </div>
-                <span className="text-gray-700 font-medium">Vendas em Aberto</span>
+                <span className="text-gray-800 font-semibold">Vendas em Aberto</span>
               </div>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-sm text-gray-500">Mesas em Aberto: 0</div>
+              <div className="text-sm text-gray-600">Mesas em Aberto: 0</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Total de Vendas Consolidadas */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-yellow-600" />
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-green-50 rounded-xl border border-green-200">
+                  <DollarSign className="h-6 w-6 text-green-600" />
                 </div>
-                <span className="text-gray-700 font-medium">Vendas Consolidadas</span>
+                <span className="text-gray-800 font-semibold">Vendas Consolidadas</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: total_vendas?.cor || '#666' }}>{total_vendas?.variacao || '0%'}</span>
+              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+                color: total_vendas?.cor || '#666',
+                backgroundColor: total_vendas?.cor ? `${total_vendas.cor}20` : '#f3f4f6'
+              }}>{total_vendas?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-sm text-gray-400">Vendas do dia</div>
+              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
+              <div className="text-sm text-gray-500">Vendas do dia</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Número de Recibos */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Receipt className="h-5 w-5 text-yellow-600" />
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
+                  <Receipt className="h-6 w-6 text-blue-600" />
                 </div>
-                <span className="text-gray-700 font-medium">Número de Faturas</span>
+                <span className="text-gray-800 font-semibold">Número de Faturas</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: numero_recibos?.cor || '#666' }}>{numero_recibos?.variacao || '0%'}</span>
+              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+                color: numero_recibos?.cor || '#666',
+                backgroundColor: numero_recibos?.cor ? `${numero_recibos.cor}20` : '#f3f4f6'
+              }}>{numero_recibos?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {numero_recibos?.ontem || 0}</div>
-              <div className="text-sm text-gray-400">Transações realizadas</div>
+              <div className="text-sm text-gray-600">Período Anterior: {numero_recibos?.ontem || 0}</div>
+              <div className="text-sm text-gray-500">Transações realizadas</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Itens Vendidos */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <ShoppingCart className="h-5 w-5 text-yellow-600" />
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
+                  <ShoppingCart className="h-6 w-6 text-purple-600" />
                 </div>
-                <span className="text-gray-700 font-medium">Itens Vendidos</span>
+                <span className="text-gray-800 font-semibold">Itens Vendidos</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: itens_vendidos?.cor || '#666' }}>{itens_vendidos?.variacao || '0%'}</span>
+              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+                color: itens_vendidos?.cor || '#666',
+                backgroundColor: itens_vendidos?.cor ? `${itens_vendidos.cor}20` : '#f3f4f6'
+              }}>{itens_vendidos?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
-              <div className="text-sm text-gray-400">Produtos vendidos</div>
+              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
+              <div className="text-sm text-gray-500">Produtos vendidos</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Ticket Médio */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-yellow-600" />
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-orange-50 rounded-xl border border-orange-200">
+                  <TrendingUp className="h-6 w-6 text-orange-600" />
                 </div>
-                <span className="text-gray-700 font-medium">Ticket Médio</span>
+                <span className="text-gray-800 font-semibold">Ticket Médio</span>
               </div>
-              <span className="text-sm font-medium " style={{ color: ticket_medio?.cor || '#666' }}>{ticket_medio?.variacao || '0%'}</span>
+              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+                color: ticket_medio?.cor || '#666',
+                backgroundColor: ticket_medio?.cor ? `${ticket_medio.cor}20` : '#f3f4f6'
+              }}>{ticket_medio?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
-              <div className="text-sm text-gray-500">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-sm text-gray-400">Valor por recibo</div>
+              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
+              <div className="text-sm text-gray-500">Valor por recibo</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Gráfico de comparativo por hora */}
-      <div className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Comparativo por Hora</h2>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Comparativo por Hora</h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={comparativo_por_hora || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="hora" />
-            <YAxis tickFormatter={v => `€${v}`} />
-            <Tooltip formatter={(value) => [`€${value}`, '']} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="hora" stroke="#6b7280" />
+            <YAxis tickFormatter={v => `€${v}`} stroke="#6b7280" />
+            <Tooltip 
+              formatter={(value) => [`€${value}`, '']}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            />
             <Legend />
-            <Line type="monotone" dataKey="hoje" stroke="#8884d8" name="Atual" />
-            <Line type="monotone" dataKey="ontem" stroke="#82ca9d" name="Anterior" />
+            <Line type="monotone" dataKey="hoje" stroke="#3b82f6" name="Atual" strokeWidth={2} />
+            <Line type="monotone" dataKey="ontem" stroke="#10b981" name="Anterior" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </div>

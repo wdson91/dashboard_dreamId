@@ -1,9 +1,15 @@
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
-import { APP_CONFIG } from "@/lib/constants"
+
 
 export function useApiNif() {
-  const { nifSelecionado } = useEstabelecimento()
+  const { nifSelecionado, isLoaded } = useEstabelecimento()
   
-  // Retorna o NIF selecionado se disponível, senão usa o NIF padrão das constantes
-  return nifSelecionado || APP_CONFIG.api.nif
+  // Se ainda não carregou, retorna null para evitar mostrar NIF padrão
+  if (!isLoaded) {
+    return null
+  }
+  
+  // Retorna o NIF selecionado se disponível, senão retorna null
+  // Isso permite que as páginas tratem o caso de usuário sem estabelecimentos
+  return nifSelecionado || null
 } 

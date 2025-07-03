@@ -46,6 +46,12 @@ export default function ProdutosPage() {
   const apiNif = useApiNif()
 
   useEffect(() => {
+    // Se não há NIF selecionado, não fazer a chamada da API
+    if (!apiNif) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     getProdutos(periodo, apiNif)
@@ -53,6 +59,26 @@ export default function ProdutosPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [periodo, apiNif])
+
+  // Se não há NIF selecionado, mostrar mensagem
+  if (!apiNif) {
+    return (
+      <div className="p-8 text-center">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Nenhum estabelecimento selecionado</h2>
+          <p className="text-gray-600 mb-6">
+            Para visualizar os produtos, você precisa selecionar um estabelecimento.
+          </p>
+          <a 
+            href="/estabelecimentos" 
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Ir para Estabelecimentos
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
@@ -77,14 +103,14 @@ export default function ProdutosPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-gray-800 text-xl font-semibold">Produtos Vendidos</h1>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-gray-900 text-2xl font-semibold">Produtos Vendidos</h1>
+          <div className="flex items-center gap-3">
+            <Calendar className="h-5 w-5 text-blue-600" />
             <div className="relative">
               <select
-                className="appearance-none border rounded px-3 py-1 pr-8 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
                 value={periodo}
                 onChange={e => setPeriodo(e.target.value)}
               >
@@ -94,7 +120,7 @@ export default function ProdutosPage() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>

@@ -95,6 +95,14 @@ export function useAuth() {
           setUser(currentSession?.user ?? null)
           hasAttemptedRefresh.current = false
         } else if (event === 'SIGNED_OUT') {
+          // Limpar dados do localStorage quando o usuário faz logout
+          try {
+            localStorage.removeItem('nifSelecionado')
+            console.log('🧹 NIF removido do localStorage (SIGNED_OUT)')
+          } catch (error) {
+            console.error('Erro ao limpar localStorage:', error)
+          }
+          
           setSession(null)
           setUser(null)
           hasAttemptedRefresh.current = false
@@ -115,6 +123,14 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
+      // Limpar dados do localStorage antes do logout
+      try {
+        localStorage.removeItem('nifSelecionado')
+        console.log('🧹 NIF removido do localStorage')
+      } catch (error) {
+        console.error('Erro ao limpar localStorage:', error)
+      }
+      
       await supabase.auth.signOut()
       // O redirect será feito automaticamente pelo onAuthStateChange
     } catch (error) {
