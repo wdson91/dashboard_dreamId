@@ -135,113 +135,113 @@ export default function Component() {
       </div>
 
       {/* Dashboard Content */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Vendas em Aberto */}
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-yellow-50 rounded-xl border border-yellow-200">
-                  <Umbrella className="h-6 w-6 text-yellow-600" />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-3 bg-yellow-50 rounded-xl border border-yellow-200">
+                  <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-yellow-600" />
                 </div>
-                <span className="text-gray-800 font-semibold">Vendas em Aberto</span>
+                <span className="text-gray-800 font-semibold text-sm md:text-base">Vendas em Aberto</span>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-sm text-gray-600">Mesas em Aberto: 0</div>
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-600">Mesas em Aberto: 0</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Total de Vendas Consolidadas */}
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-green-50 rounded-xl border border-green-200">
-                  <DollarSign className="h-6 w-6 text-green-600" />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-3 bg-green-50 rounded-xl border border-green-200">
+                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
                 </div>
-                <span className="text-gray-800 font-semibold">Vendas Consolidadas</span>
+                <span className="text-gray-800 font-semibold text-sm md:text-base">Vendas Consolidadas</span>
               </div>
-              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
                 color: total_vendas?.cor || '#666',
                 backgroundColor: total_vendas?.cor ? `${total_vendas.cor}20` : '#f3f4f6'
               }}>{total_vendas?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-sm text-gray-500">Vendas do dia</div>
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-500">Vendas do dia</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Número de Recibos */}
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
-                  <Receipt className="h-6 w-6 text-blue-600" />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-3 bg-blue-50 rounded-xl border border-blue-200">
+                  <Receipt className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
                 </div>
-                <span className="text-gray-800 font-semibold">Número de Faturas</span>
+                <span className="text-gray-800 font-semibold text-sm md:text-base">Número de Faturas</span>
               </div>
-              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
                 color: numero_recibos?.cor || '#666',
                 backgroundColor: numero_recibos?.cor ? `${numero_recibos.cor}20` : '#f3f4f6'
               }}>{numero_recibos?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
-              <div className="text-sm text-gray-600">Período Anterior: {numero_recibos?.ontem || 0}</div>
-              <div className="text-sm text-gray-500">Transações realizadas</div>
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
+              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {numero_recibos?.ontem || 0}</div>
+              <div className="text-xs md:text-sm text-gray-500">Transações realizadas</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Itens Vendidos */}
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
-                  <ShoppingCart className="h-6 w-6 text-purple-600" />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-3 bg-purple-50 rounded-xl border border-purple-200">
+                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
                 </div>
-                <span className="text-gray-800 font-semibold">Itens Vendidos</span>
+                <span className="text-gray-800 font-semibold text-sm md:text-base">Itens Vendidos</span>
               </div>
-              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
                 color: itens_vendidos?.cor || '#666',
                 backgroundColor: itens_vendidos?.cor ? `${itens_vendidos.cor}20` : '#f3f4f6'
               }}>{itens_vendidos?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
-              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
-              <div className="text-sm text-gray-500">Produtos vendidos</div>
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-500">Produtos vendidos</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Ticket Médio */}
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-orange-50 rounded-xl border border-orange-200">
-                  <TrendingUp className="h-6 w-6 text-orange-600" />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-3 bg-orange-50 rounded-xl border border-orange-200">
+                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
                 </div>
-                <span className="text-gray-800 font-semibold">Ticket Médio</span>
+                <span className="text-gray-800 font-semibold text-sm md:text-base">Ticket Médio</span>
               </div>
-              <span className="text-sm font-semibold px-2 py-1 rounded-full" style={{ 
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
                 color: ticket_medio?.cor || '#666',
                 backgroundColor: ticket_medio?.cor ? `${ticket_medio.cor}20` : '#f3f4f6'
               }}>{ticket_medio?.variacao || '0%'}</span>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
-              <div className="text-sm text-gray-600">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-sm text-gray-500">Valor por recibo</div>
+            <div className="space-y-1 md:space-y-2">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-gray-500">Valor por recibo</div>
             </div>
           </CardContent>
         </Card>
