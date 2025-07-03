@@ -3,7 +3,6 @@
 
 import { useState } from "react"
 import { createClient } from "@/utils/supabase/client"
-import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +23,7 @@ export default function LoginPage() {
   const [error, setError] = useState("")
 
   const supabase = createClient()
-  const router = useRouter()
+ 
   const { signIn } = useAuth()
 
   const handleAuth = async (e: React.FormEvent) => {
