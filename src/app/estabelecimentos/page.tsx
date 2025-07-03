@@ -102,7 +102,8 @@ export default function EstabelecimentosPage() {
               }
             } catch (err) {
               // Em caso de erro, adicionar apenas o NIF
-              console.log(err)
+              //console.log(err)
+              console.info(err)
               estabelecimentosCompletos.push({
                 nif,
                 nome: `Estabelecimento ${nif}`,
@@ -237,15 +238,7 @@ export default function EstabelecimentosPage() {
                     <Mail className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-700">{estabelecimento.email || ''}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
-                    <Calendar className="h-3 w-3" />
-                    <span>
-                      {estabelecimento.created_at ? 
-                        `Criado em: ${new Date(estabelecimento.created_at).toLocaleDateString('pt-BR')}` : 
-                        'Estabelecimento registrado'
-                      }
-                    </span>
-                  </div>
+                 
                 </CardContent>
               </Card>
             ))}

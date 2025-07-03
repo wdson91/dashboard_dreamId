@@ -7,6 +7,13 @@ export const APP_CONFIG = {
     nif: '514757876',
     cacheExpiry: 3 * 60 * 1000, // 3 minutos
   },
+  auth: {
+    refreshTokenExpiry: 10 * 60 * 1000, // 10 minutos antes de expirar (aumentado)
+    autoRefreshInterval: 8 * 60 * 1000, // 8 minutos (aumentado)
+    sessionTimeout: 60 * 60 * 1000, // 1 hora
+    minRefreshInterval: 30 * 1000, // 30 segundos mínimo entre refreshes
+    rateLimitWaitTime: 60 * 1000, // 60 segundos para aguardar após rate limit
+  },
   periods: [
     { value: '0', label: 'Hoje' },
     { value: '1', label: 'Ontem' },
@@ -19,7 +26,7 @@ export const APP_CONFIG = {
 
 // Funções utilitárias de formatação
 export const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
+  return new Intl.NumberFormat('pt-PT', {
     style: 'currency',
     currency: 'EUR'
   }).format(value)

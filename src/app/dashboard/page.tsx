@@ -22,12 +22,16 @@ async function getData(filtro: string, nif: string): Promise<FaturasResponse['da
     }
   }
   
-  const urlPath = '/stats/resumo'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${filtro}`
+  const urlPath = '/api/stats/resumo'
+  //const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${filtro}`
+  
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${filtro}`
+ 
   
   const response = await api.get(url)
-  const dados = response[0]
-
+  
+  const dados = response
+  
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({

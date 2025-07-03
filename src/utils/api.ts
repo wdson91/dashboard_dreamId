@@ -24,6 +24,13 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
       headers,
     })
     
+    // Se receber 401 (Unauthorized), não tentar refresh automaticamente
+    // Deixar o Supabase lidar com isso
+    if (response.status === 401) {
+      const errorText = await response.text()
+      throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+    }
+    
     if (!response.ok) {
       const errorText = await response.text()
       throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)

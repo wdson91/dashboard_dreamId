@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
 type AuthMode = "login" | "signup" | "forgot"
 
@@ -24,6 +25,7 @@ export default function LoginPage() {
 
   const supabase = createClient()
   const router = useRouter()
+  const { signIn } = useAuth()
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,10 +54,7 @@ export default function LoginPage() {
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
+        const { error } = await signIn(email, password)
         if (error) throw error
         router.push("/dashboard")
       } else if (mode === "signup") {
@@ -112,36 +111,30 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {mode !== "forgot" && (
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Senha
-                  </label>
-                  <div className="mt-1 relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="pl-10 pr-10"
-                    />
-                    <Lock className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Senha
+                </label>
+                <div className="mt-1 relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="pl-10 pr-10"
+                  />
+                  <Lock className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
-              )}
+              </div>
 
               {mode === "signup" && (
                 <div>
@@ -162,26 +155,22 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-gray-400" />
-                      )}
+                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
               )}
 
               {error && (
-                <div className="text-red-600 text-sm bg-red-50 p-3 rounded">
+                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
                   {error}
                 </div>
               )}
 
               {message && (
-                <div className="text-green-600 text-sm bg-green-50 p-3 rounded">
+                <div className="text-green-600 text-sm bg-green-50 p-3 rounded-md">
                   {message}
                 </div>
               )}
@@ -200,40 +189,41 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6">
-              {mode === "login" && (
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setMode("signup")}
-                    className="w-full text-sm text-blue-600 hover:text-blue-500"
-                  >
-                    Não tem uma conta? Criar conta
-                  </button>
-                  <button
-                    onClick={() => setMode("forgot")}
-                    className="w-full text-sm text-blue-600 hover:text-blue-500"
-                  >
-                    Esqueceu sua senha?
-                  </button>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
                 </div>
-              )}
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Ou</span>
+                </div>
+              </div>
 
-              {mode === "signup" && (
-                <button
-                  onClick={() => setMode("login")}
-                  className="w-full text-sm text-blue-600 hover:text-blue-500"
-                >
-                  Já tem uma conta? Entrar
-                </button>
-              )}
-
-              {mode === "forgot" && (
-                <button
-                  onClick={() => setMode("login")}
-                  className="w-full text-sm text-blue-600 hover:text-blue-500"
-                >
-                  Voltar para o login
-                </button>
-              )}
+              <div className="mt-6 grid grid-cols-1 gap-3">
+                {mode === "login" && (
+                  <>
+                    <button
+                      onClick={() => setMode("signup")}
+                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      Criar nova conta
+                    </button>
+                    <button
+                      onClick={() => setMode("forgot")}
+                      className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </>
+                )}
+                {(mode === "signup" || mode === "forgot") && (
+                  <button
+                    onClick={() => setMode("login")}
+                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    Voltar para login
+                  </button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -27,28 +27,45 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired - required for Server Components
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    // Get user without trying to refresh
+    const { data: { user } } = await supabase.auth.getUser()
 
-  // Define protected routes
-  const protectedRoutes = ['/', '/dashboard', '/produtos', '/faturas']
-  const isProtectedRoute = protectedRoutes.some(route => 
-    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + '/')
-  )
+    // Define protected routes
+    const protectedRoutes = ['/', '/dashboard', '/produtos', '/faturas', '/estabelecimentos']
+    const isProtectedRoute = protectedRoutes.some(route => 
+      request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + '/')
+    )
 
-  // If accessing protected route without authentication, redirect to login
-  if (isProtectedRoute && !user) {
-    const redirectUrl = new URL('/login', request.url)
-    return NextResponse.redirect(redirectUrl)
+    // If accessing protected route without authentication, redirect to login
+    if (isProtectedRoute && !user) {
+      const redirectUrl = new URL('/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    // If accessing login page while authenticated, redirect to dashboard
+    if (request.nextUrl.pathname === '/login' && user) {
+      const redirectUrl = new URL('/dashboard', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    return supabaseResponse
+  } catch (error) {
+    console.error('Erro inesperado no middleware:', error)
+    
+    // Em caso de erro, redirecionar para login se for rota protegida
+    const protectedRoutes = ['/', '/dashboard', '/produtos', '/faturas', '/estabelecimentos']
+    const isProtectedRoute = protectedRoutes.some(route => 
+      request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + '/')
+    )
+    
+    if (isProtectedRoute) {
+      const redirectUrl = new URL('/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+    
+    return supabaseResponse
   }
-
-  // If accessing login page while authenticated, redirect to dashboard
-  if (request.nextUrl.pathname === '/login' && user) {
-    const redirectUrl = new URL('/dashboard', request.url)
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  return supabaseResponse
 }
 
 export const config = {

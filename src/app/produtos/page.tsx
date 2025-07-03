@@ -21,12 +21,13 @@ async function getProdutos(periodo: string, nif: string): Promise<ProdutosRespon
     }
   }
   
-  const urlPath = '/products'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${periodo}`
+  const urlPath = '/api/products'
+  //const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${periodo}`
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${periodo}`
   
   const response = await api.get(url)
   
-  const dados = response[0]
+  const dados = response
   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({
