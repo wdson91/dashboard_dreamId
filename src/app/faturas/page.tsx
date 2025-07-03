@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, Search, FileText } from "lucide-react"
+import { Calendar, Search, FileText, RefreshCw } from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import {  FaturasListResponse } from "@/app/types/faturas"
@@ -111,22 +111,42 @@ export default function FaturasPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [downloadingPDF, setDownloadingPDF] = useState<string | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   const apiNif = useApiNif()
 
-  useEffect(() => {
-    // Se não há NIF selecionado, não fazer a chamada da API
+  const fetchData = useCallback(async (clearCache = false) => {
     if (!apiNif) {
       setLoading(false)
       return
     }
 
-    setLoading(true)
+    if (clearCache) {
+      // Limpar cache específico para este período e NIF
+      const cacheKey = `faturas_data_${apiNif}_${periodo}`
+      localStorage.removeItem(cacheKey)
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+    }
+    
     setError(null)
-    getFaturas(periodo, apiNif)
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
+    
+    try {
+      const result = await getFaturas(periodo, apiNif)
+      setData(result)
+      setLastUpdate(new Date())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erro desconhecido')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }, [periodo, apiNif])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleDownloadPDF = async (numeroFatura: string) => {
     setDownloadingPDF(numeroFatura)
@@ -235,7 +255,7 @@ export default function FaturasPage() {
         <div className="flex flex-col gap-3">
           <h1 className="text-gray-900 text-2xl font-semibold">Lista de Faturas</h1>
           
-          {/* Dropdown de período */}
+          {/* Dropdown de período e botão de atualizar */}
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-blue-600" />
             <div className="relative">
@@ -256,7 +276,25 @@ export default function FaturasPage() {
                 </svg>
               </div>
             </div>
+            
+            {/* Botão de atualizar */}
+            <button
+              onClick={() => fetchData(true)}
+              disabled={refreshing || loading}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Atualizar dados"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Atualizar</span>
+            </button>
           </div>
+          
+          {/* Informação da última atualização */}
+          {lastUpdate && (
+            <div className="text-sm text-gray-500">
+              Última atualização: {lastUpdate.toLocaleString('pt-BR')}
+            </div>
+          )}
           
           {/* Campo de busca */}
           <div className="relative">

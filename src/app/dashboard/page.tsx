@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar, RefreshCw } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
@@ -47,22 +47,43 @@ export default function Component() {
   const [data, setData] = useState<FaturasResponse['dados'] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   const apiNif = useApiNif()
 
-  useEffect(() => {
+  const fetchData = useCallback(async (clearCache = false) => {
     // Se não há NIF selecionado, não fazer a chamada da API
     if (!apiNif) {
       setLoading(false)
       return
     }
 
-    setLoading(true)
+    if (clearCache) {
+      // Limpar cache específico para este filtro e NIF
+      const cacheKey = `dashboard_data_${apiNif}_${filtro}`
+      localStorage.removeItem(cacheKey)
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+    }
+
     setError(null)
-    getData(filtro, apiNif)
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
+    
+    try {
+      const result = await getData(filtro, apiNif)
+      setData(result)
+      setLastUpdate(new Date())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erro desconhecido')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }, [filtro, apiNif])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   // Se não há NIF selecionado, mostrar mensagem
   if (!apiNif) {
@@ -130,7 +151,25 @@ export default function Component() {
                 </svg>
               </div>
             </div>
+            
+            {/* Botão de atualizar */}
+            <button
+              onClick={() => fetchData(true)}
+              disabled={refreshing || loading}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Atualizar dados"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Atualizar</span>
+            </button>
           </div>
+          
+          {/* Informação da última atualização */}
+          {lastUpdate && (
+            <div className="text-sm text-gray-500">
+              Última atualização: {lastUpdate.toLocaleString('pt-BR')}
+            </div>
+          )}
         </div>
       </div>
 

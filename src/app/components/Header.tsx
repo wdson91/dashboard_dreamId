@@ -2,7 +2,7 @@
 "use client"
 import Link from 'next/link' // Link do Next.js (evita reload da página)
 import { useState, useEffect } from 'react'
-import { Menu, X, LogOut, User, Building2, Home, Package, Receipt, Building} from 'lucide-react'
+import { Menu, X, LogOut, User, Building2, Home, Package, Receipt, Building, Store} from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useEstabelecimento } from './EstabelecimentoContext'
 import LogoutModal from './LogoutModal'
@@ -101,6 +101,10 @@ export default function Header() {
             <Link href="/estabelecimentos" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-700 hover:text-blue-600">
               <Building className="h-4 w-4" />
               <span>Estabelecimentos</span>
+            </Link>
+            <Link href="/filiais" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-700 hover:text-blue-600">
+              <Store className="h-4 w-4" />
+              <span>Filiais</span>
             </Link>
           </nav>
           
@@ -206,6 +210,10 @@ export default function Header() {
               <Link href="/estabelecimentos" onClick={() => setDrawerOpen(false)} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-700 hover:text-blue-600">
                 <Building className="h-4 w-4" />
                 <span>Estabelecimentos</span>
+              </Link>
+              <Link href="/filiais" onClick={() => setDrawerOpen(false)} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-700 hover:text-blue-600">
+                <Store className="h-4 w-4" />
+                <span>Filiais</span>
               </Link>
             </nav>
             
