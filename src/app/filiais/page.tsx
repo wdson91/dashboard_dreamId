@@ -125,7 +125,7 @@ export default function FiliaisPage() {
 
                      if (Array.isArray(filiaisData) && filiaisData.length > 0) {
                        // Se há filiais, criar uma entrada para cada filial
-                       filiaisData.forEach((filial: any, index: number) => {
+                       filiaisData.forEach((filial: string) => {
                          // Se filial é uma string (número da filial), criar objeto
                          const filialObj = typeof filial === 'string' 
                            ? { id: filial, numero: filial, nome: `Filial ${filial}` }
