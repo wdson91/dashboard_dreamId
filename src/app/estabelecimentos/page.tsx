@@ -24,8 +24,8 @@ export default function EstabelecimentosPage() {
       await navigator.clipboard.writeText(nif)
       setCopiedNif(nif)
       setTimeout(() => setCopiedNif(null), 2000)
-    } catch (err) {
-      console.error('Erro ao copiar NIF:', err)
+    } catch {
+      // Ignorar erro de cópia
     }
   }
 
@@ -88,7 +88,6 @@ export default function EstabelecimentosPage() {
                 .maybeSingle()
 
               if (empresaError) {
-                console.error(`Erro ao buscar dados do estabelecimento ${nif}:`, empresaError)
                 // Se houver erro, usar apenas o NIF
                 estabelecimentosCompletos.push({
                   nif,
@@ -114,9 +113,8 @@ export default function EstabelecimentosPage() {
                   updated_at: empresaData.updated_at
                 })
               }
-            } catch (err) {
+            } catch {
               // Em caso de erro, adicionar apenas o NIF
-              console.info(err)
               estabelecimentosCompletos.push({
                 nif,
                 nome: `Estabelecimento ${nif}`,
@@ -135,7 +133,6 @@ export default function EstabelecimentosPage() {
           setEstabelecimentos([])
         }
       } catch (err) {
-        console.error('Erro ao carregar estabelecimentos:', err)
         if (err instanceof Error) {
           if (err.message.includes('JSON object requested, multiple (or no) rows returned')) {
             setError('Erro na consulta: múltiplos registros ou nenhum registro encontrado. Entre em contato com o administrador.')
@@ -151,7 +148,7 @@ export default function EstabelecimentosPage() {
     }
 
     fetchEstabelecimentos()
-  }, [user, supabase, nifSelecionado, setNifSelecionado])
+  }, [user, nifSelecionado, setNifSelecionado, supabase])
 
   if (loading) {
     return (
@@ -216,7 +213,7 @@ export default function EstabelecimentosPage() {
             {estabelecimentos.map((estabelecimento, index) => (
               <Card 
                 key={index} 
-                className={`bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden min-h-[260px] ${
+                className={`bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden ${
                   nifSelecionado === estabelecimento.nif ? 'ring-2 ring-blue-500' : ''
                 }`}
               >
@@ -246,28 +243,10 @@ export default function EstabelecimentosPage() {
                                 <Copy className="h-4 w-4" />
                               )}
                             </button>
-                            <button
-                              onClick={() => selecionarEstabelecimento(estabelecimento.nif)}
-                              className={`px-2 py-0.5 rounded text-xs font-medium transition-colors whitespace-nowrap ml-1 ${
-                                nifSelecionado === estabelecimento.nif
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                              }`}
-                            >
-                              {nifSelecionado === estabelecimento.nif ? 'Selecionado' : 'Selecionar'}
-                            </button>
-                         </div>
-                          {nifSelecionado === estabelecimento.nif && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <CheckCircle className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">Selecionado</span>
-                            </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                    
-                    
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -283,7 +262,31 @@ export default function EstabelecimentosPage() {
                     <Mail className="h-4 w-4 text-gray-400" />
                     <span className="text-gray-700">{estabelecimento.email || ''}</span>
                   </div>
-                 
+
+                  {/* Botão Selecionar */}
+                  <div className="pt-2 border-t border-gray-100">
+                    <button
+                      onClick={() => selecionarEstabelecimento(estabelecimento.nif)}
+                      className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
+                        nifSelecionado === estabelecimento.nif
+                          ? 'bg-blue-600 text-white cursor-default'
+                          : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
+                      }`}
+                      disabled={nifSelecionado === estabelecimento.nif}
+                    >
+                      {nifSelecionado === estabelecimento.nif ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          Selecionado
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          Selecionar Estabelecimento
+                        </div>
+                      )}
+                    </button>
+                  </div>
                 </CardContent>
               </Card>
             ))}

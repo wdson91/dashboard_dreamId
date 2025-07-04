@@ -1,76 +1,152 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar, RefreshCw } from "lucide-react"
+import { useState, useEffect, useCallback, useMemo } from "react"
+import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import { useApiNif } from "@/hooks/useApiNif"
+import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
+import { UpdateButton } from "@/app/components/UpdateButton"
 
-async function getData(filtro: string, nif: string): Promise<FaturasResponse['dados']> {
-  const cacheKey = `dashboard_data_${nif}_${filtro}`
+// Componente separado para o gráfico
+// eslint-disable-next-line
+const ChartComponent = ({ data }: { data: any[] }) => {
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">Comparativo por Hora</h2>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis dataKey="hora" stroke="#6b7280" />
+          <YAxis tickFormatter={v => `€${v}`} stroke="#6b7280" />
+          <Tooltip 
+            formatter={(value) => [`€${value}`, '']}
+            contentStyle={{
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+          />
+          <Legend />
+          <Line type="monotone" dataKey="hoje" stroke="#3b82f6" name="Atual" strokeWidth={2} />
+          <Line type="monotone" dataKey="ontem" stroke="#10b981" name="Anterior" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<FaturasResponse['dados']> {
+  const cacheKey = `dashboard_data_${apiParams.nif}_${apiParams.filial || 'all'}_${filtro}`
   
-  // Verificar cache
+  // Verificar cache apenas se não for um refresh
   const cached = localStorage.getItem(cacheKey)
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-      return data
+  if (cached && !clearCache) {
+    try {
+      const { data, timestamp } = JSON.parse(cached)
+      const now = Date.now()
+      if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
+        return data
+      }
+    } catch {
+      localStorage.removeItem(cacheKey)
     }
   }
   
   const urlPath = '/api/stats/resumo'
-  //const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${filtro}`
   
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${filtro}`
- 
+  // Verificar se a variável de ambiente está definida
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://13.48.69.154:8000'
   
-  const response = await api.get(url)
+  let url = `${apiBaseUrl}${urlPath}?nif=${apiParams.nif}&periodo=${filtro}`
   
-  const dados = response
+  // Adicionar parâmetro de filial se existir
+  if (apiParams.filial) {
+    url += `&filial=${apiParams.filial}`
+  }
   
-  
-  // Salvar no cache
-  localStorage.setItem(cacheKey, JSON.stringify({
-    data: dados,
-    timestamp: Date.now()
-  }))
-  
-  return dados
+    try {
+    const response = await api.get(url)
+    
+    
+          // Verificar se a resposta tem a estrutura esperada
+      let dados
+      if (response && typeof response === 'object') {
+        // Se a resposta tem uma propriedade 'dados', usar ela
+        if ('dados' in response) {
+          dados = response.dados
+        } else {
+          // Se não tem 'dados', usar a resposta diretamente
+          dados = response
+        }
+      } else {
+        throw new Error('Resposta da API inválida')
+      }
+    
+    // Salvar no cache
+    localStorage.setItem(cacheKey, JSON.stringify({
+      data: dados,
+      timestamp: Date.now()
+    }))
+    
+    return dados
+  } catch (error) {
+    throw error
+  }
 }
 
 export default function Component() {
   const [filtro, setFiltro] = useState("0")
   const [data, setData] = useState<FaturasResponse['dados'] | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const { isLoaded } = useEstabelecimento()
   const apiNif = useApiNif()
 
+  // Memoizar os dados do gráfico para evitar re-renders desnecessários
+  const chartData = useMemo(() => {
+    if (!data || !data.comparativo_por_hora) {
+      return []
+    }
+    return data.comparativo_por_hora
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.comparativo_por_hora])
+
   const fetchData = useCallback(async (clearCache = false) => {
-    // Se não há NIF selecionado, não fazer a chamada da API
-    if (!apiNif) {
+    
+    // Se não há NIF selecionado ou não carregou ainda, não fazer a chamada da API
+    if (!apiNif || !isLoaded) {
       setLoading(false)
       return
     }
 
+    // Evitar chamadas duplicadas apenas se não for um refresh
+    if (loading && !clearCache) {
+      return
+    }
+
+    // Se estamos fazendo refresh ou não está carregando, definir loading como true
+    if (clearCache || !loading) {
+      setLoading(true)
+    }
+
     if (clearCache) {
       // Limpar cache específico para este filtro e NIF
-      const cacheKey = `dashboard_data_${apiNif}_${filtro}`
+      const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
       localStorage.removeItem(cacheKey)
       setRefreshing(true)
-    } else {
-      setLoading(true)
     }
 
     setError(null)
     
     try {
-      const result = await getData(filtro, apiNif)
+      const result = await getData(filtro, apiNif, clearCache)
       setData(result)
       setLastUpdate(new Date())
     } catch (e) {
@@ -79,11 +155,61 @@ export default function Component() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [filtro, apiNif])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro, apiNif, isLoaded])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    // Só fazer fetch se há apiNif disponível e isLoaded é true
+    if (apiNif && isLoaded) {
+      // Sempre fazer fetch quando entrar na página (sem cache)
+      fetchData(true)
+    } else {
+      // Se não há apiNif, garantir que loading seja false
+      setLoading(false)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiNif, isLoaded]) // Removido fetchData das dependências para evitar loops
+
+  // useEffect para reagir a mudanças no filtro
+  useEffect(() => {
+    if (apiNif && isLoaded) {
+      // Buscar dados quando o filtro mudar
+      fetchData(true)
+    }
+  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro, apiNif, isLoaded])
+
+  // Detectar quando o usuário volta para a página
+  useEffect(() => {
+    const handleFocus = () => {
+      if (apiNif && isLoaded && !loading) {
+        // Verificar se o cache está expirado
+        const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
+        const cached = localStorage.getItem(cacheKey)
+        if (cached) {
+          try {
+            const { timestamp } = JSON.parse(cached)
+            const now = Date.now()
+            if (now - timestamp >= APP_CONFIG.api.cacheExpiry) {
+              fetchData(true)
+            }
+          } catch {
+            // Ignorar erro de cache
+          }
+        }
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiNif, isLoaded, loading, filtro])
+
+  // Se ainda não carregou, mostrar loading
+  if (!isLoaded) {
+    return <div className="p-8 text-center">Carregando...</div>
+  }
 
   // Se não há NIF selecionado, mostrar mensagem
   if (!apiNif) {
@@ -105,17 +231,36 @@ export default function Component() {
     )
   }
 
-  if (loading) return <div className="p-8 text-center">Carregando...</div>
+  if (loading) return <div className="p-8 text-center">Carregando dados...</div>
   if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
-  if (!data) return null
+  if (!data) {
+    return <div className="p-8 text-center">Nenhum dado disponível</div>
+  }
 
   // Verificar se todos os dados necessários existem
-  if (!data.total_vendas || !data.itens_vendidos || !data.numero_recibos || !data.ticket_medio || !data.comparativo_por_hora) {
-    return <div className="p-8 text-center text-red-500">Dados incompletos recebidos da API</div>
+  const camposObrigatorios = {
+    total_vendas: !!data.total_vendas,
+    itens_vendidos: !!data.itens_vendidos,
+    numero_recibos: !!data.numero_recibos,
+    ticket_medio: !!data.ticket_medio,
+    comparativo_por_hora: !!data.comparativo_por_hora
+  }
+  
+  const camposFaltando = Object.entries(camposObrigatorios)
+    .filter(([, existe]) => !existe)
+    .map(([campo]) => campo)
+  
+  if (camposFaltando.length > 0) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        <div>Dados incompletos recebidos da API</div>
+        <div className="text-sm mt-2">Campos faltando: {camposFaltando.join(', ')}</div>
+      </div>
+    )
   }
 
   const {
-    comparativo_por_hora,
+    //comparativo_por_hora,
     itens_vendidos,
     numero_recibos,
     ticket_medio,
@@ -153,21 +298,23 @@ export default function Component() {
             </div>
             
             {/* Botão de atualizar */}
-            <button
-              onClick={() => fetchData(true)}
-              disabled={refreshing || loading}
-              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Atualizar dados"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Atualizar</span>
-            </button>
+            <UpdateButton 
+              onUpdate={() => fetchData(true)} 
+              disabled={refreshing || loading} 
+              refreshing={refreshing}
+            />
           </div>
           
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-gray-500">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR')}
+              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })}
             </div>
           )}
         </div>
@@ -187,7 +334,9 @@ export default function Component() {
               </div>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                {formatCurrency(total_vendas?.valor || 0)}
+              </div>
               <div className="text-xs md:text-sm text-gray-600">Mesas em Aberto: 0</div>
             </div>
           </CardContent>
@@ -287,28 +436,7 @@ export default function Component() {
       </div>
 
       {/* Gráfico de comparativo por hora */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Comparativo por Hora</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={comparativo_por_hora || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="hora" stroke="#6b7280" />
-            <YAxis tickFormatter={v => `€${v}`} stroke="#6b7280" />
-            <Tooltip 
-              formatter={(value) => [`€${value}`, '']}
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
-            />
-            <Legend />
-            <Line type="monotone" dataKey="hoje" stroke="#3b82f6" name="Atual" strokeWidth={2} />
-            <Line type="monotone" dataKey="ontem" stroke="#10b981" name="Anterior" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <ChartComponent data={chartData} />
     </div>
   )
 }

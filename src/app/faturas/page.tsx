@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, Search, FileText, RefreshCw } from "lucide-react"
+import { Calendar, Search, FileText } from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import {  FaturasListResponse } from "@/app/types/faturas"
 import { useApiNif } from "@/hooks/useApiNif"
+import { UpdateButton } from "@/app/components/UpdateButton"
 
-async function getFaturas(periodo: string, nif: string): Promise<FaturasListResponse> {
-  const cacheKey = `faturas_data_${nif}_${periodo}`
+async function getFaturas(periodo: string, apiParams: { nif: string; filial?: string }): Promise<FaturasListResponse> {
+  const cacheKey = `faturas_data_${apiParams.nif}_${apiParams.filial || 'all'}_${periodo}`
   
   // // Verificar cache
   const cached = localStorage.getItem(cacheKey)
@@ -23,7 +24,12 @@ async function getFaturas(periodo: string, nif: string): Promise<FaturasListResp
   
   
   const urlPath = '/api/faturas'
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${periodo}`
+  let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${apiParams.nif}&periodo=${periodo}`
+  
+  // Adicionar parâmetro de filial se existir
+  if (apiParams.filial) {
+    url += `&filial=${apiParams.filial}`
+  }
   
   const response = await api.get(url)
   
@@ -95,7 +101,6 @@ async function downloadPDF(numeroFatura: string) {
     
     
   } catch (error) {
-    console.error('Erro ao baixar PDF:', error)
     if (error instanceof Error) {
       alert(`Erro ao baixar o PDF: ${error.message}`)
     } else {
@@ -103,6 +108,8 @@ async function downloadPDF(numeroFatura: string) {
     }
   }
 }
+
+
 
 export default function FaturasPage() {
   const [periodo, setPeriodo] = useState("0")
@@ -123,7 +130,7 @@ export default function FaturasPage() {
 
     if (clearCache) {
       // Limpar cache específico para este período e NIF
-      const cacheKey = `faturas_data_${apiNif}_${periodo}`
+      const cacheKey = `faturas_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
       localStorage.removeItem(cacheKey)
       setRefreshing(true)
     } else {
@@ -278,21 +285,23 @@ export default function FaturasPage() {
             </div>
             
             {/* Botão de atualizar */}
-            <button
-              onClick={() => fetchData(true)}
+            <UpdateButton
+              onUpdate={() => fetchData(true)}
               disabled={refreshing || loading}
-              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Atualizar dados"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Atualizar</span>
-            </button>
+              refreshing={refreshing}
+            />
           </div>
           
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-gray-500">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR')}
+              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })}
             </div>
           )}
           
