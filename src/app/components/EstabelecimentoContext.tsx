@@ -1,11 +1,14 @@
 "use client"
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react'
 
 interface EstabelecimentoContextType {
   nifSelecionado: string | null
+  filialSelecionada: string | null
   setNifSelecionado: (nif: string) => void
+  setFilialSelecionada: (filial: string | null) => void
   isLoaded: boolean
   autoSelectFirstEstabelecimento: () => Promise<void>
+  getApiParams: () => { nif: string; filial?: string } | null
 }
 
 const EstabelecimentoContext = createContext<EstabelecimentoContextType | undefined>(undefined)
@@ -13,33 +16,51 @@ const EstabelecimentoContext = createContext<EstabelecimentoContextType | undefi
 // Função para verificar se estamos no browser
 const isBrowser = typeof window !== 'undefined'
 
-// Função para obter NIF do localStorage de forma segura
-const getNifFromStorage = (): string | null => {
-  if (!isBrowser) return null
+// Função para obter dados do localStorage de forma segura
+const getDataFromStorage = (): { nif: string | null; filial: string | null } => {
+  if (!isBrowser) return { nif: null, filial: null }
   try {
-    return localStorage.getItem('nifSelecionado')
-  } catch (error) {
-    console.error('Erro ao acessar localStorage:', error)
-    return null
+    const nif = localStorage.getItem('nifSelecionado')
+    const filial = localStorage.getItem('filialSelecionada')
+    return { nif, filial }
+  } catch {
+    return { nif: null, filial: null }
   }
 }
 
-// Função para salvar NIF no localStorage de forma segura
-const saveNifToStorage = (nif: string): void => {
+// Função para salvar dados no localStorage de forma segura
+const saveDataToStorage = (nif: string, filial: string | null = null): void => {
   if (!isBrowser) return
   try {
     localStorage.setItem('nifSelecionado', nif)
-  } catch (error) {
-    console.error('Erro ao salvar no localStorage:', error)
+    if (filial) {
+      localStorage.setItem('filialSelecionada', filial)
+    } else {
+      localStorage.removeItem('filialSelecionada')
+    }
+  } catch {
+    // Ignorar erro de localStorage
   }
 }
 
 export function EstabelecimentoProvider({ children }: { children: ReactNode }) {
   const [nifSelecionado, setNifSelecionadoState] = useState<string | null>(null)
+  const [filialSelecionada, setFilialSelecionadaState] = useState<string | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
+  // Função para obter parâmetros da API
+  const getApiParams = useCallback((): { nif: string; filial?: string } | null => {
+    if (!nifSelecionado) return null
+    
+    if (filialSelecionada) {
+      return { nif: nifSelecionado, filial: filialSelecionada }
+    } else {
+      return { nif: nifSelecionado }
+    }
+  }, [nifSelecionado, filialSelecionada])
+
   // Função para buscar e selecionar automaticamente o primeiro estabelecimento
-  const autoSelectFirstEstabelecimento = async () => {
+  const autoSelectFirstEstabelecimento = useCallback(async () => {
     try {
       // Importar o cliente Supabase dinamicamente
       const { createClient } = await import('@/utils/supabase/client')
@@ -79,90 +100,125 @@ export function EstabelecimentoProvider({ children }: { children: ReactNode }) {
       // Só selecionar se realmente há estabelecimentos
       if (nifList.length > 0) {
         const primeiroNif = nifList[0]
-        setNifSelecionado(primeiroNif)
+        setNifSelecionadoState(primeiroNif)
+        // Não selecionar filial automaticamente - deixar para o usuário escolher
+        setFilialSelecionadaState(null)
+        saveDataToStorage(primeiroNif, null)
       }
       // Se nifList está vazio, não selecionar nenhum estabelecimento
-    } catch (error) {
-      console.error('Erro ao selecionar automaticamente o primeiro estabelecimento:', error)
+    } catch {
+      // Ignorar erro de seleção automática
     }
-  }
+  }, [])
 
   // Reagir às mudanças de autenticação
   useEffect(() => {
+    let isMounted = true
+    let subscription: { unsubscribe: () => void } | null = null
+    
     const setupAuthListener = async () => {
-      const { createClient } = await import('@/utils/supabase/client')
-      const supabase = createClient()
-      
-      // Obter sessão atual
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session?.user) {
-        // Usuário não autenticado, limpar dados
-        setNifSelecionadoState(null)
-        setIsLoaded(true)
-        return
-      }
+      try {
+        const { createClient } = await import('@/utils/supabase/client')
+        const supabase = createClient()
+        
+        // Obter sessão atual
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!isMounted) return
+        
+        if (!session?.user) {
+          // Usuário não autenticado, limpar dados
+          setNifSelecionadoState(null)
+          setFilialSelecionadaState(null)
+          setIsLoaded(true)
+          return
+        }
 
-      // Usuário autenticado, verificar se há NIF salvo
-      const savedNif = getNifFromStorage()
-      
-      if (savedNif) {
-        setNifSelecionadoState(savedNif)
-        setIsLoaded(true)
-      } else {
-        // Se não há NIF salvo, tentar selecionar automaticamente o primeiro
-        await autoSelectFirstEstabelecimento()
-        setIsLoaded(true)
-      }
-
-      // Listener para mudanças de autenticação
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          if (event === 'SIGNED_IN' && session?.user) {
-            // Usuário fez login, buscar estabelecimentos
-            const savedNif = getNifFromStorage()
-            
-            if (savedNif) {
-              setNifSelecionadoState(savedNif)
-              setIsLoaded(true)
-            } else {
-              await autoSelectFirstEstabelecimento()
-              setIsLoaded(true)
-            }
-          } else if (event === 'SIGNED_OUT') {
-            // Usuário fez logout, limpar dados
-            setNifSelecionadoState(null)
+        // Usuário autenticado, verificar se há dados salvos
+        const savedData = getDataFromStorage()
+        
+        if (savedData.nif) {
+          setNifSelecionadoState(savedData.nif)
+          setFilialSelecionadaState(savedData.filial)
+          setIsLoaded(true)
+        } else {
+          // Se não há dados salvos, tentar selecionar automaticamente o primeiro
+          await autoSelectFirstEstabelecimento()
+          if (isMounted) {
             setIsLoaded(true)
           }
         }
-      )
 
-      return subscription
+        // Listener para mudanças de autenticação
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (!isMounted) return
+            
+            if (event === 'SIGNED_IN' && session?.user) {
+              // Usuário fez login, buscar estabelecimentos
+              const savedData = getDataFromStorage()
+              
+              if (savedData.nif) {
+                setNifSelecionadoState(savedData.nif)
+                setFilialSelecionadaState(savedData.filial)
+                setIsLoaded(true)
+              } else {
+                await autoSelectFirstEstabelecimento()
+                if (isMounted) {
+                  setIsLoaded(true)
+                }
+              }
+            } else if (event === 'SIGNED_OUT') {
+              // Usuário fez logout, limpar dados
+              setNifSelecionadoState(null)
+              setFilialSelecionadaState(null)
+              setIsLoaded(true)
+            }
+          }
+        )
+
+        subscription = authSubscription
+      } catch {
+        if (isMounted) {
+          setIsLoaded(true)
+        }
+      }
     }
     
-    let subscription: { unsubscribe: () => void } | null = null
-    
-    setupAuthListener().then((sub) => {
-      if (sub) {
-        subscription = sub
-      }
-    })
+    setupAuthListener()
 
     return () => {
+      isMounted = false
       if (subscription) {
         subscription.unsubscribe()
       }
     }
-  })
+  }, [autoSelectFirstEstabelecimento])
 
   const setNifSelecionado = (nif: string) => {
-    
     setNifSelecionadoState(nif)
-    saveNifToStorage(nif)
+    // Quando muda o NIF, limpar a filial selecionada
+    setFilialSelecionadaState(null)
+    saveDataToStorage(nif, null)
+  }
+
+  const setFilialSelecionada = (filial: string | null) => {
+    setFilialSelecionadaState(filial)
+    if (nifSelecionado) {
+      saveDataToStorage(nifSelecionado, filial)
+    }
   }
 
   return (
-    <EstabelecimentoContext.Provider value={{ nifSelecionado, setNifSelecionado, isLoaded, autoSelectFirstEstabelecimento }}>
+    <EstabelecimentoContext.Provider value={{ 
+      nifSelecionado, 
+      filialSelecionada,
+      setNifSelecionado, 
+      setFilialSelecionada,
+      isLoaded, 
+      autoSelectFirstEstabelecimento,
+      getApiParams
+    }}>
       {children}
     </EstabelecimentoContext.Provider>
   )
