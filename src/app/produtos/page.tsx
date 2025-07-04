@@ -2,14 +2,28 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, RefreshCw } from "lucide-react"
+import { Calendar} from "lucide-react"
 import { api } from "@/utils/api"
 import { APP_CONFIG } from "@/lib/constants"
-import {  ProdutosResponse } from "@/app/types/faturas"
 import { useApiNif } from "@/hooks/useApiNif"
+import { UpdateButton } from "@/app/components/UpdateButton"
 
-async function getProdutos(periodo: string, nif: string): Promise<ProdutosResponse> {
-  const cacheKey = `produtos_data_${nif}_${periodo}`
+// Tipo para a resposta da API de produtos
+interface ProdutosResponse {
+  data_inicio: string
+  data_fim: string
+  total_itens: number
+  total_montante: number
+  itens: Array<{
+    produto: string
+    quantidade: number
+    montante: number
+    percentagem?: number
+  }>
+}
+
+async function getProdutos(periodo: string, apiParams: { nif: string; filial?: string }): Promise<ProdutosResponse> {
+  const cacheKey = `produtos_data_${apiParams.nif}_${apiParams.filial || 'all'}_${periodo}`
   
   // Verificar cache
   const cached = localStorage.getItem(cacheKey)
@@ -22,8 +36,12 @@ async function getProdutos(periodo: string, nif: string): Promise<ProdutosRespon
   }
   
   const urlPath = '/api/products'
-  //const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}?route=${urlPath}&nif=${nif}&periodo=${periodo}`
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${nif}&periodo=${periodo}`
+  let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${apiParams.nif}&periodo=${periodo}`
+  
+  // Adicionar parâmetro de filial se existir
+  if (apiParams.filial) {
+    url += `&filial=${apiParams.filial}`
+  }
   
   const response = await api.get(url)
   
@@ -56,7 +74,7 @@ export default function ProdutosPage() {
 
     if (clearCache) {
       // Limpar cache específico para este período e NIF
-      const cacheKey = `produtos_data_${apiNif}_${periodo}`
+      const cacheKey = `produtos_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
       localStorage.removeItem(cacheKey)
       setRefreshing(true)
     } else {
@@ -117,7 +135,10 @@ export default function ProdutosPage() {
   }
 
   // Função para formatar porcentagens
-  const formatPercentage = (value: number) => {
+  const formatPercentage = (value: number | undefined | null) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '0.0%'
+    }
     return `${value.toFixed(1)}%`
   }
 
@@ -149,21 +170,23 @@ export default function ProdutosPage() {
             </div>
             
             {/* Botão de atualizar */}
-            <button
-              onClick={() => fetchData(true)}
-              disabled={refreshing || loading}
-              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Atualizar dados"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Atualizar</span>
-            </button>
+            <UpdateButton 
+              onUpdate={() => fetchData(true)} 
+              disabled={refreshing || loading} 
+              refreshing={refreshing} 
+            />
           </div>
           
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-gray-500">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR')}
+              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })}
             </div>
           )}
         </div>
@@ -225,7 +248,7 @@ export default function ProdutosPage() {
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                          {formatPercentage(produto.porcentagem_montante)}
+                          {formatPercentage(produto.percentagem)}
                         </span>
                       </td>
                     </tr>

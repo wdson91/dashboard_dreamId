@@ -50,9 +50,7 @@ export async function middleware(request: NextRequest) {
     }
 
     return supabaseResponse
-  } catch (error) {
-    console.error('Erro inesperado no middleware:', error)
-    
+  } catch {
     // Em caso de erro, redirecionar para login se for rota protegida
     const protectedRoutes = ['/', '/dashboard', '/produtos', '/faturas', '/estabelecimentos']
     const isProtectedRoute = protectedRoutes.some(route => 

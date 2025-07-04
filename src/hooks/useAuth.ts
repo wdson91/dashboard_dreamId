@@ -27,15 +27,11 @@ export function useAuth() {
       hasAttemptedRefresh.current = true
       setRefreshing(true)
       
-      console.log('Tentando refresh da sessão...')
       const { data, error } = await supabase.auth.refreshSession()
       
       if (error) {
-        console.error('Erro ao fazer refresh da sessão:', error)
-        
         // Se for rate limit, não tentar novamente
         if (error.message.includes('rate limit')) {
-          console.log('Rate limit atingido, não tentando novamente')
           return session
         }
         
@@ -45,13 +41,11 @@ export function useAuth() {
         return null
       }
       
-      console.log('Refresh da sessão realizado com sucesso')
       return data.session
-    } catch (error) {
-      console.error('Erro inesperado no refresh:', error)
-      await supabase.auth.signOut()
-      router.push('/login')
-      return null
+          } catch {
+        await supabase.auth.signOut()
+        router.push('/login')
+        return null
     } finally {
       setRefreshing(false)
     }
@@ -70,11 +64,10 @@ export function useAuth() {
           setSession(null)
           setUser(null)
         }
-      } catch (error) {
-        console.error('Erro ao obter sessão inicial:', error)
-        setSession(null)
-        setUser(null)
-      } finally {
+              } catch {
+          setSession(null)
+          setUser(null)
+        } finally {
         setLoading(false)
       }
     }
@@ -98,9 +91,9 @@ export function useAuth() {
           // Limpar dados do localStorage quando o usuário faz logout
           try {
             localStorage.removeItem('nifSelecionado')
-            console.log('🧹 NIF removido do localStorage (SIGNED_OUT)')
-          } catch (error) {
-            console.error('Erro ao limpar localStorage:', error)
+            localStorage.removeItem('filialSelecionada')
+          } catch {
+            // Ignorar erro de localStorage
           }
           
           setSession(null)
@@ -126,15 +119,14 @@ export function useAuth() {
       // Limpar dados do localStorage antes do logout
       try {
         localStorage.removeItem('nifSelecionado')
-        console.log('🧹 NIF removido do localStorage')
-      } catch (error) {
-        console.error('Erro ao limpar localStorage:', error)
+        localStorage.removeItem('filialSelecionada')
+      } catch {
+        // Ignorar erro de localStorage
       }
       
       await supabase.auth.signOut()
       // O redirect será feito automaticamente pelo onAuthStateChange
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error)
+    } catch {
       // Forçar redirect mesmo se houver erro
       router.push('/login')
     }
