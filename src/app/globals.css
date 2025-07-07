@@ -37,6 +37,7 @@
   --color-chart-3: #15803d; /* Verde Escuro */
   --color-chart-4: #166534; /* Verde Muito Escuro */
   --color-chart-5: #86efac; /* Verde Claro */
+  --color-chart-previous: #3b82f6; /* Azul para período anterior */
 
   /* Sidebar Colors */
   --color-sidebar: #166534; /* Verde Muito Escuro */
@@ -98,6 +99,7 @@
   --color-chart-3: #15803d; /* Verde Escuro */
   --color-chart-4: #166534; /* Verde Muito Escuro */
   --color-chart-5: #86efac; /* Verde Claro */
+  --color-chart-previous: #3b82f6; /* Azul para período anterior */
 
   /* Sidebar Colors */
   --color-sidebar: #14532d; /* Even Darker Green */

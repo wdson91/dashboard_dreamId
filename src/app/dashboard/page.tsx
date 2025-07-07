@@ -34,7 +34,7 @@ const ChartComponent = ({ data }: { data: any[] }) => {
           />
           <Legend />
           <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name="Atual" strokeWidth={2} />
-          <Line type="monotone" dataKey="ontem" stroke="var(--color-card-text-green-light)" name="Anterior" strokeWidth={2} />
+          <Line type="monotone" dataKey="ontem" stroke="var(--color-chart-previous)" name="Anterior" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>

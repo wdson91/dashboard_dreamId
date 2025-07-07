@@ -185,14 +185,14 @@ export default function Header() {
       </div>
 
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border p-4 shadow-md">
+      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border p-2  shadow-md">
         <nav className="flex justify-between max-w-4xl mx-auto items-center">
-          <div className="flex flex-col">
-            <div className="flex justify-center gap-2">
+          <div className="flex flex-col ml-10">
+            <div className="flex justify-center gap-2 ">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={120}
+                width={80}
                 height={120}
                 className="object-contain"
               />
@@ -225,9 +225,15 @@ export default function Header() {
 
       {/* Mobile Drawer */}
       {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/60 flex justify-end">
+        <div 
+          className="lg:hidden fixed inset-0 z-50 bg-black/60 flex justify-end"
+          onClick={() => setDrawerOpen(false)}
+        >
           
-          <div className="bg-sidebar w-72 h-full p-6 flex flex-col gap-4 shadow-2xl animate-slide-in-right border-l border-sidebar-border text-sidebar-foreground">
+          <div 
+            className="bg-sidebar w-72 h-full p-6 flex flex-col gap-4 shadow-2xl animate-slide-in-right border-l border-sidebar-border text-sidebar-foreground"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center mb-4">
                 <div className="flex justify-center gap-2 ml-15">
                   <Image
