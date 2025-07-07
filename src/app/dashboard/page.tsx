@@ -287,25 +287,25 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="bg-primary/90 border border-primary rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-        <h1 className="text-primary-foreground text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-[var(--color-card-text-green)] text-xl font-semibold">Dashboard</h1>
 
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-primary-foreground" />
+            <Calendar className="h-5 w-5 text-[var(--color-card-text-green)]" />
             <div className="relative">
               <select
-                className="appearance-none border border-primary rounded-lg px-4 py-2 pr-10 text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:border-primary-foreground bg-primary/80 shadow-sm"
+                className="appearance-none border border-[var(--color-card-border-green)] rounded-lg px-4 py-2 pr-10 text-[var(--color-card-text-green)] focus:outline-none focus:ring-2 focus:ring-[var(--color-card-border-green)] focus:border-[var(--color-card-border-green)] bg-[var(--color-card-white)] shadow-sm"
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
                 {APP_CONFIG.periods.map(period => (
-                  <option key={period.value} value={period.value} className="bg-primary text-primary-foreground">
+                  <option key={period.value} value={period.value} className="bg-[var(--color-card-white)] text-[var(--color-card-text-green)]">
                     {period.label}
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-primary-foreground">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[var(--color-card-text-green)]">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -322,7 +322,7 @@ export default function Component() {
           
           {/* Informação da última atualização */}
           {lastUpdate && (
-            <div className="text-sm text-primary-foreground/80">
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">
               Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',

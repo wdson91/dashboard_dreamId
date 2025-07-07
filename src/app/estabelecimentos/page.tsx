@@ -179,10 +179,10 @@ export default function EstabelecimentosPage() {
   return (
           <div className="min-h-screen bg-white">
         {/* Header */}
-        <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
+        <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-white text-2xl font-semibold">Estabelecimentos</h1>
-            <p className="text-white text-sm">
+            <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Estabelecimentos</h1>
+            <p className="text-[var(--color-card-text-green-muted)] text-sm">
               {estabelecimentos.length} estabelecimento{estabelecimentos.length !== 1 ? 's' : ''} encontrado{estabelecimentos.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -210,24 +210,24 @@ export default function EstabelecimentosPage() {
                 key={`${estabelecimento.nif}-${index}`}
                 className={`transition-all duration-200 hover:shadow-md border ${
                   nifSelecionado === estabelecimento.nif 
-                    ? 'bg-emerald-600 border-emerald-500 ring-2 ring-emerald-500' 
-                    : 'bg-white border-gray-200'
+                    ? 'bg-[var(--color-card-border-green)] border-[var(--color-card-border-green)] ring-2 ring-[var(--color-card-border-green)]' 
+                    : 'bg-[var(--color-card-white)] border-[var(--color-card-border-green)]'
                 }`}
               >
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start justify-between text-lg">
                     <div className="flex items-start gap-2 flex-1 min-w-0">
                       <Building2 className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
-                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                       }`} />
                       <div className="flex flex-col min-w-0 flex-1">
                         <span className={`truncate text-base ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-900'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           {estabelecimento.nome || `Estabelecimento ${estabelecimento.nif}`}
                         </span>
                         <span className={`text-sm font-semibold ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           NIF: {estabelecimento.nif}
                         </span>
@@ -243,13 +243,13 @@ export default function EstabelecimentosPage() {
                     {/* NIF */}
                     <div className="flex items-center justify-between">
                       <span className={`text-sm ${
-                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                       }`}>NIF:</span>
                       <div className="flex items-center gap-2">
                         <span className={`font-mono text-sm px-2 py-1 rounded ${
                           nifSelecionado === estabelecimento.nif 
-                            ? 'bg-emerald-400 text-white' 
-                            : 'bg-gray-100 text-gray-700'
+                            ? 'bg-white text-[var(--color-card-border-green)]' 
+                            : 'bg-[var(--color-card-border-green)] text-white'
                         }`}>
                           {estabelecimento.nif}
                         </span>
@@ -260,18 +260,18 @@ export default function EstabelecimentosPage() {
                           }}
                           className={`p-1 rounded transition-colors ${
                             nifSelecionado === estabelecimento.nif 
-                              ? 'hover:bg-emerald-400' 
-                              : 'hover:bg-gray-200'
+                              ? 'hover:bg-white' 
+                              : 'hover:bg-[var(--color-card-border-green)]'
                           }`}
                           title="Copiar NIF"
                         >
                           {copiedNif === estabelecimento.nif ? (
                             <Check className={`h-4 w-4 ${
-                              nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                              nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                             }`} />
                           ) : (
                             <Copy className={`h-4 w-4 ${
-                              nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                              nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                             }`} />
                           )}
                         </button>
@@ -282,10 +282,10 @@ export default function EstabelecimentosPage() {
                     {estabelecimento.nome && (
                       <div className="flex items-center gap-2">
                         <Building2 className={`h-4 w-4 ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`} />
                         <span className={`text-sm truncate ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           {estabelecimento.nome}
                         </span>
@@ -296,10 +296,10 @@ export default function EstabelecimentosPage() {
                     {estabelecimento.morada && (
                       <div className="flex items-start gap-2">
                         <MapPin className={`h-4 w-4 mt-0.5 ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`} />
                         <span className={`text-sm line-clamp-2 ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           {estabelecimento.morada}
                         </span>
@@ -310,10 +310,10 @@ export default function EstabelecimentosPage() {
                     {estabelecimento.telefone && (
                       <div className="flex items-center gap-2">
                         <Phone className={`h-4 w-4 ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`} />
                         <span className={`text-sm ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           {estabelecimento.telefone}
                         </span>
@@ -324,10 +324,10 @@ export default function EstabelecimentosPage() {
                     {estabelecimento.email && (
                       <div className="flex items-center gap-2">
                         <Mail className={`h-4 w-4 ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`} />
                         <span className={`text-sm truncate ${
-                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                         }`}>
                           {estabelecimento.email}
                         </span>
@@ -337,7 +337,7 @@ export default function EstabelecimentosPage() {
                     {/* Responsável */}
                     {estabelecimento.responsavel && (
                       <div className={`text-sm ${
-                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-gray-600'
+                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                       }`}>
                         Responsável: {estabelecimento.responsavel}
                       </div>
@@ -345,14 +345,14 @@ export default function EstabelecimentosPage() {
 
                     {/* Botão Selecionar */}
                     <div className={`pt-2 border-t ${
-                      nifSelecionado === estabelecimento.nif ? 'border-emerald-400' : 'border-gray-200'
+                      nifSelecionado === estabelecimento.nif ? 'border-white' : 'border-[var(--color-card-border-green)]'
                     }`}>
                       <button
                         onClick={() => selecionarEstabelecimento(estabelecimento.nif)}
                         className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                           nifSelecionado === estabelecimento.nif
-                            ? 'bg-emerald-400 text-white cursor-default'
-                            : 'bg-emerald-500 text-white hover:bg-emerald-400 border border-emerald-400'
+                            ? 'bg-white text-[var(--color-card-border-green)] cursor-default'
+                            : 'bg-[var(--color-card-border-green)] text-white hover:bg-[var(--color-card-text-green)] border border-[var(--color-card-border-green)]'
                         }`}
                         disabled={nifSelecionado === estabelecimento.nif}
                       >

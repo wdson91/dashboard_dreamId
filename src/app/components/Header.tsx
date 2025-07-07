@@ -199,23 +199,23 @@ export default function Header() {
             </div>
             
           </div>
-          {isLoaded && nifSelecionado && (
-              <>
-                <div className="flex items-center flex-col gap-1 mt-1">
-                <div className="flex items-center gap-1 mt-1">
-                  <Building2 className="h-3 w-3 text-sidebar-secondary-foreground" />
-                  <span className="text-xs font-mono text-sidebar-secondary-foreground">NIF: {nifSelecionado}</span>
-                </div>
-                {filialSelecionada && (
+                      {isLoaded && nifSelecionado && (
+                <>
+                 <div className="flex items-center flex-col gap-1 mt-1">
                   <div className="flex items-center gap-1 mt-1">
-                    <Store className="h-3 w-3 text-sidebar-secondary-foreground" />
-                    <span className="text-xs text-sidebar-secondary-foreground font-medium">Filial: #{filialSelecionada}</span>
+                    <Building2 className="h-3 w-3 text-white" />
+                    <span className="text-xs font-mono text-white">NIF: {nifSelecionado}</span>
                   </div>
-                )}
-                </div>
-                
-              </>
-            )}
+                  {filialSelecionada && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Store className="h-3 w-3 text-white" />
+                      <span className="text-xs text-white font-medium">Filial: #{filialSelecionada}</span>
+                    </div>
+                  )}
+                 </div>
+                  
+                </>
+              )}
           <button 
             onClick={() => setDrawerOpen(true)} 
             aria-label="Abrir menu" 
