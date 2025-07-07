@@ -20,8 +20,8 @@ const ChartComponent = ({ data }: { data: any[] }) => {
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="hora" stroke="#6b7280" />
-          <YAxis tickFormatter={v => `€${v}`} stroke="#6b7280" />
+          <XAxis dataKey="hora" stroke="#374151" />
+          <YAxis tickFormatter={v => `€${v}`} stroke="#374151" />
           <Tooltip 
             formatter={(value) => [`€${value}`, '']}
             contentStyle={{
@@ -32,8 +32,8 @@ const ChartComponent = ({ data }: { data: any[] }) => {
             }}
           />
           <Legend />
-          <Line type="monotone" dataKey="hoje" stroke="#3b82f6" name="Atual" strokeWidth={2} />
-          <Line type="monotone" dataKey="ontem" stroke="#10b981" name="Anterior" strokeWidth={2} />
+          <Line type="monotone" dataKey="hoje" stroke="#10b981" name="Atual" strokeWidth={2} />
+          <Line type="monotone" dataKey="ontem" stroke="#6b7280" name="Anterior" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -208,7 +208,7 @@ export default function Component() {
 
   // Se ainda não carregou, mostrar loading
   if (!isLoaded) {
-    return <div className="p-8 text-center">Carregando...</div>
+    return <div className="p-8 text-center text-white">Carregando...</div>
   }
 
   // Se não há NIF selecionado, mostrar mensagem
@@ -216,13 +216,13 @@ export default function Component() {
     return (
       <div className="p-8 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Nenhum estabelecimento selecionado</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Nenhum estabelecimento selecionado</h2>
+          <p className="text-white mb-6">
             Para visualizar o dashboard, você precisa selecionar um estabelecimento.
           </p>
           <a 
             href="/estabelecimentos" 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-gray-100 transition-colors"
           >
             Ir para Estabelecimentos
           </a>
@@ -231,10 +231,10 @@ export default function Component() {
     )
   }
 
-  if (loading) return <div className="p-8 text-center">Carregando dados...</div>
-  if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
+  if (loading) return <div className="p-8 text-center text-white">Carregando dados...</div>
+  if (error) return <div className="p-8 text-center text-red-300">Erro: {error}</div>
   if (!data) {
-    return <div className="p-8 text-center">Nenhum dado disponível</div>
+    return <div className="p-8 text-center text-white">Nenhum dado disponível</div>
   }
 
   // Verificar se todos os dados necessários existem
@@ -252,7 +252,7 @@ export default function Component() {
   
   if (camposFaltando.length > 0) {
     return (
-      <div className="p-8 text-center text-red-500">
+      <div className="p-8 text-center text-red-300">
         <div>Dados incompletos recebidos da API</div>
         <div className="text-sm mt-2">Campos faltando: {camposFaltando.join(', ')}</div>
       </div>
@@ -270,27 +270,27 @@ export default function Component() {
 
   
   return (
-    <div>
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-        <h1 className="text-gray-800 text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-white text-xl font-semibold">Dashboard</h1>
 
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-white" />
             <div className="relative">
               <select
-                className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                className="appearance-none border border-emerald-400 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white bg-emerald-500 shadow-sm"
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
                 {APP_CONFIG.periods.map(period => (
-                  <option key={period.value} value={period.value}>
+                  <option key={period.value} value={period.value} className="bg-emerald-500 text-white">
                     {period.label}
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -307,7 +307,7 @@ export default function Component() {
           
           {/* Informação da última atualização */}
           {lastUpdate && (
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-white">
               Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -327,10 +327,10 @@ export default function Component() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-yellow-50 rounded-xl border border-yellow-200">
-                  <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-yellow-600" />
+                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                  <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-800 font-semibold text-sm md:text-base">Vendas em Aberto</span>
+                <span className="text-gray-900 font-semibold text-sm md:text-base">Vendas em Aberto</span>
               </div>
             </div>
             <div className="space-y-1 md:space-y-2">
@@ -347,20 +347,17 @@ export default function Component() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-green-50 rounded-xl border border-green-200">
-                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-800 font-semibold text-sm md:text-base">Vendas Consolidadas</span>
+                <span className="text-gray-900 font-semibold text-sm md:text-base">Vendas Consolidadas</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
-                color: total_vendas?.cor || '#666',
-                backgroundColor: total_vendas?.cor ? `${total_vendas.cor}20` : '#f3f4f6'
-              }}>{total_vendas?.variacao || '0%'}</span>
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{total_vendas?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
               <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-500">Vendas do dia</div>
+              <div className="text-xs md:text-sm text-gray-600">Vendas do dia</div>
             </div>
           </CardContent>
         </Card>
@@ -370,20 +367,17 @@ export default function Component() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-blue-50 rounded-xl border border-blue-200">
-                  <Receipt className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                  <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-800 font-semibold text-sm md:text-base">Número de Faturas</span>
+                <span className="text-gray-900 font-semibold text-sm md:text-base">Número de Faturas</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
-                color: numero_recibos?.cor || '#666',
-                backgroundColor: numero_recibos?.cor ? `${numero_recibos.cor}20` : '#f3f4f6'
-              }}>{numero_recibos?.variacao || '0%'}</span>
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{numero_recibos?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
               <div className="text-xs md:text-sm text-gray-600">Período Anterior: {numero_recibos?.ontem || 0}</div>
-              <div className="text-xs md:text-sm text-gray-500">Transações realizadas</div>
+              <div className="text-xs md:text-sm text-gray-600">Transações realizadas</div>
             </div>
           </CardContent>
         </Card>
@@ -393,20 +387,17 @@ export default function Component() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-purple-50 rounded-xl border border-purple-200">
-                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-800 font-semibold text-sm md:text-base">Itens Vendidos</span>
+                <span className="text-gray-900 font-semibold text-sm md:text-base">Itens Vendidos</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
-                color: itens_vendidos?.cor || '#666',
-                backgroundColor: itens_vendidos?.cor ? `${itens_vendidos.cor}20` : '#f3f4f6'
-              }}>{itens_vendidos?.variacao || '0%'}</span>
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{itens_vendidos?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
               <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-500">Produtos vendidos</div>
+              <div className="text-xs md:text-sm text-gray-600">Produtos vendidos</div>
             </div>
           </CardContent>
         </Card>
@@ -416,20 +407,17 @@ export default function Component() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-orange-50 rounded-xl border border-orange-200">
-                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
+                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-800 font-semibold text-sm md:text-base">Ticket Médio</span>
+                <span className="text-gray-900 font-semibold text-sm md:text-base">Ticket Médio</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full" style={{ 
-                color: ticket_medio?.cor || '#666',
-                backgroundColor: ticket_medio?.cor ? `${ticket_medio.cor}20` : '#f3f4f6'
-              }}>{ticket_medio?.variacao || '0%'}</span>
+              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{ticket_medio?.variacao || '0%'}</span>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
               <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-500">Valor por recibo</div>
+              <div className="text-xs md:text-sm text-gray-600">Valor por recibo</div>
             </div>
           </CardContent>
         </Card>

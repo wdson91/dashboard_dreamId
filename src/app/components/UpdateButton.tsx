@@ -27,7 +27,7 @@ export const UpdateButton = ({ onUpdate, disabled = false, refreshing = false }:
       className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
         isInCooldown 
           ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-          : 'bg-blue-600 text-white hover:bg-blue-700'
+          : 'bg-green-600 text-white hover:bg-green-700'
       } disabled:opacity-50 disabled:cursor-not-allowed`}
       title={isInCooldown 
         ? `Aguarde ${cooldownCountdown}s para atualizar novamente` 

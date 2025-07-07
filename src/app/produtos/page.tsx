@@ -57,7 +57,7 @@ async function getProdutos(periodo: string, apiParams: { nif: string; filial?: s
 }
 
 export default function ProdutosPage() {
-  const [periodo, setPeriodo] = useState("2") // Começa com "Esta Semana"
+  const [periodo, setPeriodo] = useState("0") // Começa com "Hoje"
   const [data, setData] = useState<ProdutosResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -104,13 +104,13 @@ export default function ProdutosPage() {
     return (
       <div className="p-8 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Nenhum estabelecimento selecionado</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Nenhum estabelecimento selecionado</h2>
+          <p className="text-white mb-6">
             Para visualizar os produtos, você precisa selecionar um estabelecimento.
           </p>
           <a 
             href="/estabelecimentos" 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-gray-100 transition-colors"
           >
             Ir para Estabelecimentos
           </a>
@@ -119,8 +119,8 @@ export default function ProdutosPage() {
     )
   }
 
-  if (loading) return <div className="p-8 text-center">Carregando...</div>
-  if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>
+  if (loading) return <div className="p-8 text-center text-white">Carregando...</div>
+  if (error) return <div className="p-8 text-center text-red-300">Erro: {error}</div>
   if (!data) return null
 
   // Ordenar produtos por montante (maior para menor)
@@ -142,27 +142,41 @@ export default function ProdutosPage() {
     return `${value.toFixed(1)}%`
   }
 
+  // Função para formatar datas com "/"
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
+    } catch {
+      // Se não conseguir formatar, retornar a string original
+      return dateString
+    }
+  }
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-          <h1 className="text-gray-900 text-2xl font-semibold">Produtos Vendidos</h1>
+          <h1 className="text-white text-2xl font-semibold">Produtos Vendidos</h1>
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-white" />
             <div className="relative">
               <select
-                className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                className="appearance-none border border-emerald-400 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white bg-emerald-500 shadow-sm"
                 value={periodo}
                 onChange={e => setPeriodo(e.target.value)}
               >
                 {APP_CONFIG.periods.map(period => (
-                  <option key={period.value} value={period.value}>
+                  <option key={period.value} value={period.value} className="bg-emerald-500 text-white">
                     {period.label}
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -179,7 +193,7 @@ export default function ProdutosPage() {
           
           {/* Informação da última atualização */}
           {lastUpdate && (
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-white">
               Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -195,75 +209,71 @@ export default function ProdutosPage() {
       {/* Resumo */}
       <div className="p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-white shadow-sm">
+          <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-500">Período</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {new Date(data.data_inicio).toLocaleDateString('pt-BR')} - {new Date(data.data_fim).toLocaleDateString('pt-BR')}
+              <div className="text-sm text-gray-600">Período</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {formatDate(data.data_inicio)} - {formatDate(data.data_fim)}
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white shadow-sm">
+          
+          <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-500">Total de Itens</div>
-              <div className="text-lg font-semibold text-gray-900">{data.total_itens}</div>
+              <div className="text-sm text-gray-600">Total de Itens</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {data.total_itens.toLocaleString('pt-BR')}
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-white shadow-sm">
+          
+          <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-500">Total de Vendas</div>
-              <div className="text-lg font-semibold text-gray-900">{formatCurrency(data.total_montante)}</div>
+              <div className="text-sm text-gray-600">Total Montante</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {formatCurrency(data.total_montante)}
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Tabela de Produtos */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">#</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Produto</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-700">Quantidade</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-700">Montante</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-700">% do Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {produtosOrdenados.map((produto, index) => (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 text-gray-500 font-medium">
+        {/* Lista de Produtos */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Produtos Mais Vendidos</h2>
+          
+          {produtosOrdenados.map((produto, index) => (
+            <Card key={index} className="bg-white border border-gray-200">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                         {index + 1}
-                      </td>
-                      <td className="py-3 px-4 text-gray-900 font-medium">
-                        {produto.produto}
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-700">
-                        {produto.quantidade.toLocaleString('pt-BR')}
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-900 font-medium">
-                        {formatCurrency(produto.montante)}
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-700">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                          {formatPercentage(produto.percentagem)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {produtosOrdenados.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                Nenhum produto encontrado para o período selecionado.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">{produto.produto}</h3>
+                        <p className="text-gray-600 text-sm">
+                          Quantidade: {produto.quantidade.toLocaleString('pt-BR')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {formatCurrency(produto.montante)}
+                    </div>
+                    {produto.percentagem && (
+                      <div className="text-sm text-gray-600">
+                        {formatPercentage(produto.percentagem)} do total
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   )

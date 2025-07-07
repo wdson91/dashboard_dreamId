@@ -181,23 +181,23 @@ export default function FiliaisPage() {
 
   if (loading) {
     return (
-      <div>
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="min-h-screen bg-white">
+        <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-gray-900 text-2xl font-semibold">Filiais</h1>
+            <h1 className="text-white text-2xl font-semibold">Filiais</h1>
           </div>
         </div>
-        <div className="text-center py-8">Carregando filiais...</div>
+        <div className="text-center py-8 text-gray-600">Carregando filiais...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div>
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="min-h-screen bg-white">
+        <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-gray-900 text-2xl font-semibold">Filiais</h1>
+            <h1 className="text-white text-2xl font-semibold">Filiais</h1>
           </div>
         </div>
         <div className="text-center py-8 text-red-500">Erro: {error}</div>
@@ -206,21 +206,21 @@ export default function FiliaisPage() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-gray-900 text-2xl font-semibold">Filiais</h1>
-              <p className="text-gray-600 text-sm">
+              <h1 className="text-white text-2xl font-semibold">Filiais</h1>
+              <p className="text-white text-sm">
                 {filiais.length} filial{filiais.length !== 1 ? 'is' : ''} encontrada{filiais.length !== 1 ? 's' : ''}
               </p>
             </div>
             {filialSelecionada && (
               <button
                 onClick={() => selecionarFilial(nifSelecionado || '', undefined)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors border border-gray-300"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors border border-green-400"
               >
                 <Building2 className="h-4 w-4" />
                 Ver Dados Gerais
@@ -228,12 +228,12 @@ export default function FiliaisPage() {
             )}
           </div>
           {filialSelecionada && (
-            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <Store className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-800 font-medium">
+            <div className="flex items-center gap-2 p-3 bg-green-600 rounded-lg border border-green-400">
+              <Store className="h-4 w-4 text-white" />
+              <span className="text-white font-medium">
                 Filial selecionada: #{filialSelecionada}
               </span>
-              <span className="text-blue-600 text-sm">
+              <span className="text-white text-sm">
                 (Visualizando dados específicos desta filial)
               </span>
             </div>
@@ -245,9 +245,9 @@ export default function FiliaisPage() {
       <div>
         {filiais.length === 0 ? (
           <div className="text-center py-12">
-            <Store className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma filial encontrada</h3>
-            <p className="text-gray-500 mb-4">
+            <Store className="h-12 w-12 text-white mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Nenhuma filial encontrada</h3>
+            <p className="text-white mb-4">
               Não foram encontradas filiais associadas à sua conta.
             </p>
           </div>
@@ -255,29 +255,29 @@ export default function FiliaisPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Card de Dados Gerais */}
             {!filialSelecionada && (
-              <Card className="transition-all duration-200 hover:shadow-md ring-2 ring-green-500 bg-green-50">
+              <Card className="transition-all duration-200 hover:shadow-md ring-2 ring-emerald-400 bg-emerald-500 border border-emerald-400">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start justify-between text-lg">
                     <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <Building2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <Building2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
                       <div className="flex flex-col min-w-0 flex-1">
-                        <span className="truncate text-base text-green-800">
+                        <span className="truncate text-base text-white">
                           Dados Gerais
                         </span>
-                        <span className="text-sm text-green-600 font-semibold">
+                        <span className="text-sm text-white font-semibold">
                           Todas as Filiais
                         </span>
                       </div>
                     </div>
-                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 ml-2" />
+                    <CheckCircle className="h-5 w-5 text-white flex-shrink-0 ml-2" />
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">NIF:</span>
+                      <span className="text-sm text-white">NIF:</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                        <span className="font-mono text-sm bg-emerald-400 px-2 py-1 rounded text-white">
                           {nifSelecionado}
                         </span>
                         <button
@@ -285,30 +285,30 @@ export default function FiliaisPage() {
                             e.stopPropagation()
                             copyToClipboard(nifSelecionado || '')
                           }}
-                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                          className="p-1 hover:bg-emerald-400 rounded transition-colors"
                           title="Copiar NIF"
                         >
                           {copiedNif === nifSelecionado ? (
-                            <Check className="h-4 w-4 text-green-600" />
+                            <Check className="h-4 w-4 text-white" />
                           ) : (
-                            <Copy className="h-4 w-4 text-gray-400" />
+                            <Copy className="h-4 w-4 text-white" />
                           )}
                         </button>
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-white">
                       Visualizando dados consolidados de todas as filiais deste estabelecimento.
                     </div>
 
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-white">
                       Total de filiais: {filiais.length}
                     </div>
 
                     {/* Botão Selecionar */}
-                    <div className="pt-2 border-t border-gray-100">
+                    <div className="pt-2 border-t border-emerald-400">
                       <button
-                        className="w-full py-2 px-4 rounded-lg font-medium bg-green-600 text-white cursor-default"
+                        className="w-full py-2 px-4 rounded-lg font-medium bg-emerald-400 text-white cursor-default"
                         disabled
                       >
                         <div className="flex items-center justify-center gap-2">
@@ -325,27 +325,35 @@ export default function FiliaisPage() {
             {filiais.map((filial, index) => (
               <Card 
                 key={`${filial.nif}-${filial.filial_id || 'main'}-${index}`}
-                className={`transition-all duration-200 hover:shadow-md ${
-                  filialSelecionada === filial.filial_id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                className={`transition-all duration-200 hover:shadow-md border ${
+                  filialSelecionada === filial.filial_id 
+                    ? 'bg-emerald-600 border-emerald-500 ring-2 ring-emerald-500' 
+                    : 'bg-white border-gray-200'
                 }`}
               >
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start justify-between text-lg">
                     <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <Store className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <Store className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
+                        filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                      }`} />
                       <div className="flex flex-col min-w-0 flex-1">
-                        <span className="truncate text-base">
+                        <span className={`truncate text-base ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-900'
+                        }`}>
                           {filial.filial_nome || filial.nome || `Filial ${filial.nif}`}
                         </span>
                         {filial.filial_numero && (
-                          <span className="text-sm text-blue-600 font-semibold">
+                          <span className={`text-sm font-semibold ${
+                            filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                          }`}>
                             Filial #{filial.filial_numero}
                           </span>
                         )}
                       </div>
                     </div>
                     {filialSelecionada === filial.filial_id && (
-                      <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 ml-2" />
+                      <CheckCircle className="h-5 w-5 text-white flex-shrink-0 ml-2" />
                     )}
                   </CardTitle>
                 </CardHeader>
@@ -353,9 +361,15 @@ export default function FiliaisPage() {
                   <div className="space-y-3">
                     {/* NIF e Número da Filial */}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">NIF:</span>
+                      <span className={`text-sm ${
+                        filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                      }`}>NIF:</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                        <span className={`font-mono text-sm px-2 py-1 rounded ${
+                          filialSelecionada === filial.filial_id 
+                            ? 'bg-emerald-400 text-white' 
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
                           {filial.nif}
                         </span>
                         <button
@@ -363,13 +377,21 @@ export default function FiliaisPage() {
                             e.stopPropagation()
                             copyToClipboard(filial.nif)
                           }}
-                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                          className={`p-1 rounded transition-colors ${
+                            filialSelecionada === filial.filial_id 
+                              ? 'hover:bg-emerald-400' 
+                              : 'hover:bg-gray-200'
+                          }`}
                           title="Copiar NIF"
                         >
                           {copiedNif === filial.nif ? (
-                            <Check className="h-4 w-4 text-green-600" />
+                            <Check className={`h-4 w-4 ${
+                              filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                            }`} />
                           ) : (
-                            <Copy className="h-4 w-4 text-gray-400" />
+                            <Copy className={`h-4 w-4 ${
+                              filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                            }`} />
                           )}
                         </button>
                       </div>
@@ -378,8 +400,14 @@ export default function FiliaisPage() {
                     {/* Número da Filial */}
                     {filial.filial_numero && (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Número da Filial:</span>
-                        <span className="font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        <span className={`text-sm ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`}>Número da Filial:</span>
+                        <span className={`font-semibold px-2 py-1 rounded ${
+                          filialSelecionada === filial.filial_id 
+                            ? 'text-white bg-emerald-400' 
+                            : 'text-gray-700 bg-gray-100'
+                        }`}>
                           #{filial.filial_numero}
                         </span>
                       </div>
@@ -388,8 +416,12 @@ export default function FiliaisPage() {
                     {/* Nome da Empresa */}
                     {filial.nome && filial.nome !== filial.filial_nome && (
                       <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-600 truncate">
+                        <Building2 className={`h-4 w-4 ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`} />
+                        <span className={`text-sm truncate ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`}>
                           {filial.nome}
                         </span>
                       </div>
@@ -398,8 +430,12 @@ export default function FiliaisPage() {
                     {/* Morada */}
                     {filial.morada && (
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
-                        <span className="text-sm text-gray-600 line-clamp-2">
+                        <MapPin className={`h-4 w-4 mt-0.5 ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`} />
+                        <span className={`text-sm line-clamp-2 ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`}>
                           {filial.morada}
                         </span>
                       </div>
@@ -408,8 +444,12 @@ export default function FiliaisPage() {
                     {/* Telefone */}
                     {filial.telefone && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-600">
+                        <Phone className={`h-4 w-4 ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`} />
+                        <span className={`text-sm ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`}>
                           {filial.telefone}
                         </span>
                       </div>
@@ -418,8 +458,12 @@ export default function FiliaisPage() {
                     {/* Email */}
                     {filial.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-600 truncate">
+                        <Mail className={`h-4 w-4 ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`} />
+                        <span className={`text-sm truncate ${
+                          filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                        }`}>
                           {filial.email}
                         </span>
                       </div>
@@ -427,19 +471,23 @@ export default function FiliaisPage() {
 
                     {/* Responsável */}
                     {filial.responsavel && (
-                      <div className="text-sm text-gray-500">
+                      <div className={`text-sm ${
+                        filialSelecionada === filial.filial_id ? 'text-white' : 'text-gray-600'
+                      }`}>
                         Responsável: {filial.responsavel}
                       </div>
                     )}
 
                     {/* Botão Selecionar */}
-                    <div className="pt-2 border-t border-gray-100">
+                    <div className={`pt-2 border-t ${
+                      filialSelecionada === filial.filial_id ? 'border-emerald-400' : 'border-gray-200'
+                    }`}>
                       <button
                         onClick={() => selecionarFilial(filial.nif, filial.filial_id)}
                         className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                           filialSelecionada === filial.filial_id
-                            ? 'bg-blue-600 text-white cursor-default'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
+                            ? 'bg-emerald-400 text-white cursor-default'
+                            : 'bg-emerald-500 text-white hover:bg-emerald-400 border border-emerald-400'
                         }`}
                         disabled={filialSelecionada === filial.filial_id}
                       >
