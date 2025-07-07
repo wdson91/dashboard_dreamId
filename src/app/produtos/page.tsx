@@ -18,7 +18,7 @@ interface ProdutosResponse {
     produto: string
     quantidade: number
     montante: number
-    percentagem?: number
+    porcentagem_montante?: number
   }>
 }
 
@@ -46,7 +46,7 @@ async function getProdutos(periodo: string, apiParams: { nif: string; filial?: s
   const response = await api.get(url)
   
   const dados = response
-  
+   
   // Salvar no cache
   localStorage.setItem(cacheKey, JSON.stringify({
     data: dados,
@@ -263,9 +263,9 @@ export default function ProdutosPage() {
                     <div className="text-2xl font-bold text-gray-900">
                       {formatCurrency(produto.montante)}
                     </div>
-                    {produto.percentagem && (
+                    {produto.porcentagem_montante && (
                       <div className="text-sm text-gray-600">
-                        {formatPercentage(produto.percentagem)} do total
+                        {formatPercentage(produto.porcentagem_montante)} do total
                       </div>
                     )}
                   </div>

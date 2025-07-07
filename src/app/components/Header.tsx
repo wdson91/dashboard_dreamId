@@ -82,7 +82,7 @@ export default function Header() {
                 <User className="h-4 w-4 text-sidebar-secondary-foreground" />
                 <span className="text-sm font-medium text-sidebar-foreground">Usuário</span>
               </div>
-              <div className="text-xs text-sidebar-secondary-foreground truncate">
+              <div className="text-xs text-white  text-sidebar-secondary-foreground truncate">
                 {user.email}
               </div>
             </div>
@@ -92,19 +92,19 @@ export default function Header() {
           {isLoaded && nifSelecionado && (
             <div className="mb-6 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border">
               <div className="flex items-center gap-2 mb-2">
-                <Building2 className="h-4 w-4 text-sidebar-secondary-foreground" />
-                <span className="text-sm font-medium text-sidebar-foreground">Estabelecimento</span>
+                <Building2 className="h-4 w-4 text-white" />
+                <span className="text-sm font-medium text-white">Estabelecimento</span>
               </div>
-              <div className="text-xs text-sidebar-secondary-foreground font-mono">
+              <div className="text-xs text-white font-mono">
                 NIF: {nifSelecionado}
               </div>
               {filialSelecionada && (
-                <div className="text-xs text-sidebar-secondary-foreground mt-1 font-medium">
+                <div className="text-xs text-white mt-1 font-medium">
                   Filial: #{filialSelecionada}
                 </div>
               )}
               {morada && (
-                <div className="text-xs text-sidebar-secondary-foreground mt-1 line-clamp-2 break-words whitespace-normal">
+                <div className="text-xs text-white mt-1 line-clamp-2 break-words whitespace-normal">
                   {morada}
                 </div>
               )}
@@ -116,7 +116,7 @@ export default function Header() {
               href="/" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/') 
-                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
@@ -127,7 +127,7 @@ export default function Header() {
               href="/produtos" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/produtos') 
-                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
@@ -138,7 +138,7 @@ export default function Header() {
               href="/faturas" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/faturas') 
-                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
@@ -149,7 +149,7 @@ export default function Header() {
               href="/estabelecimentos" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/estabelecimentos') 
-                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
@@ -160,7 +160,7 @@ export default function Header() {
               href="/filiais" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/filiais') 
-                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
@@ -260,7 +260,7 @@ export default function Header() {
                   <User className="h-4 w-4 text-sidebar-secondary-foreground" />
                   <span className="text-sm font-medium text-sidebar-foreground">Usuário</span>
                 </div>
-                <div className="text-xs text-sidebar-secondary-foreground truncate">{user.email}</div>
+                <div className="text-xs  text-white  text-sidebar-secondary-foreground truncate">{user.email}</div>
               </div>
             )}
             
