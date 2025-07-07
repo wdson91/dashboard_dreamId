@@ -336,7 +336,7 @@ export default function Component() {
       </div>
 
       {/* Dashboard Content */}
-      <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 xl:grid-cols-3">
         {/* Vendas em Aberto */}
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
@@ -361,13 +361,13 @@ export default function Component() {
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Vendas Consolidadas</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Vendas Consolidadas</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(total_vendas?.variacao)}`}>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
                 {total_vendas?.variacao || '0%'}
               </span>
             </div>
@@ -383,13 +383,13 @@ export default function Component() {
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Número de Faturas</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Número de Faturas</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(numero_recibos?.variacao)}`}>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
                 {numero_recibos?.variacao || '0%'}
               </span>
             </div>
@@ -405,13 +405,13 @@ export default function Component() {
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Itens Vendidos</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Itens Vendidos</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(itens_vendidos?.variacao)}`}>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
                 {itens_vendidos?.variacao || '0%'}
               </span>
             </div>
@@ -427,13 +427,13 @@ export default function Component() {
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Ticket Médio</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Ticket Médio</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(ticket_medio?.variacao)}`}>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(ticket_medio?.variacao)}`}>
                 {ticket_medio?.variacao || '0%'}
               </span>
             </div>
