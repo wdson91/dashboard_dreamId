@@ -10,7 +10,7 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ children }: LoadingScreenProps) {
   const [isLoading, setIsLoading] = useState(true)
-  const { user, loading: authLoading } = useAuth()
+  const { loading: authLoading } = useAuth()
 
   useEffect(() => {
     // Aguardar o carregamento da autenticação e um tempo mínimo

@@ -2,6 +2,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { createClient } from "@/utils/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -33,20 +34,20 @@ export default function LoginPage() {
     setMessage("")
 
     // Validação básica
-    if (!email || !password) {
-      setError("Por favor, preencha todos os campos obrigatórios")
+    if (!email || (mode !== 'forgot' && !password)) {
+      setError("Por favor, preencha todos os campos obrigatórios.")
       setLoading(false)
       return
     }
 
     if (mode === "signup" && password !== confirmPassword) {
-      setError("As senhas não coincidem")
+      setError("As senhas não coincidem.")
       setLoading(false)
       return
     }
 
     if (mode === "signup" && password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres")
+      setError("A senha deve ter pelo menos 6 caracteres.")
       setLoading(false)
       return
     }
@@ -55,25 +56,17 @@ export default function LoginPage() {
       if (mode === "login") {
         const { error } = await signIn(email, password)
         if (error) throw error
-        
-        // Aguardar um pouco para garantir que a sessão foi estabelecida
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Fazer refresh da página para garantir que todos os contextos sejam atualizados
         window.location.href = "/dashboard"
       } else if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
+        const { error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
-        setMessage("Verifique seu email para confirmar a conta!")
+        setMessage("Verifique seu e-mail para confirmar a conta!")
       } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/login`,
         })
         if (error) throw error
-        setMessage("Email de redefinição enviado!")
+        setMessage("E-mail de redefinição enviado!")
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
@@ -84,35 +77,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-emerald-600 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <img 
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6">
+        <div className="flex justify-center">
+            <Image 
               src="/logo.png" 
               alt="Logo" 
-              className="h-64 w-auto"
+              width={128}
+              height={128}
+              priority
             />
-          </div>
-          
-          
         </div>
 
-        <Card className="bg-emerald-600 border border-emerald-400">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            {mode === "login" && "Login"}
-            {mode === "signup" && "Criar nova conta"}
-            {mode === "forgot" && "Recuperar senha"}
-          </h2>
-          <CardContent className="p-6">
+        <Card className="bg-emerald-800 border border-emerald-700 shadow-2xl">
+          <CardContent className="p-8">
+            <h2 className="mb-6 text-center text-3xl font-bold tracking-tight text-white">
+              {mode === "login" && "Aceda à sua conta"}
+              {mode === "signup" && "Criar nova conta"}
+              {mode === "forgot" && "Recuperar senha"}
+            </h2>
             
             <form className="space-y-6" onSubmit={handleAuth}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white">
+                <label htmlFor="email" className="sr-only">
                   Email
                 </label>
-                <div className="mt-1 relative">
+                <div className="relative">
                   <Input
                     id="email"
                     type="email"
@@ -120,43 +110,45 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
-                    className="pl-10 bg-emerald-500 border-emerald-400 text-white placeholder-emerald-300"
+                    className="pl-10 bg-emerald-700 border-emerald-600 text-white placeholder-emerald-400 focus:ring-emerald-500"
                   />
-                  <Mail className="h-5 w-5 text-white absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  <Mail className="h-5 w-5 text-emerald-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-white">
-                  Senha
-                </label>
-                <div className="mt-1 relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-10 pr-10 bg-emerald-500 border-emerald-400 text-white placeholder-emerald-300"
-                  />
-                  <Lock className="h-5 w-5 text-white absolute left-3 top-1/2 transform -translate-y-1/2" />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:text-green-200"
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
+              {mode !== 'forgot' && (
+                <div>
+                  <label htmlFor="password" className="sr-only">
+                    Senha
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="pl-10 pr-10 bg-emerald-700 border-emerald-600 text-white placeholder-emerald-400 focus:ring-emerald-500"
+                    />
+                    <Lock className="h-5 w-5 text-emerald-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 hover:text-emerald-200"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {mode === "signup" && (
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-white">
+                  <label htmlFor="confirmPassword" className="sr-only">
                     Confirmar Senha
                   </label>
-                  <div className="mt-1 relative">
+                  <div className="relative">
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
@@ -164,13 +156,13 @@ export default function LoginPage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="pl-10 pr-10 bg-emerald-500 border-emerald-400 text-white placeholder-emerald-300"
+                      className="pl-10 pr-10 bg-emerald-700 border-emerald-600 text-white placeholder-emerald-400 focus:ring-emerald-500"
                     />
-                    <Lock className="h-5 w-5 text-white absolute left-3 top-1/2 transform -translate-y-1/2" />
+                    <Lock className="h-5 w-5 text-emerald-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:text-green-200"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 hover:text-emerald-200"
                     >
                       {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -179,13 +171,13 @@ export default function LoginPage() {
               )}
 
               {error && (
-                <div className="text-red-300 text-sm bg-red-600 p-3 rounded-md">
+                <div className="text-red-300 text-sm bg-red-500/20 border border-red-500/30 p-3 rounded-md">
                   {error}
                 </div>
               )}
 
               {message && (
-                <div className="text-white text-sm bg-emerald-500 p-3 rounded-md">
+                <div className="text-emerald-200 text-sm bg-emerald-600/50 border border-emerald-500/60 p-3 rounded-md">
                   {message}
                 </div>
               )}
@@ -193,62 +185,38 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-500 text-white hover:bg-emerald-400 border border-emerald-400"
+                className="w-full bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500 focus:ring-emerald-400"
               >
-                {loading ? "Carregando..." : (
+                {loading ? "A carregar..." : (
                   mode === "login" ? "Entrar" :
                   mode === "signup" ? "Criar Conta" :
-                  "Enviar Email"
+                  "Enviar"
                 )}
               </Button>
             </form>
 
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-green-400" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-green-700 text-white">
-                    Ou continue com
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 gap-3">
+            <div className="mt-6 text-center">
                 <button
                   type="button"
-                  onClick={() => setMode(mode === "login" ? "signup" : "login")}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-green-400 rounded-md shadow-sm bg-green-600 text-sm font-medium text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  onClick={() => setMode(mode === 'login' ? 'signup' : mode === 'signup' ? 'login' : 'login')}
+                  className="font-medium text-emerald-300 hover:text-emerald-100 text-sm"
                 >
-                  {mode === "login" ? "Criar conta" : "Já tenho conta"}
+                  {mode === 'login' ? 'Ainda não tem conta? Crie uma' : 'Já tem conta? Entre'}
                 </button>
-              </div>
+            </div>
 
-              {mode === "login" && (
-                <div className="text-center">
+            {mode === 'login' && (
+              <div className="mt-2 text-center">
                   <button
                     type="button"
                     onClick={() => setMode("forgot")}
-                    className="text-white hover:text-green-200 text-sm"
+                    className="font-medium text-emerald-400 hover:text-emerald-200 text-sm"
                   >
-                    Esqueceu sua senha?
+                    Esqueceu a sua senha?
                   </button>
-                </div>
-              )}
+              </div>
+            )}
 
-              {(mode === "signup" || mode === "forgot") && (
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => setMode("login")}
-                    className="text-white hover:text-green-200 text-sm"
-                  >
-                    Voltar para login
-                  </button>
-                </div>
-              )}
-            </div>
           </CardContent>
         </Card>
       </div>
