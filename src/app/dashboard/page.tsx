@@ -15,25 +15,26 @@ import { UpdateButton } from "@/app/components/UpdateButton"
 // eslint-disable-next-line
 const ChartComponent = ({ data }: { data: any[] }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Comparativo por Hora</h2>
+    <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm p-6 mt-6">
+      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4">Comparativo por Hora</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="hora" stroke="#374151" />
-          <YAxis tickFormatter={v => `€${v}`} stroke="#374151" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
+          <XAxis dataKey="hora" stroke="var(--color-card-text-green)" />
+          <YAxis tickFormatter={v => `€${v}`} stroke="var(--color-card-text-green)" />
           <Tooltip 
             formatter={(value) => [`€${value}`, '']}
             contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb',
+              backgroundColor: 'var(--color-card-white)',
+              border: '1px solid var(--color-card-border-green)',
               borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}
+            labelStyle={{ color: 'var(--color-card-text-green)' }}
+            itemStyle={{ color: 'var(--color-card-border-green)' }}
           />
           <Legend />
-          <Line type="monotone" dataKey="hoje" stroke="#10b981" name="Atual" strokeWidth={2} />
-          <Line type="monotone" dataKey="ontem" stroke="#6b7280" name="Anterior" strokeWidth={2} />
+          <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name="Atual" strokeWidth={2} />
+          <Line type="monotone" dataKey="ontem" stroke="var(--color-card-text-green-light)" name="Anterior" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -117,6 +118,20 @@ export default function Component() {
     return data.comparativo_por_hora
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.comparativo_por_hora])
+
+  const getBadgeClass = (variation: string | undefined) => {
+    if (!variation) {
+      return 'bg-warning text-warning-foreground'; // Pendente
+    }
+    const value = parseFloat(variation.replace('%', ''));
+    if (value > 0) {
+      return 'bg-muted text-foreground'; // Concluído (Positivo)
+    }
+    if (value < 0) {
+      return 'bg-destructive-muted text-destructive-muted-foreground'; // Negativo
+    }
+    return 'bg-warning text-warning-foreground'; // Pendente (Zero)
+  }
 
   const fetchData = useCallback(async (clearCache = false) => {
     
@@ -270,27 +285,27 @@ export default function Component() {
 
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-primary/90 border border-primary rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-        <h1 className="text-white text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-primary-foreground text-xl font-semibold">Dashboard</h1>
 
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-white" />
+            <Calendar className="h-5 w-5 text-primary-foreground" />
             <div className="relative">
               <select
-                className="appearance-none border border-emerald-400 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white bg-emerald-500 shadow-sm"
+                className="appearance-none border border-primary rounded-lg px-4 py-2 pr-10 text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:border-primary-foreground bg-primary/80 shadow-sm"
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
                 {APP_CONFIG.periods.map(period => (
-                  <option key={period.value} value={period.value} className="bg-emerald-500 text-white">
+                  <option key={period.value} value={period.value} className="bg-primary text-primary-foreground">
                     {period.label}
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-primary-foreground">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
@@ -307,7 +322,7 @@ export default function Component() {
           
           {/* Informação da última atualização */}
           {lastUpdate && (
-            <div className="text-sm text-white">
+            <div className="text-sm text-primary-foreground/80">
               Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -323,101 +338,109 @@ export default function Component() {
       {/* Dashboard Content */}
       <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Vendas em Aberto */}
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm md:text-base">Vendas em Aberto</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Vendas em Aberto</span>
               </div>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">
                 {formatCurrency(total_vendas?.valor || 0)}
               </div>
-              <div className="text-xs md:text-sm text-gray-600">Mesas em Aberto: 0</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Mesas em Aberto: 0</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Total de Vendas Consolidadas */}
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm md:text-base">Vendas Consolidadas</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Vendas Consolidadas</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{total_vendas?.variacao || '0%'}</span>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(total_vendas?.variacao)}`}>
+                {total_vendas?.variacao || '0%'}
+              </span>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Vendas do dia</div>
+              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Vendas do dia</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Número de Recibos */}
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm md:text-base">Número de Faturas</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Número de Faturas</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{numero_recibos?.variacao || '0%'}</span>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(numero_recibos?.variacao)}`}>
+                {numero_recibos?.variacao || '0%'}
+              </span>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">{numero_recibos?.valor || 0}</div>
-              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {numero_recibos?.ontem || 0}</div>
-              <div className="text-xs md:text-sm text-gray-600">Transações realizadas</div>
+              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {numero_recibos?.ontem || 0}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Transações realizadas</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Itens Vendidos */}
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm md:text-base">Itens Vendidos</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Itens Vendidos</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{itens_vendidos?.variacao || '0%'}</span>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(itens_vendidos?.variacao)}`}>
+                {itens_vendidos?.variacao || '0%'}
+              </span>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(itens_vendidos?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Produtos vendidos</div>
+              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(itens_vendidos?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Produtos vendidos</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Ticket Médio */}
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-emerald-500 rounded-xl border border-emerald-400">
+                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-gray-900 font-semibold text-sm md:text-base">Ticket Médio</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Ticket Médio</span>
               </div>
-              <span className="text-xs md:text-sm font-semibold px-2 py-1 rounded-full text-white bg-emerald-500">{ticket_medio?.variacao || '0%'}</span>
+              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full ${getBadgeClass(ticket_medio?.variacao)}`}>
+                {ticket_medio?.variacao || '0%'}
+              </span>
             </div>
             <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-gray-900">{formatCurrency(ticket_medio?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-gray-600">Valor por recibo</div>
+              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(ticket_medio?.valor || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Valor por recibo</div>
             </div>
           </CardContent>
         </Card>

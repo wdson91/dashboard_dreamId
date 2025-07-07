@@ -269,9 +269,9 @@ export default function FaturasPage() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
+      <div className="bg-[var(--color-card-border-green)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
           <h1 className="text-white text-2xl font-semibold">Lista de Faturas</h1>
           
@@ -280,12 +280,12 @@ export default function FaturasPage() {
             <Calendar className="h-5 w-5 text-white" />
             <div className="relative">
               <select
-                className="appearance-none border border-emerald-400 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white bg-emerald-500 shadow-sm"
+                className="appearance-none border border-white rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-white bg-[var(--color-card-border-green)]/80 shadow-sm"
                 value={periodo}
                 onChange={e => setPeriodo(e.target.value)}
               >
                 {APP_CONFIG.periods.map(period => (
-                  <option key={period.value} value={period.value} className="bg-emerald-500 text-white">
+                  <option key={period.value} value={period.value} className="bg-[var(--color-card-border-green)] text-white">
                     {period.label}
                   </option>
                 ))}
@@ -307,7 +307,7 @@ export default function FaturasPage() {
           
           {/* Informação da última atualização */}
           {lastUpdate && (
-            <div className="text-sm text-white">
+            <div className="text-sm text-white/80">
               Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -322,28 +322,28 @@ export default function FaturasPage() {
 
       {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-white shadow-sm border border-gray-200">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Total de Faturas</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">Total de Faturas</div>
+            <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {data.faturas.length.toLocaleString('pt-BR')}
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-white shadow-sm border border-gray-200">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Total Montante</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">Total Montante</div>
+            <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0))}
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-white shadow-sm border border-gray-200">
+        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Ticket Médio</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">Ticket Médio</div>
+            <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0) / data.faturas.length)}
             </div>
           </CardContent>
@@ -353,13 +353,13 @@ export default function FaturasPage() {
       {/* Barra de pesquisa */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[var(--color-card-text-green-muted)]" />
           <input
             type="text"
             placeholder="Pesquisar por número, cliente ou data..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="w-full pl-10 pr-4 py-2 bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg text-[var(--color-card-text-green)] placeholder:text-[var(--color-card-text-green-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-card-border-green)] focus:border-[var(--color-card-border-green)]"
           />
         </div>
       </div>
@@ -367,30 +367,30 @@ export default function FaturasPage() {
       {/* Lista de Faturas */}
       <div className="space-y-4">
         {filteredFaturas.map((fatura, index) => (
-          <Card key={index} className="bg-white border border-gray-200">
+          <Card key={index} className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)] hover:bg-gray-50 transition-colors">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 bg-[var(--color-card-border-green)] rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {index + 1}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">Fatura #{fatura.numero_fatura}</h3>
-                      <p className="text-gray-600 text-sm">NIF Cliente: {fatura.nif_cliente}</p>
-                      <p className="text-gray-600 text-sm">Data: {fatura.data}</p>
+                      <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">Fatura #{fatura.numero_fatura}</h3>
+                      <p className="text-[var(--color-card-text-green-muted)] text-sm">NIF Cliente: {fatura.nif_cliente}</p>
+                      <p className="text-[var(--color-card-text-green-muted)] text-sm">Data: {fatura.data}</p>
                     </div>
                   </div>
                 </div>
                 
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
                     {formatCurrency(fatura.total)}
                   </div>
                   <button
                     onClick={() => handleDownloadPDF(fatura.numero_fatura)}
                     disabled={downloadingPDF === fatura.numero_fatura}
-                    className="mt-2 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-400 border border-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-2 px-4 py-2 bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {downloadingPDF === fatura.numero_fatura ? 'Baixando...' : 'Baixar PDF'}
                   </button>
@@ -402,9 +402,9 @@ export default function FaturasPage() {
         
         {filteredFaturas.length === 0 && (
           <div className="text-center py-8">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma fatura encontrada</h3>
-            <p className="text-gray-600">
+            <FileText className="h-12 w-12 text-[var(--color-card-text-green-muted)] mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[var(--color-card-text-green)] mb-2">Nenhuma fatura encontrada</h3>
+            <p className="text-[var(--color-card-text-green-muted)]">
               Tente ajustar os filtros de pesquisa.
             </p>
           </div>

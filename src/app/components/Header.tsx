@@ -61,28 +61,28 @@ export default function Header() {
 
     
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block fixed left-0 top-0 h-full w-64 bg-emerald-700 border-r border-emerald-600 text-slate-200 z-50">
+      <div className="hidden lg:block fixed left-0 top-0 h-full w-64 bg-sidebar border-r border-sidebar-border text-sidebar-foreground z-50">
         <div className="p-6 flex flex-col h-full">
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex justify-center mb-4">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={96}
-                height={96}
+                width={180}
+                height={180}
+                className="object-contain"
               />
-              <Link href="/" className="font-bold text-xl text-white hover:text-emerald-200 transition-colors">MyDream</Link>
             </div>
           </div>
           
           {/* User Info */}
           {user && (
-            <div className="mb-6 p-3 bg-emerald-800 rounded-lg border border-emerald-600 shadow-sm">
+            <div className="mb-6 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 text-emerald-300" />
-                <span className="text-sm font-medium text-white">Usuário</span>
+                <User className="h-4 w-4 text-sidebar-secondary-foreground" />
+                <span className="text-sm font-medium text-sidebar-foreground">Usuário</span>
               </div>
-              <div className="text-xs text-slate-300 truncate">
+              <div className="text-xs text-sidebar-secondary-foreground truncate">
                 {user.email}
               </div>
             </div>
@@ -90,21 +90,21 @@ export default function Header() {
 
           {/* Estabelecimento Selecionado */}
           {isLoaded && nifSelecionado && (
-            <div className="mb-6 p-3 bg-emerald-800 rounded-lg border border-emerald-600">
+            <div className="mb-6 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border">
               <div className="flex items-center gap-2 mb-2">
-                <Building2 className="h-4 w-4 text-emerald-300" />
-                <span className="text-sm font-medium text-white">Estabelecimento</span>
+                <Building2 className="h-4 w-4 text-sidebar-secondary-foreground" />
+                <span className="text-sm font-medium text-sidebar-foreground">Estabelecimento</span>
               </div>
-              <div className="text-xs text-slate-300 font-mono">
+              <div className="text-xs text-sidebar-secondary-foreground font-mono">
                 NIF: {nifSelecionado}
               </div>
               {filialSelecionada && (
-                <div className="text-xs text-slate-300 mt-1 font-medium">
+                <div className="text-xs text-sidebar-secondary-foreground mt-1 font-medium">
                   Filial: #{filialSelecionada}
                 </div>
               )}
               {morada && (
-                <div className="text-xs text-slate-300 mt-1 line-clamp-2 break-words whitespace-normal">
+                <div className="text-xs text-sidebar-secondary-foreground mt-1 line-clamp-2 break-words whitespace-normal">
                   {morada}
                 </div>
               )}
@@ -116,8 +116,8 @@ export default function Header() {
               href="/" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
               <Home className="h-4 w-4" />
@@ -127,8 +127,8 @@ export default function Header() {
               href="/produtos" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/produtos') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
               <Package className="h-4 w-4" />
@@ -138,8 +138,8 @@ export default function Header() {
               href="/faturas" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/faturas') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
               <Receipt className="h-4 w-4" />
@@ -149,8 +149,8 @@ export default function Header() {
               href="/estabelecimentos" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/estabelecimentos') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
               <Building className="h-4 w-4" />
@@ -160,8 +160,8 @@ export default function Header() {
               href="/filiais" 
               className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                 isActiveLink('/filiais') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                  ? 'bg-sidebar-accent text-sidebar-foreground shadow-inner border border-sidebar-primary' 
+                  : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
               <Store className="h-4 w-4" />
@@ -171,7 +171,7 @@ export default function Header() {
           
           {/* Logout Button */}
           {user && (
-            <div className="mt-auto pt-6 border-t border-emerald-600">
+            <div className="mt-auto pt-6 border-t border-sidebar-border">
               <button
                 onClick={() => setLogoutModalOpen(true)}
                 className="w-full flex items-center gap-3 py-2 px-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
@@ -185,28 +185,28 @@ export default function Header() {
       </div>
 
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-emerald-700 border-b border-emerald-600 p-4 shadow-md">
+      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border p-4 shadow-md">
         <nav className="flex justify-between max-w-4xl mx-auto items-center">
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
+            <div className="flex justify-center gap-2">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={96}
-                height={96}
+                width={120}
+                height={120}
+                className="object-contain"
               />
-              <Link href="/" className="font-bold text-xl text-white hover:text-emerald-200 transition-colors">MyDream</Link>
             </div>
             {isLoaded && nifSelecionado && (
               <>
                 <div className="flex items-center gap-1 mt-1">
-                  <Building2 className="h-3 w-3 text-emerald-300" />
-                  <span className="text-xs font-mono text-slate-300">NIF: {nifSelecionado}</span>
+                  <Building2 className="h-3 w-3 text-sidebar-secondary-foreground" />
+                  <span className="text-xs font-mono text-sidebar-secondary-foreground">NIF: {nifSelecionado}</span>
                 </div>
                 {filialSelecionada && (
                   <div className="flex items-center gap-1 mt-1">
-                    <Store className="h-3 w-3 text-emerald-300" />
-                    <span className="text-xs text-slate-300 font-medium">Filial: #{filialSelecionada}</span>
+                    <Store className="h-3 w-3 text-sidebar-secondary-foreground" />
+                    <span className="text-xs text-sidebar-secondary-foreground font-medium">Filial: #{filialSelecionada}</span>
                   </div>
                 )}
                 
@@ -216,7 +216,7 @@ export default function Header() {
           <button 
             onClick={() => setDrawerOpen(true)} 
             aria-label="Abrir menu" 
-            className="p-2 -mr-2 text-white hover:bg-emerald-600 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="p-2 -mr-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-sidebar-primary"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -227,135 +227,130 @@ export default function Header() {
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/60 flex justify-end">
           
-          <div className="bg-emerald-700 w-72 h-full p-6 flex flex-col gap-4 shadow-2xl animate-slide-in-right border-l border-emerald-600 text-slate-200">
+          <div className="bg-sidebar w-72 h-full p-6 flex flex-col gap-4 shadow-2xl animate-slide-in-right border-l border-sidebar-border text-sidebar-foreground">
             <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
+                <div className="flex justify-center gap-2 ml-15">
                   <Image
                     src="/logo.png" 
                     alt="Logo" 
-                    width={96}
-                    height={96}
+                    width={120}
+                    height={120}
+                    className="object-contain"
                   />
-                  <span className="font-bold text-xl text-white">MyDream</span>
                 </div>
                 <button className="-mr-2 p-2" onClick={() => setDrawerOpen(false)} aria-label="Fechar menu">
-                  <X className="h-6 w-6 text-white" />
+                  <X className="h-6 w-6 text-sidebar-foreground" />
                 </button>
             </div>
             
             
             {/* User Info Mobile */}
             {user && (
-              <div className="mb-4 p-3 bg-emerald-800 rounded-lg border border-emerald-600 shadow-sm">
+              <div className="mb-4 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <User className="h-4 w-4 text-emerald-300" />
-                  <span className="text-sm font-medium text-white">Usuário</span>
+                  <User className="h-4 w-4 text-sidebar-secondary-foreground" />
+                  <span className="text-sm font-medium text-sidebar-foreground">Usuário</span>
                 </div>
-                <div className="text-xs text-slate-300 truncate">
-                  {user.email}
-                </div>
+                <div className="text-xs text-sidebar-secondary-foreground truncate">{user.email}</div>
               </div>
             )}
-
+            
             {/* Estabelecimento Selecionado Mobile */}
             {isLoaded && nifSelecionado && (
-              <div className="mb-4 p-3 bg-emerald-800 rounded-lg border border-emerald-600">
+              <div className="mb-4 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border">
                 <div className="flex items-center gap-2 mb-2">
-                  <Building2 className="h-4 w-4 text-emerald-300" />
-                  <span className="text-sm font-medium text-white">Estabelecimento</span>
+                  <Building2 className="h-4 w-4 text-sidebar-secondary-foreground" />
+                  <span className="text-sm font-medium text-sidebar-foreground">Estabelecimento</span>
                 </div>
-                <div className="text-xs text-slate-300 font-mono">
+                <div className="text-xs text-sidebar-secondary-foreground font-mono">
                   NIF: {nifSelecionado}
                 </div>
                 {filialSelecionada && (
-                  <div className="text-xs text-slate-300 mt-1 font-medium">
+                  <div className="text-xs text-sidebar-secondary-foreground mt-1 font-medium">
                     Filial: #{filialSelecionada}
                   </div>
                 )}
-                {morada && (
-                  <div className="text-xs text-slate-300 mt-1 line-clamp-2 break-words whitespace-normal">
+                 {morada && (
+                  <div className="text-xs text-sidebar-secondary-foreground mt-1 line-clamp-2 break-words whitespace-normal">
                     {morada}
                   </div>
                 )}
               </div>
             )}
             
-            <nav className="space-y-2 flex-1">
-              <Link 
-                href="/" 
-                onClick={() => setDrawerOpen(false)} 
+            <nav className="flex flex-col gap-2">
+              <Link
+                href="/"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                    ? 'bg-sidebar-accent text-sidebar-foreground' 
+                    : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 }`}
+                onClick={() => setDrawerOpen(false)}
               >
-                <Home className="h-5 w-5" />
+                <Home className="h-4 w-4" />
                 <span>Dashboard</span>
               </Link>
-              <Link 
-                href="/produtos" 
-                onClick={() => setDrawerOpen(false)} 
+              <Link
+                href="/produtos"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/produtos') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                    ? 'bg-sidebar-accent text-sidebar-foreground' 
+                    : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 }`}
+                onClick={() => setDrawerOpen(false)}
               >
-                <Package className="h-5 w-5" />
+                <Package className="h-4 w-4" />
                 <span>Produtos</span>
               </Link>
-              <Link 
-                href="/faturas" 
-                onClick={() => setDrawerOpen(false)} 
+              <Link
+                href="/faturas"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/faturas') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                    ? 'bg-sidebar-accent text-sidebar-foreground' 
+                    : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 }`}
+                onClick={() => setDrawerOpen(false)}
               >
-                <Receipt className="h-5 w-5" />
+                <Receipt className="h-4 w-4" />
                 <span>Faturas</span>
               </Link>
-              <Link 
-                href="/estabelecimentos" 
-                onClick={() => setDrawerOpen(false)} 
+              <Link
+                href="/estabelecimentos"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/estabelecimentos') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                    ? 'bg-sidebar-accent text-sidebar-foreground' 
+                    : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 }`}
+                onClick={() => setDrawerOpen(false)}
               >
-                <Building className="h-5 w-5" />
+                <Building className="h-4 w-4" />
                 <span>Estabelecimentos</span>
               </Link>
-              <Link 
-                href="/filiais" 
-                onClick={() => setDrawerOpen(false)} 
+              <Link
+                href="/filiais"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/filiais') 
-                  ? 'bg-emerald-600 text-white shadow-inner border border-emerald-500' 
-                  : 'text-slate-300 hover:bg-emerald-600 hover:text-white'
+                    ? 'bg-sidebar-accent text-sidebar-foreground' 
+                    : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 }`}
+                onClick={() => setDrawerOpen(false)}
               >
-                <Store className="h-5 w-5" />
+                <Store className="h-4 w-4" />
                 <span>Filiais</span>
               </Link>
             </nav>
             
             {/* Logout Button Mobile */}
-            {user && (
+            <div className="mt-auto pt-6 border-t border-sidebar-border">
               <button
-                onClick={() => {
-                  setDrawerOpen(false)
-                  setLogoutModalOpen(true)
-                }}
+                onClick={() => setLogoutModalOpen(true)}
                 className="w-full flex items-center gap-3 py-2 px-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut className="h-4 w-4" />
                 Sair
               </button>
-            )}
+            </div>
           </div>
         </div>
       )}
