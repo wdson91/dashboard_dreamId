@@ -185,20 +185,23 @@ export default function Header() {
       </div>
 
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border p-2  shadow-md">
+      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border   shadow-md">
         <nav className="flex justify-between max-w-4xl mx-auto items-center">
-          <div className="flex flex-col ml-10">
+          <div className="flex flex-col">
             <div className="flex justify-center gap-2 ">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={80}
+                width={120}
                 height={120}
                 className="object-contain"
               />
             </div>
-            {isLoaded && nifSelecionado && (
+            
+          </div>
+          {isLoaded && nifSelecionado && (
               <>
+                <div className="flex items-center flex-col gap-1 mt-1">
                 <div className="flex items-center gap-1 mt-1">
                   <Building2 className="h-3 w-3 text-sidebar-secondary-foreground" />
                   <span className="text-xs font-mono text-sidebar-secondary-foreground">NIF: {nifSelecionado}</span>
@@ -209,14 +212,14 @@ export default function Header() {
                     <span className="text-xs text-sidebar-secondary-foreground font-medium">Filial: #{filialSelecionada}</span>
                   </div>
                 )}
+                </div>
                 
               </>
             )}
-          </div>
           <button 
             onClick={() => setDrawerOpen(true)} 
             aria-label="Abrir menu" 
-            className="p-2 -mr-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-sidebar-primary"
+            className="p-2 -mr-2 mr-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-sidebar-primary"
           >
             <Menu className="h-6 w-6" />
           </button>
