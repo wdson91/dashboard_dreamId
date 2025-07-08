@@ -10,13 +10,15 @@ import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
 import { UpdateButton } from "@/app/components/UpdateButton"
+import Link from "next/link"
+//import HeatmapComponent from "@/app/components/HeatmapComponent"
 
 // Componente separado para o gráfico
 // eslint-disable-next-line
 const ChartComponent = ({ data }: { data: any[] }) => {
   return (
-    <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm p-6 mt-6">
-      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4">Comparativo por Hora</h2>
+    <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm  mt-6">
+      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4 p-2">Comparativo por Hora</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
@@ -285,9 +287,9 @@ export default function Component() {
 
   
   return (
-    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
-      {/* Header */}
-      <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
+    <div className="min-h-screen bg-white p-1 sm:p-2 md:p-4 lg:p-6">
+              {/* Header */}
+        <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm px-2 sm:px-4 md:px-6 py-3 sm:py-4 mb-4 sm:mb-6">
         <div className="flex flex-col gap-3">
         <h1 className="text-[var(--color-card-text-green)] text-xl font-semibold">Dashboard</h1>
 
@@ -336,10 +338,10 @@ export default function Component() {
       </div>
 
       {/* Dashboard Content */}
-      <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-6 md:grid-cols-2 xl:grid-cols-3">
         {/* Vendas em Aberto */}
-        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
-          <CardContent className="p-4 md:p-6">
+        <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
@@ -358,8 +360,8 @@ export default function Component() {
         </Card>
 
         {/* Total de Vendas Consolidadas */}
-        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
-          <CardContent className="p-4 md:p-6">
+        <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
@@ -380,52 +382,56 @@ export default function Component() {
         </Card>
 
         {/* Número de Recibos */}
-        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                  <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
+        <Link href="/faturas" className="block">
+          <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
+            <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
+              <div className="flex items-start justify-between mb-3 md:mb-4">
+                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                  <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
+                    <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Número de Faturas</span>
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Número de Faturas</span>
+                <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
+                  {numero_recibos?.variacao || '0%'}
+                </span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
-                {numero_recibos?.variacao || '0%'}
-              </span>
-            </div>
-            <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {numero_recibos?.ontem || 0}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Transações realizadas</div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-1 md:space-y-2">
+                <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {numero_recibos?.ontem || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Transações realizadas</div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Itens Vendidos */}
-        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
+        <Link href="/produtos" className="block">
+          <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
+            <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
+              <div className="flex items-start justify-between mb-3 md:mb-4">
+                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                  <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
+                    <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Produtos Vendidos</span>
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Itens Vendidos</span>
+                <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
+                  {itens_vendidos?.variacao || '0%'}
+                </span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
-                {itens_vendidos?.variacao || '0%'}
-              </span>
-            </div>
-            <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(itens_vendidos?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(itens_vendidos?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Produtos vendidos</div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-1 md:space-y-2">
+                <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{itens_vendidos?.valor || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {itens_vendidos?.ontem || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Produtos vendidos</div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Ticket Médio */}
-        <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
-          <CardContent className="p-4 md:p-6">
+        <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
@@ -448,6 +454,11 @@ export default function Component() {
 
       {/* Gráfico de comparativo por hora */}
       <ChartComponent data={chartData} />
+
+      {/* Heatmap de Horários */}
+      {/* <div className="mt-6">
+        <HeatmapComponent />
+      </div> */}
     </div>
   )
 }

@@ -12,10 +12,22 @@ import LogoutModal from './LogoutModal'
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const { user, signOut } = useAuth()
   const { nifSelecionado, filialSelecionada, isLoaded } = useEstabelecimento()
   const [morada, setMorada] = useState<string | null>(null)
   const pathname = usePathname()
+
+  // Hook para detectar scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setIsScrolled(scrollTop > 10)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Função para verificar se um link está ativo
   const isActiveLink = (href: string) => {
@@ -185,31 +197,45 @@ export default function Header() {
       </div>
 
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border   shadow-md">
-        <nav className="flex justify-between max-w-4xl mx-auto items-center">
+      <header className={`lg:hidden sticky top-0 z-40 bg-sidebar border-b border-sidebar-border shadow-md transition-all duration-300 ${
+        isScrolled ? 'py-1' : 'py-4'
+      }`}>
+        <nav className={`flex justify-between max-w-4xl mx-auto items-center transition-all duration-300 ${
+          isScrolled ? 'px-3' : 'px-6'
+        }`}>
           <div className="flex flex-col">
-            <div className="flex justify-center gap-2 ">
+            <div className="flex justify-center gap-2">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
-                width={120}
-                height={120}
-                className="object-contain"
+                width={isScrolled ? 60 : 120}
+                height={isScrolled ? 60 : 120}
+                className="object-contain transition-all duration-300"
               />
             </div>
             
           </div>
                       {isLoaded && nifSelecionado && (
                 <>
-                 <div className="flex items-center flex-col gap-1 mt-1">
+                 <div className={`flex items-center flex-col gap-1 mt-1 transition-all duration-300 ${
+                   isScrolled ? 'scale-75' : 'scale-100'
+                 }`}>
                   <div className="flex items-center gap-1 mt-1">
-                    <Building2 className="h-3 w-3 text-white" />
-                    <span className="text-xs font-mono text-white">NIF: {nifSelecionado}</span>
+                    <Building2 className={`text-white transition-all duration-300 ${
+                      isScrolled ? 'h-2 w-2' : 'h-3 w-3'
+                    }`} />
+                    <span className={`font-mono text-white transition-all duration-300 ${
+                      isScrolled ? 'text-[8px]' : 'text-xs'
+                    }`}>NIF: {nifSelecionado}</span>
                   </div>
                   {filialSelecionada && (
                     <div className="flex items-center gap-1 mt-1">
-                      <Store className="h-3 w-3 text-white" />
-                      <span className="text-xs text-white font-medium">Filial: #{filialSelecionada}</span>
+                      <Store className={`text-white transition-all duration-300 ${
+                        isScrolled ? 'h-2 w-2' : 'h-3 w-3'
+                      }`} />
+                      <span className={`text-white font-medium transition-all duration-300 ${
+                        isScrolled ? 'text-[8px]' : 'text-xs'
+                      }`}>Filial: #{filialSelecionada}</span>
                     </div>
                   )}
                  </div>
@@ -218,10 +244,14 @@ export default function Header() {
               )}
           <button 
             onClick={() => setDrawerOpen(true)} 
-            aria-label="Abrir menu" 
-            className="p-2 -mr-2 mr-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-sidebar-primary"
+            aria-label="Abrar menu" 
+            className={`text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sidebar-primary ${
+              isScrolled ? 'p-1' : 'p-2'
+            }`}
           >
-            <Menu className="h-6 w-6" />
+            <Menu className={`transition-all duration-300 ${
+              isScrolled ? 'h-4 w-4' : 'h-6 w-6'
+            }`} />
           </button>
         </nav>
       </header>
