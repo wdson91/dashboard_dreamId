@@ -18,9 +18,9 @@ import Link from "next/link"
 // eslint-disable-next-line
 const ChartComponent = ({ data, title }: { data: any[]; title: string }) => {
   return (
-    <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm  mt-6">
-      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4 p-2">{title}</h2>
-      <ResponsiveContainer width="100%" height={300}>
+    <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm mt-4">
+      <h2 className="text-lg font-semibold text-[var(--color-card-text-green)] mb-3 p-3">{title}</h2>
+      <ResponsiveContainer width="100%" height={250}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
           <XAxis dataKey="hora" stroke="var(--color-card-text-green)" />
@@ -289,17 +289,17 @@ export default function Component() {
 
   
   return (
-    <div className="min-h-screen bg-white p-1 sm:p-2 md:p-4 lg:p-6">
+    <div className="min-h-screen bg-white p-1 sm:p-2 md:p-3 lg:p-4">
               {/* Header */}
-        <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm px-2 sm:px-4 md:px-6 py-3 sm:py-4 mb-4 sm:mb-6">
-        <div className="flex flex-col gap-3">
-        <h1 className="text-[var(--color-card-text-green)] text-xl font-semibold">{t('dashboard.title')}</h1>
+        <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm px-2 sm:px-3 md:px-4 py-2 sm:py-3 mb-3 sm:mb-4">
+        <div className="flex flex-col gap-2">
+        <h1 className="text-[var(--color-card-text-green)] text-lg font-semibold">{t('dashboard.title')}</h1>
 
-          <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-[var(--color-card-text-green)]" />
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-[var(--color-card-text-green)]" />
             <div className="relative">
               <select
-                className="appearance-none border border-[var(--color-card-border-green)] rounded-lg px-4 py-2 pr-10 text-[var(--color-card-text-green)] focus:outline-none focus:ring-2 focus:ring-[var(--color-card-border-green)] focus:border-[var(--color-card-border-green)] bg-[var(--color-card-white)] shadow-sm"
+                className="appearance-none border border-[var(--color-card-border-green)] rounded-lg px-3 py-1.5 pr-8 text-sm text-[var(--color-card-text-green)] focus:outline-none focus:ring-2 focus:ring-[var(--color-card-border-green)] focus:border-[var(--color-card-border-green)] bg-[var(--color-card-white)] shadow-sm"
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
@@ -309,8 +309,8 @@ export default function Component() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[var(--color-card-text-green)]">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--color-card-text-green)]">
+                <svg className="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
               </div>
@@ -340,45 +340,45 @@ export default function Component() {
       </div>
 
       {/* Dashboard Content */}
-      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-4 md:grid-cols-2 xl:grid-cols-3">
         {/* Vendas em Aberto */}
         <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
-          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
-                  <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-white" />
+          <CardContent className="p-2 sm:p-3 md:p-4">
+            <div className="flex items-start justify-between mb-2 md:mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 md:p-2 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)]">
+                  <Umbrella className="h-4 w-4 md:h-5 md:w-5 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">{t('dashboard.open_sales')}</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm">{t('dashboard.open_sales')}</span>
               </div>
             </div>
-            <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">
+            <div className="space-y-1">
+              <div className="text-xl md:text-2xl font-bold text-[var(--color-card-text-green)]">
                 {formatCurrency(total_vendas?.valor || 0)}
               </div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.open_tables')}: 0</div>
+              <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.open_tables')}: 0</div>
             </div>
           </CardContent>
         </Card>
 
         {/* Total de Vendas Consolidadas */}
         <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
-          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                  <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
+          <CardContent className="p-2 sm:p-3 md:p-4">
+            <div className="flex items-start justify-between mb-2 md:mb-3">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="p-1.5 md:p-2 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)] flex-shrink-0">
+                  <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.consolidated_sales')}</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.consolidated_sales')}</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
                 {total_vendas?.variacao || '0%'}
               </span>
             </div>
-            <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.daily_sales')}</div>
+            <div className="space-y-1">
+              <div className="text-xl md:text-2xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(total_vendas?.valor || 0)}</div>
+              <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(total_vendas?.ontem || 0)}</div>
+              <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.daily_sales')}</div>
             </div>
           </CardContent>
         </Card>
@@ -386,22 +386,22 @@ export default function Component() {
         {/* Número de Recibos */}
         <Link href="/faturas" className="block">
           <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
-            <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
-              <div className="flex items-start justify-between mb-3 md:mb-4">
-                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                  <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                    <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <CardContent className="p-2 sm:p-3 md:p-4">
+              <div className="flex items-start justify-between mb-2 md:mb-3">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="p-1.5 md:p-2 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)] flex-shrink-0">
+                    <Receipt className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.invoices')}</span>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.invoices')}</span>
                 </div>
-                <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
                   {numero_recibos?.variacao || '0%'}
                 </span>
               </div>
-              <div className="space-y-1 md:space-y-2">
-                <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {numero_recibos?.ontem || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.transactions')}</div>
+              <div className="space-y-1">
+                <div className="text-xl md:text-2xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
+                <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {numero_recibos?.ontem || 0}</div>
+                <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.transactions')}</div>
               </div>
             </CardContent>
           </Card>
@@ -410,22 +410,22 @@ export default function Component() {
         {/* Itens Vendidos */}
         <Link href="/produtos" className="block">
           <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
-            <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
-              <div className="flex items-start justify-between mb-3 md:mb-4">
-                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                  <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                    <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <CardContent className="p-2 sm:p-3 md:p-4">
+              <div className="flex items-start justify-between mb-2 md:mb-3">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="p-1.5 md:p-2 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)] flex-shrink-0">
+                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.products_sold')}</span>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.products_sold')}</span>
                 </div>
-                <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
                   {itens_vendidos?.variacao || '0%'}
                 </span>
               </div>
-              <div className="space-y-1 md:space-y-2">
-                <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{itens_vendidos?.valor || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {itens_vendidos?.ontem || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.products_sold_count')}</div>
+              <div className="space-y-1">
+                <div className="text-xl md:text-2xl font-bold text-[var(--color-card-text-green)]">{itens_vendidos?.valor || 0}</div>
+                <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {itens_vendidos?.ontem || 0}</div>
+                <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.products_sold_count')}</div>
               </div>
             </CardContent>
           </Card>
@@ -433,22 +433,22 @@ export default function Component() {
 
         {/* Ticket Médio */}
         <Card className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)]">
-          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6">
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
-                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
+          <CardContent className="p-2 sm:p-3 md:p-4">
+            <div className="flex items-start justify-between mb-2 md:mb-3">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="p-1.5 md:p-2 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)] flex-shrink-0">
+                  <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.average_ticket')}</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.average_ticket')}</span>
               </div>
-              <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(ticket_medio?.variacao)}`}>
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(ticket_medio?.variacao)}`}>
                 {ticket_medio?.variacao || '0%'}
               </span>
             </div>
-            <div className="space-y-1 md:space-y-2">
-              <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(ticket_medio?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.value_per_receipt')}</div>
+            <div className="space-y-1">
+              <div className="text-xl md:text-2xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(ticket_medio?.valor || 0)}</div>
+              <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(ticket_medio?.ontem || 0)}</div>
+              <div className="text-xs text-[var(--color-card-text-green-muted)]">{t('dashboard.value_per_receipt')}</div>
             </div>
           </CardContent>
         </Card>

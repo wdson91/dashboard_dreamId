@@ -75,31 +75,31 @@ export default function Header() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block fixed left-0 top-0 h-full w-64 2xl:w-80 bg-sidebar border-r border-sidebar-border text-sidebar-foreground z-50">
-        <div className="p-6 2xl:p-8 flex flex-col h-full">
-          <div className="mb-8 2xl:mb-12">
-            <div className="flex justify-center mb-4">
+      <div className="hidden lg:block fixed left-0 top-0 h-screen w-64 2xl:w-80 bg-sidebar border-r border-sidebar-border text-sidebar-foreground z-50 overflow-hidden">
+        <div className="p-4 2xl:p-6 flex flex-col h-full overflow-y-auto">
+          <div className="mb-4 2xl:mb-6 flex-shrink-0">
+            <div className="flex justify-center mb-2">
               <Image 
                 src="/logo.png"
                 alt="Logo"
-                width={180}
-                height={180}
-                className="object-contain 2xl:w-64 2xl:h-64"
+                width={120}
+                height={120}
+                className="object-contain 2xl:w-32 2xl:h-32"
               />
             </div>
           </div>
           
           {/* Language Selector - moved here */}
-          <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center">
+          <div className="mb-3 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center flex-shrink-0">
             <LanguageSelector />
           </div>
           
           {/* User Info */}
           {user && (
-            <div className="mb-6 2xl:mb-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 2xl:h-5 2xl:w-5 text-sidebar-secondary-foreground" />
-                <span className="text-sm 2xl:text-base font-medium text-sidebar-foreground">{t('layout.user')}</span>
+            <div className="mb-3 2xl:mb-4 p-2 2xl:p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm flex-shrink-0">
+              <div className="flex items-center gap-2 mb-1">
+                <User className="h-3 w-3 2xl:h-4 2xl:w-4 text-sidebar-secondary-foreground" />
+                <span className="text-xs 2xl:text-sm font-medium text-sidebar-foreground">{t('layout.user')}</span>
               </div>
               <div className="text-xs 2xl:text-sm text-white text-sidebar-secondary-foreground truncate">
                 {user.email}
@@ -109,10 +109,10 @@ export default function Header() {
 
           {/* Estabelecimento Selecionado */}
           {isLoaded && nifSelecionado && (
-            <div className="mb-6 2xl:mb-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Building2 className="h-4 w-4 2xl:h-5 2xl:w-5 text-white" />
-                <span className="text-sm 2xl:text-base font-medium text-white">{t('layout.establishment')}</span>
+            <div className="mb-3 2xl:mb-4 p-2 2xl:p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border flex-shrink-0">
+              <div className="flex items-center gap-2 mb-1">
+                <Building2 className="h-3 w-3 2xl:h-4 2xl:w-4 text-white" />
+                <span className="text-xs 2xl:text-sm font-medium text-white">{t('layout.establishment')}</span>
               </div>
               <div className="text-xs 2xl:text-sm text-white font-mono">
                 {t('layout.nif')}: {nifSelecionado}
@@ -130,61 +130,61 @@ export default function Header() {
             </div>
           )}
           
-          <nav className="space-y-2 2xl:space-y-3">
+          <nav className="space-y-1 2xl:space-y-2 flex-1 min-h-0">
             <Link
               href="/"
-              className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
+              className={`flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 rounded-lg transition-all ${
                 isActiveLink('/') 
                   ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Home className="h-4 w-4 2xl:h-5 2xl:w-5" />
-              <span className="text-sm 2xl:text-base">{t('menu.dashboard')}</span>
+              <Home className="h-3 w-3 2xl:h-4 2xl:w-4" />
+              <span className="text-xs 2xl:text-sm">{t('menu.dashboard')}</span>
             </Link>
             <Link 
               href="/produtos" 
-              className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
+              className={`flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 rounded-lg transition-all ${
                 isActiveLink('/produtos') 
                   ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Package className="h-4 w-4 2xl:h-5 2xl:w-5" />
-              <span className="text-sm 2xl:text-base">{t('menu.products')}</span>
+              <Package className="h-3 w-3 2xl:h-4 2xl:w-4" />
+              <span className="text-xs 2xl:text-sm">{t('menu.products')}</span>
             </Link>
             <Link 
               href="/faturas" 
-              className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
+              className={`flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 rounded-lg transition-all ${
                 isActiveLink('/faturas') 
                   ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Receipt className="h-4 w-4 2xl:h-5 2xl:w-5" />
-              <span className="text-sm 2xl:text-base">{t('menu.invoices')}</span>
+              <Receipt className="h-3 w-3 2xl:h-4 2xl:w-4" />
+              <span className="text-xs 2xl:text-sm">{t('menu.invoices')}</span>
             </Link>
             <Link 
               href="/estabelecimentos" 
-              className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
+              className={`flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 rounded-lg transition-all ${
                 isActiveLink('/estabelecimentos') 
                   ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Building className="h-4 w-4 2xl:h-5 2xl:w-5" />
-              <span className="text-sm 2xl:text-base">{t('menu.establishments')}</span>
+              <Building className="h-3 w-3 2xl:h-4 2xl:w-4" />
+              <span className="text-xs 2xl:text-sm">{t('menu.establishments')}</span>
             </Link>
             <Link 
               href="/filiais" 
-              className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
+              className={`flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 rounded-lg transition-all ${
                 isActiveLink('/filiais') 
                   ? 'bg-transparent text-white border border-white' 
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Store className="h-4 w-4 2xl:h-5 2xl:w-5" />
-              <span className="text-sm 2xl:text-base">{t('menu.branches')}</span>
+              <Store className="h-3 w-3 2xl:h-4 2xl:w-4" />
+              <span className="text-xs 2xl:text-sm">{t('menu.branches')}</span>
             </Link>
             {/* <Link 
               href="/analises" 
@@ -203,13 +203,13 @@ export default function Header() {
           
           {/* Logout Button */}
           {user && (
-            <div className="mt-auto pt-6 2xl:pt-8 border-t border-sidebar-border">
+            <div className="mt-auto pt-3 2xl:pt-4 border-t border-sidebar-border flex-shrink-0">
               <button
                 onClick={() => setLogoutModalOpen(true)}
-                className="w-full flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
+                className="w-full flex items-center gap-2 py-1.5 px-2 2xl:py-2 2xl:px-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
               >
-                <LogOut className="h-4 w-4 2xl:h-5 2xl:w-5" />
-                <span className="text-sm 2xl:text-base">{t('layout.logout')}</span>
+                <LogOut className="h-3 w-3 2xl:h-4 2xl:w-4" />
+                <span className="text-xs 2xl:text-sm">{t('layout.logout')}</span>
               </button>
             </div>
           )}
