@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth } from '@/lib/auth'
 import { createClient } from '@/utils/supabase/server'
 
 // Função para gerar PDF simples (básico sem bibliotecas externas)
@@ -87,7 +88,7 @@ startxref
   return Buffer.from(pdfFinal, 'utf-8')
 }
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) => {
   try {
     // Obter parâmetros da query
     const { searchParams } = new URL(request.url)
@@ -146,7 +147,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
 // Suporte para OPTIONS (CORS)
 export async function OPTIONS() {

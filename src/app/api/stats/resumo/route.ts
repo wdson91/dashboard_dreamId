@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth } from '@/lib/auth'
 import { 
   is_valid_nif,
   get_periodo_datas,
@@ -8,17 +9,8 @@ import {
   calcular_variacao_dados
 } from '../utils'
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) => {
   try {
-    // Verificar autenticação (comentado para desenvolvimento)
-    // const supabase = await createClient()
-    // const { data: { session } } = await supabase.auth.getSession()
-    
-    // Descomente a linha abaixo para habilitar autenticação
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    // }
-    
     // Obter parâmetros da query
     const { searchParams } = new URL(request.url)
     const nif = searchParams.get('nif')?.trim() || ''
@@ -79,7 +71,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
 // Suporte para OPTIONS (CORS)
 export async function OPTIONS() {

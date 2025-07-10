@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth } from '@/lib/auth'
 import { 
   is_valid_nif,
   get_periodo_datas,
@@ -6,7 +7,7 @@ import {
 } from '../stats/utils'
 import { createClient } from '@/utils/supabase/server'
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) => {
   try {
     // Obter parâmetros da query
     const { searchParams } = new URL(request.url)
@@ -112,7 +113,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
 // Suporte para OPTIONS (CORS)
 export async function OPTIONS() {

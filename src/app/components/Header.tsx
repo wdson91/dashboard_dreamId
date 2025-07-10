@@ -140,7 +140,7 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Home className="h-6 w-6" />
+              <Home className="h-5 w-5" />
               <span className="text-md font-bold">{t('menu.dashboard')}</span>
             </Link>
             <Link 
@@ -151,7 +151,7 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Package className="h-6 w-6" />
+              <Package className="h-5 w-5" />
               <span className="text-md font-bold">{t('menu.products')}</span>
             </Link>
             <Link 
@@ -162,7 +162,7 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Receipt className="h-6 w-6" />
+              <Receipt className="h-5 w-5" />
               <span className="text-md font-bold">{t('menu.invoices')}</span>
             </Link>
             <Link 
@@ -173,7 +173,7 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Building className="h-6 w-6" />
+              <Building className="h-5 w-5" />
               <span className="text-md font-bold">{t('menu.establishments')}</span>
             </Link>
             <Link 
@@ -184,7 +184,7 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Store className="h-6 w-6" />
+              <Store className="h-5 w-5" />
               <span className="text-md font-bold">{t('menu.branches')}</span>
             </Link>
             {/* <Link 

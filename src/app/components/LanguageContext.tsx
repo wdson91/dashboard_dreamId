@@ -67,6 +67,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.chart_current': 'Atual',
         'dashboard.chart_previous': 'Anterior',
         
+        // Loading
+        'loading.loading': 'Carregando...',
+        'loading.verifying_auth': 'Verificando autenticação...',
+        
         // Produtos
         'products.title': 'Produtos Vendidos',
         'products.loading': 'Carregando...',
@@ -198,6 +202,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.loading': 'Loading...',
         'dashboard.loading_data': 'Loading data...',
         'dashboard.no_data': 'No data available',
+        
+        // Loading
+        'loading.loading': 'Loading...',
+        'loading.verifying_auth': 'Verifying authentication...',
         'dashboard.error': 'Error',
         'dashboard.last_update': 'Last update',
         'dashboard.no_establishment': 'No establishment selected',
@@ -381,6 +389,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.chart_current': 'Actuel',
         'dashboard.chart_previous': 'Précédent',
         
+        // Loading
+        'loading.loading': 'Chargement...',
+        'loading.verifying_auth': 'Vérification de l\'authentification...',
+        
         // Produits
         'products.title': 'Produits Vendus',
         'products.loading': 'Chargement...',
@@ -537,6 +549,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.previous': 'Anterior',
         'dashboard.chart_current': 'Actual',
         'dashboard.chart_previous': 'Anterior',
+        
+        // Loading
+        'loading.loading': 'Cargando...',
+        'loading.verifying_auth': 'Verificando autenticación...',
         
         // Productos
         'products.title': 'Productos Vendidos',
