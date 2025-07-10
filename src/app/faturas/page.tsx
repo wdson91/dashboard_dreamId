@@ -299,7 +299,7 @@ export default function FaturasPage() {
         {filteredFaturas.map((fatura, index) => (
           <Card key={index} className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)] hover:bg-gray-50 transition-colors">
             <CardContent className="p-4">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-[var(--color-card-border-green)] rounded-full flex items-center justify-center text-white font-bold text-sm">
                     {index + 1}
@@ -307,21 +307,21 @@ export default function FaturasPage() {
                   <div>
                     <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">{t('invoices.invoice_number')} #{fatura.numero_fatura}</h3>
                     <p className="text-[var(--color-card-text-green-muted)] text-sm">
-                      {t('invoices.client_nif')}: {fatura.nif_cliente} • {t('invoices.date')}: {fatura.data}
+                      {t('invoices.client_nif')}: {fatura.nif_cliente}
+                    </p>
+                    <p className="text-[var(--color-card-text-green-muted)] text-sm">
+                      {t('invoices.date')}: {fatura.data}
                     </p>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
-                      {formatCurrency(fatura.total)}
-                    </div>
+                <div className="flex flex-row sm:flex-col items-end sm:items-end gap-2 sm:gap-3 min-w-[120px] sm:min-w-[140px]">
+                  <div className="text-2xl font-bold text-[var(--color-card-text-green)] text-right w-full">
+                    {formatCurrency(fatura.total)}
                   </div>
                   <button
                     onClick={() => handleDownloadPDF(fatura.numero_fatura)}
                     disabled={downloadingPDF === fatura.numero_fatura}
-                    className="px-4 py-2 bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 text-sm w-auto sm:px-4 sm:py-2 sm:text-base sm:w-auto bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {downloadingPDF === fatura.numero_fatura ? t('invoices.downloading') : t('invoices.download_pdf')}
                   </button>
