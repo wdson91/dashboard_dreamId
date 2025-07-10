@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
-import { APP_CONFIG, formatCurrency } from "@/lib/constants"
+import { formatCurrency } from "@/lib/constants"
+import { CacheManager } from "@/lib/cache"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
 import { UpdateButton } from "@/app/components/UpdateButton"
@@ -44,23 +45,7 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
   )
 }
 
-async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<FaturasResponse['dados']> {
-  const cacheKey = `dashboard_data_${apiParams.nif}_${apiParams.filial || 'all'}_${filtro}`
-  
-  // Verificar cache apenas se não for um refresh
-  const cached = localStorage.getItem(cacheKey)
-  if (cached && !clearCache) {
-    try {
-      const { data, timestamp } = JSON.parse(cached)
-      const now = Date.now()
-      if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-        return data
-      }
-    } catch {
-      localStorage.removeItem(cacheKey)
-    }
-  }
-  
+async function getData(filtro: string, apiParams: { nif: string; filial?: string }): Promise<FaturasResponse['dados']> {
   // Usar a nova API local
   let url = `/api/stats/resumo?nif=${apiParams.nif}&periodo=${filtro}`
   
@@ -69,25 +54,13 @@ async function getData(filtro: string, apiParams: { nif: string; filial?: string
     url += `&filial=${apiParams.filial}`
   }
   
-  try {
-    const response = await fetch(url)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const dados = await response.json()
-    
-    // Salvar no cache
-    localStorage.setItem(cacheKey, JSON.stringify({
-      data: dados,
-      timestamp: Date.now()
-    }))
-    
-    return dados
-  } catch (error) {
-    throw error
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
   }
+  
+  return response.json()
 }
 
 export default function Component() {
@@ -138,7 +111,7 @@ export default function Component() {
     return 'bg-warning text-warning-foreground'; // Pendente (Zero)
   }
 
-  const fetchData = useCallback(async (clearCache = false) => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     
     // Se não há NIF selecionado ou não carregou ainda, não fazer a chamada da API
     if (!apiNif || !isLoaded) {
@@ -148,12 +121,12 @@ export default function Component() {
 
     // Prevenir múltiplas chamadas muito próximas (menos de 500ms)
     const now = Date.now()
-    if (!clearCache && (now - lastCallRef.current < 500)) {
+    if (!forceRefresh && (now - lastCallRef.current < 500)) {
       return
     }
 
     // Evitar chamadas duplicadas se já está carregando
-    if (isLoadingRef.current && !clearCache) {
+    if (isLoadingRef.current && !forceRefresh) {
       return
     }
 
@@ -161,24 +134,28 @@ export default function Component() {
     isLoadingRef.current = true
 
     // Se estamos fazendo refresh ou não está carregando, definir loading como true
-    if (clearCache || !loading) {
+    if (forceRefresh || !loading) {
       setLoading(true)
     }
 
-    if (clearCache) {
-      // Limpar cache específico para este filtro e NIF
-      const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
-      localStorage.removeItem(cacheKey)
+    if (forceRefresh) {
       setRefreshing(true)
     }
 
     setError(null)
     
     try {
-      console.log(`[Dashboard] API call - NIF: ${apiNif.nif}, Filtro: ${filtro}, ClearCache: ${clearCache}`)
-      const result = await getData(filtro, apiNif, clearCache)
-      setData(result)
-      setLastUpdate(new Date())
+      
+      const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => getData(filtro, apiNif),
+        forceRefresh
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {
@@ -193,7 +170,7 @@ export default function Component() {
   useEffect(() => {
     // Só fazer fetch se há apiNif disponível e isLoaded é true
     if (apiNif && isLoaded && !isLoadingRef.current) {
-      fetchData(true)
+      fetchData(false) // false = usar cache se disponível
     } else {
       // Se não há apiNif, garantir que loading seja false
       setLoading(false)
@@ -205,19 +182,10 @@ export default function Component() {
   useEffect(() => {
     const handleFocus = () => {
       if (apiNif && isLoaded && !loading) {
-        // Verificar se o cache está expirado
+        // Verificar se o cache está expirado usando o CacheManager
         const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
-        const cached = localStorage.getItem(cacheKey)
-        if (cached) {
-          try {
-            const { timestamp } = JSON.parse(cached)
-            const now = Date.now()
-            if (now - timestamp >= APP_CONFIG.api.cacheExpiry) {
-              fetchData(true)
-            }
-          } catch {
-            // Ignorar erro de cache
-          }
+        if (!CacheManager.isValidCache(cacheKey)) {
+          fetchData(true) // true = forçar refresh
         }
       }
     }

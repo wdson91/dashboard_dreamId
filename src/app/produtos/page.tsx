@@ -3,35 +3,13 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar} from "lucide-react"
-import { APP_CONFIG } from "@/lib/constants"
+// APP_CONFIG removido - agora usamos CacheManager
 import { useProdutosApi, type ProdutosResponse } from "@/hooks/useApiNif"
+import { CacheManager } from "@/lib/cache"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "../components/LanguageContext"
 
-async function getProdutosWithCache(periodo: string, fetchProdutos: (periodo: string) => Promise<ProdutosResponse>, nif: string, filial?: string): Promise<ProdutosResponse> {
-  const cacheKey = `produtos_data_${nif}_${filial || 'all'}_${periodo}`
-  
-  // Verificar cache
-  const cached = localStorage.getItem(cacheKey)
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-      return data
-    }
-  }
-  
-  // Buscar dados da API
-  const dados = await fetchProdutos(periodo)
-   
-  // Salvar no cache
-  localStorage.setItem(cacheKey, JSON.stringify({
-    data: dados,
-    timestamp: Date.now()
-  }))
-  
-  return dados
-}
+// Função removida - agora usamos CacheManager diretamente
 
 export default function ProdutosPage() {
   const [periodo, setPeriodo] = useState("0") // Começa com "Hoje"
@@ -44,7 +22,7 @@ export default function ProdutosPage() {
   const { t, getTranslatedPeriods } = useLanguage()
   const isLoadingRef = useRef(false)
 
-  const fetchData = useCallback(async (clearCache = false) => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     // Se não há NIF selecionado, não fazer a chamada da API
     if (!apiNif || isLoadingRef.current) {
       setLoading(false)
@@ -53,10 +31,7 @@ export default function ProdutosPage() {
 
     isLoadingRef.current = true
 
-    if (clearCache) {
-      // Limpar cache específico para este período e NIF
-      const cacheKey = `produtos_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
-      localStorage.removeItem(cacheKey)
+    if (forceRefresh) {
       setRefreshing(true)
     } else {
       setLoading(true)
@@ -65,9 +40,16 @@ export default function ProdutosPage() {
     setError(null)
     
     try {
-      const result = await getProdutosWithCache(periodo, fetchProdutos, apiNif.nif, apiNif.filial)
-      setData(result)
-      setLastUpdate(new Date())
+      const cacheKey = `produtos_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => fetchProdutos(periodo),
+        forceRefresh
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {

@@ -3,35 +3,13 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Search, FileText } from "lucide-react"
-import { APP_CONFIG, formatCurrency } from "@/lib/constants"
+import { formatCurrency } from "@/lib/constants"
 import { useFaturas, type FaturasResponse } from "@/hooks/useFaturas"
+import { CacheManager } from "@/lib/cache"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "../components/LanguageContext"
 
-async function getFaturasWithCache(periodo: string, fetchFaturas: (periodo: string) => Promise<FaturasResponse>, nif: string, filial?: string): Promise<FaturasResponse> {
-  const cacheKey = `faturas_data_${nif}_${filial || 'all'}_${periodo}`
-  
-  // Verificar cache
-  const cached = localStorage.getItem(cacheKey)
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-      return data
-    }
-  }
-  
-  // Buscar dados da API
-  const dados = await fetchFaturas(periodo)
-  
-  // Salvar no cache
-  localStorage.setItem(cacheKey, JSON.stringify({
-    data: dados,
-    timestamp: Date.now()
-  }))
-  
-  return dados
-}
+// Função removida - agora usamos CacheManager diretamente
 
 export default function FaturasPage() {
   const [periodo, setPeriodo] = useState("0")
@@ -46,7 +24,7 @@ export default function FaturasPage() {
   const { t, getTranslatedPeriods } = useLanguage()
   const isLoadingRef = useRef(false)
 
-  const fetchData = useCallback(async (clearCache = false) => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     if (!apiNif || isLoadingRef.current) {
       setLoading(false)
       return
@@ -54,10 +32,7 @@ export default function FaturasPage() {
 
     isLoadingRef.current = true
 
-    if (clearCache) {
-      // Limpar cache específico para este período e NIF
-      const cacheKey = `faturas_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
-      localStorage.removeItem(cacheKey)
+    if (forceRefresh) {
       setRefreshing(true)
     } else {
       setLoading(true)
@@ -66,9 +41,16 @@ export default function FaturasPage() {
     setError(null)
     
     try {
-      const result = await getFaturasWithCache(periodo, fetchFaturas, apiNif.nif, apiNif.filial)
-      setData(result)
-      setLastUpdate(new Date())
+      const cacheKey = `faturas_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => fetchFaturas(periodo),
+        forceRefresh
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {
