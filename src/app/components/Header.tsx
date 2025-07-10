@@ -85,6 +85,7 @@ export default function Header() {
                 width={120}
                 height={120}
                 className="object-contain 2xl:w-32 2xl:h-32"
+                priority
               />
             </div>
           </div>
@@ -139,8 +140,8 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Home className="h-3 w-3 2xl:h-4 2xl:w-4" />
-              <span className="text-xs 2xl:text-sm">{t('menu.dashboard')}</span>
+              <Home className="h-6 w-6" />
+              <span className="text-md font-bold">{t('menu.dashboard')}</span>
             </Link>
             <Link 
               href="/produtos" 
@@ -150,8 +151,8 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Package className="h-3 w-3 2xl:h-4 2xl:w-4" />
-              <span className="text-xs 2xl:text-sm">{t('menu.products')}</span>
+              <Package className="h-6 w-6" />
+              <span className="text-md font-bold">{t('menu.products')}</span>
             </Link>
             <Link 
               href="/faturas" 
@@ -161,8 +162,8 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Receipt className="h-3 w-3 2xl:h-4 2xl:w-4" />
-              <span className="text-xs 2xl:text-sm">{t('menu.invoices')}</span>
+              <Receipt className="h-6 w-6" />
+              <span className="text-md font-bold">{t('menu.invoices')}</span>
             </Link>
             <Link 
               href="/estabelecimentos" 
@@ -172,8 +173,8 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Building className="h-3 w-3 2xl:h-4 2xl:w-4" />
-              <span className="text-xs 2xl:text-sm">{t('menu.establishments')}</span>
+              <Building className="h-6 w-6" />
+              <span className="text-md font-bold">{t('menu.establishments')}</span>
             </Link>
             <Link 
               href="/filiais" 
@@ -183,8 +184,8 @@ export default function Header() {
                   : 'text-sidebar-secondary-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
               }`}
             >
-              <Store className="h-3 w-3 2xl:h-4 2xl:w-4" />
-              <span className="text-xs 2xl:text-sm">{t('menu.branches')}</span>
+              <Store className="h-6 w-6" />
+              <span className="text-md font-bold">{t('menu.branches')}</span>
             </Link>
             {/* <Link 
               href="/analises" 
@@ -231,6 +232,7 @@ export default function Header() {
                 width={isScrolled ? 60 : 120}
                 height={isScrolled ? 60 : 120}
                 className="object-contain transition-all duration-300"
+                priority
               />
             </div>
           </div>
@@ -287,13 +289,14 @@ export default function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <div className="flex justify-center gap-2 ml-15">
+              <div className="flex justify-center gap-2 ">
                 <Image
                   src="/logo.png" 
                   alt="Logo" 
                   width={120}
                   height={120}
                   className="object-contain ml-15"
+                  priority
                 />
               </div>
               <button className="-mr-2 p-2" onClick={() => setDrawerOpen(false)} aria-label={t('layout.close_menu')}>
@@ -351,7 +354,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(false)}
               >
                 <Home className="h-4 w-4" />
-                <span>{t('menu.dashboard')}</span>
+                <span className="text-base font-semibold">{t('menu.dashboard')}</span>
               </Link>
               <Link
                 href="/produtos"
@@ -363,7 +366,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(false)}
               >
                 <Package className="h-4 w-4" />
-                <span>{t('menu.products')}</span>
+                <span className="text-base font-semibold">{t('menu.products')}</span>
               </Link>
               <Link
                 href="/faturas"
@@ -375,7 +378,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(false)}
               >
                 <Receipt className="h-4 w-4" />
-                <span>{t('menu.invoices')}</span>
+                <span className="text-base font-semibold">{t('menu.invoices')}</span>
               </Link>
               <Link
                 href="/estabelecimentos"
@@ -387,7 +390,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(false)}
               >
                 <Building className="h-4 w-4" />
-                <span>{t('menu.establishments')}</span>
+                <span className="text-base font-semibold">{t('menu.establishments')}</span>
               </Link>
               <Link
                 href="/filiais"
@@ -399,7 +402,7 @@ export default function Header() {
                 onClick={() => setDrawerOpen(false)}
               >
                 <Store className="h-4 w-4" />
-                <span>{t('menu.branches')}</span>
+                <span className="text-base font-semibold">{t('menu.branches')}</span>
               </Link>
               {/* <Link
                 href="/analises"

@@ -48,6 +48,7 @@ export const LanguageSelector = () => {
                         alt={currentLanguageData.name}
                         width={32}
                         height={24}
+                        style={{ height: 'auto' }}
                         className="object-cover rounded-sm"
                     />
                 )}
@@ -70,6 +71,7 @@ export const LanguageSelector = () => {
                                         alt={lang.name}
                                         width={40}
                                         height={30}
+                                        style={{ height: 'auto' }}
                                         className="object-cover rounded-sm"
                                     />
                             <span className="text-xs">{lang.name}</span>

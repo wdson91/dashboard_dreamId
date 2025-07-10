@@ -37,9 +37,9 @@ export default function LoadingScreen({ children }: LoadingScreenProps) {
             <Image
               src="/logo.png"
               alt="Logo"
-              width={300}
-              height={300}
-              className="mx-auto animate-pulse"
+              width={120}
+              height={120}
+              className="object-contain"
               priority
             />
           </div>
