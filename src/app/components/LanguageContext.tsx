@@ -64,6 +64,8 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.hourly_comparison': 'Comparativo por Hora',
         'dashboard.current': 'Atual',
         'dashboard.previous': 'Anterior',
+        'dashboard.chart_current': 'Atual',
+        'dashboard.chart_previous': 'Anterior',
         
         // Produtos
         'products.title': 'Produtos Vendidos',
@@ -219,6 +221,8 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.hourly_comparison': 'Hourly Comparison',
         'dashboard.current': 'Current',
         'dashboard.previous': 'Previous',
+        'dashboard.chart_current': 'Current',
+        'dashboard.chart_previous': 'Previous',
         
         // Products
         'products.title': 'Products Sold',
@@ -374,6 +378,8 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.hourly_comparison': 'Comparaison Horaire',
         'dashboard.current': 'Actuel',
         'dashboard.previous': 'Précédent',
+        'dashboard.chart_current': 'Actuel',
+        'dashboard.chart_previous': 'Précédent',
         
         // Produits
         'products.title': 'Produits Vendus',
@@ -529,6 +535,8 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.hourly_comparison': 'Comparación por Hora',
         'dashboard.current': 'Actual',
         'dashboard.previous': 'Anterior',
+        'dashboard.chart_current': 'Actual',
+        'dashboard.chart_previous': 'Anterior',
         
         // Productos
         'products.title': 'Productos Vendidos',

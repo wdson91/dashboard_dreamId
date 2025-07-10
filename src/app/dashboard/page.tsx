@@ -16,7 +16,7 @@ import Link from "next/link"
 
 // Componente separado para o gráfico
 // eslint-disable-next-line
-const ChartComponent = ({ data, title }: { data: any[]; title: string }) => {
+const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any }) => {
   return (
     <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm mt-4">
       <h2 className="text-lg font-semibold text-[var(--color-card-text-green)] mb-3 p-3">{title}</h2>
@@ -36,8 +36,8 @@ const ChartComponent = ({ data, title }: { data: any[]; title: string }) => {
             itemStyle={{ color: 'var(--color-card-border-green)' }}
           />
           <Legend />
-          <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name="Atual" strokeWidth={2} />
-          <Line type="monotone" dataKey="ontem" stroke="var(--color-chart-previous)" name="Anterior" strokeWidth={2} />
+          <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name={t('dashboard.chart_current')} strokeWidth={2} />
+          <Line type="monotone" dataKey="ontem" stroke="var(--color-chart-previous)" name={t('dashboard.chart_previous')} strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -455,7 +455,7 @@ export default function Component() {
       </div>
 
       {/* Gráfico de comparativo por hora */}
-      <ChartComponent data={chartData} title={t('dashboard.hourly_comparison')} />
+      <ChartComponent data={chartData} title={t('dashboard.hourly_comparison')} t={t} />
 
       {/* Heatmap de Horários */}
       {/* <div className="mt-6">
