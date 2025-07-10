@@ -7,6 +7,7 @@ import { api } from "@/utils/api"
 import { APP_CONFIG } from "@/lib/constants"
 import { useApiNif } from "@/hooks/useApiNif"
 import { UpdateButton } from "@/app/components/UpdateButton"
+import { useLanguage } from "../components/LanguageContext"
 
 // Tipo para a resposta da API de produtos
 interface ProdutosResponse {
@@ -64,6 +65,7 @@ export default function ProdutosPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const apiNif = useApiNif()
+  const { t, getTranslatedPeriods } = useLanguage()
 
   const fetchData = useCallback(async (clearCache = false) => {
     // Se não há NIF selecionado, não fazer a chamada da API
@@ -104,23 +106,23 @@ export default function ProdutosPage() {
     return (
       <div className="p-8 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-xl font-semibold text-white mb-4">Nenhum estabelecimento selecionado</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">{t('products.no_establishment')}</h2>
           <p className="text-white mb-6">
-            Para visualizar os produtos, você precisa selecionar um estabelecimento.
+            {t('products.no_establishment_message')}
           </p>
           <a 
             href="/estabelecimentos" 
             className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-gray-100 transition-colors"
           >
-            Ir para Estabelecimentos
+            {t('products.go_to_establishments')}
           </a>
         </div>
       </div>
     )
   }
 
-  if (loading) return <div className="p-8 text-center text-white">Carregando...</div>
-  if (error) return <div className="p-8 text-center text-red-300">Erro: {error}</div>
+  if (loading) return <div className="p-8 text-center text-white">{t('products.loading')}</div>
+  if (error) return <div className="p-8 text-center text-red-300">{t('products.error')}: {error}</div>
   if (!data) return null
 
   // Ordenar produtos por montante (maior para menor)
@@ -161,7 +163,7 @@ export default function ProdutosPage() {
       {/* Header */}
       <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-          <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Produtos Vendidos</h1>
+          <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">{t('products.title')}</h1>
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-[var(--color-card-text-green)]" />
             <div className="relative">
@@ -170,7 +172,7 @@ export default function ProdutosPage() {
                 value={periodo}
                 onChange={e => setPeriodo(e.target.value)}
               >
-                {APP_CONFIG.periods.map(period => (
+                {getTranslatedPeriods().map(period => (
                   <option key={period.value} value={period.value} className="bg-[var(--color-card-white)] text-[var(--color-card-text-green)]">
                     {period.label}
                   </option>
@@ -194,7 +196,7 @@ export default function ProdutosPage() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+              {t('products.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 day: '2-digit',
@@ -211,7 +213,7 @@ export default function ProdutosPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Período</div>
+              <div className="text-sm text-gray-600">{t('products.period')}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {formatDate(data.data_inicio)} - {formatDate(data.data_fim)}
               </div>
@@ -220,7 +222,7 @@ export default function ProdutosPage() {
           
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Total de Itens</div>
+              <div className="text-sm text-gray-600">{t('products.total_items')}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {data.total_itens.toLocaleString('pt-BR')}
               </div>
@@ -229,7 +231,7 @@ export default function ProdutosPage() {
           
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardContent className="p-4">
-              <div className="text-sm text-gray-600">Total Montante</div>
+              <div className="text-sm text-gray-600">{t('products.total_amount')}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {formatCurrency(data.total_montante)}
               </div>
@@ -239,7 +241,7 @@ export default function ProdutosPage() {
 
         {/* Lista de Produtos */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Produtos Mais Vendidos</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('products.best_sellers')}</h2>
           
           {produtosOrdenados.map((produto, index) => (
             <Card key={index} className="bg-white border border-gray-200">
@@ -253,7 +255,7 @@ export default function ProdutosPage() {
                       <div>
                         <h3 className="font-semibold text-gray-900 text-lg">{produto.produto}</h3>
                         <p className="text-gray-600 text-sm">
-                          Quantidade: {produto.quantidade.toLocaleString('pt-BR')}
+                          {t('products.quantity')}: {produto.quantidade.toLocaleString('pt-BR')}
                         </p>
                       </div>
                     </div>
@@ -265,7 +267,7 @@ export default function ProdutosPage() {
                     </div>
                     {produto.porcentagem_montante && (
                       <div className="text-sm text-gray-600">
-                        {formatPercentage(produto.porcentagem_montante)} do total
+                        {formatPercentage(produto.porcentagem_montante)} {t('products.of_total')}
                       </div>
                     )}
                   </div>

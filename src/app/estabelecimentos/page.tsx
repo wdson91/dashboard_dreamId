@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { Estabelecimento } from "../types/estabelecimentos"
 import { useEstabelecimento } from "../components/EstabelecimentoContext"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "../components/LanguageContext"
 
 export default function EstabelecimentosPage() {
   const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([])
@@ -18,6 +19,7 @@ export default function EstabelecimentosPage() {
   const { nifSelecionado, setNifSelecionado} = useEstabelecimento()
   const router = useRouter()
   const supabase = createClient()
+  const { t } = useLanguage()
 
   const copyToClipboard = async (nif: string) => {
     try {
@@ -155,10 +157,10 @@ export default function EstabelecimentosPage() {
       <div className="min-h-screen bg-white">
         <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-white text-2xl font-semibold">Estabelecimentos</h1>
+            <h1 className="text-white text-2xl font-semibold">{t('establishments.title')}</h1>
           </div>
         </div>
-        <div className="text-center py-8 text-gray-600">Carregando estabelecimentos...</div>
+        <div className="text-center py-8 text-gray-600">{t('establishments.loading')}</div>
       </div>
     )
   }
@@ -168,10 +170,10 @@ export default function EstabelecimentosPage() {
       <div className="min-h-screen bg-white">
         <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-white text-2xl font-semibold">Estabelecimentos</h1>
+            <h1 className="text-white text-2xl font-semibold">{t('establishments.title')}</h1>
           </div>
         </div>
-        <div className="text-center py-8 text-red-500">Erro: {error}</div>
+        <div className="text-center py-8 text-red-500">{t('establishments.error')}: {error}</div>
       </div>
     )
   }
@@ -181,9 +183,9 @@ export default function EstabelecimentosPage() {
         {/* Header */}
         <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Estabelecimentos</h1>
+            <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">{t('establishments.title')}</h1>
             <p className="text-[var(--color-card-text-green-muted)] text-sm">
-              {estabelecimentos.length} estabelecimento{estabelecimentos.length !== 1 ? 's' : ''} encontrado{estabelecimentos.length !== 1 ? 's' : ''}
+              {estabelecimentos.length} {estabelecimentos.length === 1 ? t('establishments.found_count') : t('establishments.found_count_plural')}
             </p>
           </div>
         </div>
@@ -193,13 +195,13 @@ export default function EstabelecimentosPage() {
         {estabelecimentos.length === 0 ? (
           <div className="text-center py-12">
             <Building2 className="h-12 w-12 text-white mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">Nenhum estabelecimento encontrado</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('establishments.no_establishments')}</h3>
             <p className="text-white mb-4">
-              Não foram encontrados estabelecimentos associados à sua conta.
+              {t('establishments.no_establishments_message')}
             </p>
             <div className="bg-green-600 border border-green-400 rounded-lg p-4 max-w-md mx-auto">
               <p className="text-white text-sm">
-                Entre em contato com o administrador para adicionar estabelecimentos à sua conta.
+                {t('establishments.contact_admin')}
               </p>
             </div>
           </div>
@@ -242,9 +244,9 @@ export default function EstabelecimentosPage() {
                   <div className="space-y-3">
                     {/* NIF */}
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm ${
-                        nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
-                      }`}>NIF:</span>
+                                              <span className={`text-sm ${
+                          nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
+                        }`}>{t('establishments.nif')}:</span>
                       <div className="flex items-center gap-2">
                         <span className={`font-mono text-sm px-2 py-1 rounded ${
                           nifSelecionado === estabelecimento.nif 
@@ -263,7 +265,7 @@ export default function EstabelecimentosPage() {
                               ? 'hover:bg-white' 
                               : 'hover:bg-[var(--color-card-border-green)]'
                           }`}
-                          title="Copiar NIF"
+                          title={t('establishments.copy_nif')}
                         >
                           {copiedNif === estabelecimento.nif ? (
                             <Check className={`h-4 w-4 ${
@@ -339,7 +341,7 @@ export default function EstabelecimentosPage() {
                       <div className={`text-sm ${
                         nifSelecionado === estabelecimento.nif ? 'text-white' : 'text-[var(--color-card-text-green)]'
                       }`}>
-                        Responsável: {estabelecimento.responsavel}
+                        {t('establishments.responsible')}: {estabelecimento.responsavel}
                       </div>
                     )}
 
@@ -359,12 +361,12 @@ export default function EstabelecimentosPage() {
                         {nifSelecionado === estabelecimento.nif ? (
                           <div className="flex items-center justify-center gap-2">
                             <CheckCircle className="h-4 w-4" />
-                            Selecionado
+                            {t('establishments.selected')}
                           </div>
                         ) : (
                           <div className="flex items-center justify-center gap-2">
                             <CheckCircle className="h-4 w-4" />
-                            Selecionar Estabelecimento
+                            {t('establishments.select_establishment')}
                           </div>
                         )}
                       </button>

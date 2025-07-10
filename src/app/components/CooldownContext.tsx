@@ -12,29 +12,9 @@ interface CooldownContextType {
 const CooldownContext = createContext<CooldownContextType | undefined>(undefined)
 
 export function CooldownProvider({ children }: { children: React.ReactNode }) {
-  const [lastRefreshTime, setLastRefreshTime] = useState<number>(() => {
-    // Recuperar o timestamp do localStorage ao inicializar
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('global_last_refresh')
-      return saved ? parseInt(saved, 10) : 0
-    }
-    return 0
-  })
-  
-  const [cooldownCountdown, setCooldownCountdown] = useState<number>(() => {
-    // Inicializar o countdown baseado no lastRefreshTime
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('global_last_refresh')
-      if (saved) {
-        const lastRefresh = parseInt(saved, 10)
-        const timeSinceLastRefresh = Date.now() - lastRefresh
-        const remainingTime = Math.max(0, Math.ceil((30000 - timeSinceLastRefresh) / 1000))
-        // Se o tempo já expirou, retornar 0
-        return remainingTime > 0 ? remainingTime : 0
-      }
-    }
-    return 0
-  })
+  const [lastRefreshTime, setLastRefreshTime] = useState<number>(0)
+  const [cooldownCountdown, setCooldownCountdown] = useState<number>(0)
+  const [isClient, setIsClient] = useState(false)
   
   const minInterval = 30000 // 30 segundos
   
@@ -44,8 +24,28 @@ export function CooldownProvider({ children }: { children: React.ReactNode }) {
     return result
   }, [cooldownCountdown])
   
+  // Inicializar dados do localStorage apenas no cliente
+  useEffect(() => {
+    setIsClient(true)
+    
+    // Recuperar o timestamp do localStorage ao inicializar
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('global_last_refresh')
+      if (saved) {
+        const lastRefresh = parseInt(saved, 10)
+        setLastRefreshTime(lastRefresh)
+        
+        const timeSinceLastRefresh = Date.now() - lastRefresh
+        const remainingTime = Math.max(0, Math.ceil((minInterval - timeSinceLastRefresh) / 1000))
+        setCooldownCountdown(remainingTime > 0 ? remainingTime : 0)
+      }
+    }
+  }, [minInterval])
+  
   // Atualizar o contador do cooldown
   useEffect(() => {
+    if (!isClient) return
+    
     const updateCountdown = () => {
       const timeSinceLastRefresh = Date.now() - lastRefreshTime
       const remainingTime = Math.max(0, Math.ceil((minInterval - timeSinceLastRefresh) / 1000))
@@ -67,13 +67,15 @@ export function CooldownProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [lastRefreshTime, minInterval])
+  }, [lastRefreshTime, minInterval, isClient])
   
   const triggerRefresh = useCallback(() => {
     const now = Date.now()
     setLastRefreshTime(now)
     // Salvar no localStorage para persistir entre navegações
-    localStorage.setItem('global_last_refresh', now.toString())
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('global_last_refresh', now.toString())
+    }
   }, [])
   
   // Memoizar o valor do contexto para evitar re-renders desnecessários

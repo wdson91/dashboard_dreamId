@@ -6,6 +6,7 @@ import ConditionalHeader from './components/ConditionalHeader'
 import ConditionalMain from './components/ConditionalMain'
 import { EstabelecimentoProvider } from './components/EstabelecimentoContext'
 import { CooldownProvider } from './components/CooldownContext'
+import { LanguageProvider } from './components/LanguageContext'
 import LoadingScreen from './components/LoadingScreen'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -18,17 +19,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR"> 
-      <body className={`${inter.className}  min-h-screen`}>
-        <LoadingScreen>
-          <EstabelecimentoProvider>
-            <CooldownProvider>
-              <ConditionalHeader />
-              <ConditionalMain>
-                {children}
-              </ConditionalMain>
-            </CooldownProvider>
-          </EstabelecimentoProvider>
-        </LoadingScreen>
+      <body className={`${inter.className} min-h-screen`} suppressHydrationWarning={true}>
+        <LanguageProvider>
+          <LoadingScreen>
+            <EstabelecimentoProvider>
+              <CooldownProvider>
+                <ConditionalHeader />
+                <ConditionalMain>
+                  {children}
+                </ConditionalMain>
+              </CooldownProvider>
+            </EstabelecimentoProvider>
+          </LoadingScreen>
+        </LanguageProvider>
       </body>
     </html>
   )

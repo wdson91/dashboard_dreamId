@@ -10,9 +10,11 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ children }: LoadingScreenProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
   const { loading: authLoading } = useAuth()
 
   useEffect(() => {
+    setIsClient(true)
     // Aguardar o carregamento da autenticação e um tempo mínimo
     const timer = setTimeout(() => {
       setIsLoading(false)
@@ -20,6 +22,11 @@ export default function LoadingScreen({ children }: LoadingScreenProps) {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // No servidor, renderizar children diretamente para evitar diferenças de hidratação
+  if (!isClient) {
+    return <>{children}</>
+  }
 
   // Mostrar loading se ainda está carregando a autenticação ou se ainda não passou o tempo mínimo
   if (isLoading || authLoading) {

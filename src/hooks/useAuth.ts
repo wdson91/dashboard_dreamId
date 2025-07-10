@@ -10,6 +10,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const supabase = createClient()
   const router = useRouter()
   
@@ -52,6 +53,8 @@ export function useAuth() {
   }, [supabase.auth, router, session, refreshing])
 
   useEffect(() => {
+    setIsClient(true)
+    
     // Get initial session
     const getSession = async () => {
       try {
@@ -90,8 +93,10 @@ export function useAuth() {
         } else if (event === 'SIGNED_OUT') {
           // Limpar dados do localStorage quando o usuário faz logout
           try {
-            localStorage.removeItem('nifSelecionado')
-            localStorage.removeItem('filialSelecionada')
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('nifSelecionado')
+              localStorage.removeItem('filialSelecionada')
+            }
           } catch {
             // Ignorar erro de localStorage
           }
@@ -118,8 +123,10 @@ export function useAuth() {
     try {
       // Limpar dados do localStorage antes do logout
       try {
-        localStorage.removeItem('nifSelecionado')
-        localStorage.removeItem('filialSelecionada')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('nifSelecionado')
+          localStorage.removeItem('filialSelecionada')
+        }
       } catch {
         // Ignorar erro de localStorage
       }
@@ -144,6 +151,19 @@ export function useAuth() {
       return { data, error: null }
     } catch (error) {
       return { data: null, error }
+    }
+  }
+
+  // Retornar estado inicial no servidor para evitar diferenças de hidratação
+  if (!isClient) {
+    return { 
+      user: null, 
+      session: null,
+      loading: true, 
+      refreshing: false,
+      signOut, 
+      signIn,
+      refreshSession 
     }
   }
 
