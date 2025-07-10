@@ -76,27 +76,27 @@ export default function Header() {
     <>
       {/* Desktop Sidebar */}
       <div className="hidden lg:block fixed left-0 top-0 h-full w-64 2xl:w-80 bg-sidebar border-r border-sidebar-border text-sidebar-foreground z-50">
-        <div className="p-6 2xl:p-8 flex flex-col h-full">
-          <div className="mb-8 2xl:mb-12">
+        <div className="p-6 2xl:p-8 flex flex-col h-full overflow-y-auto">
+          <div className="mb-6 2xl:mb-8 flex-shrink-0">
             <div className="flex justify-center mb-4">
               <Image 
                 src="/logo.png"
                 alt="Logo"
-                width={180}
-                height={180}
-                className="object-contain 2xl:w-64 2xl:h-64"
+                width={120}
+                height={120}
+                className="object-contain 2xl:w-40 2xl:h-40"
               />
             </div>
           </div>
           
           {/* Language Selector - moved here */}
-          <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center">
+          <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center flex-shrink-0">
             <LanguageSelector />
           </div>
           
           {/* User Info */}
           {user && (
-            <div className="mb-6 2xl:mb-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
+            <div className="mb-4 2xl:mb-6 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <User className="h-4 w-4 2xl:h-5 2xl:w-5 text-sidebar-secondary-foreground" />
                 <span className="text-sm 2xl:text-base font-medium text-sidebar-foreground">{t('layout.user')}</span>
@@ -109,7 +109,7 @@ export default function Header() {
 
           {/* Estabelecimento Selecionado */}
           {isLoaded && nifSelecionado && (
-            <div className="mb-6 2xl:mb-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border">
+            <div className="mb-4 2xl:mb-6 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="h-4 w-4 2xl:h-5 2xl:w-5 text-white" />
                 <span className="text-sm 2xl:text-base font-medium text-white">{t('layout.establishment')}</span>
@@ -130,7 +130,7 @@ export default function Header() {
             </div>
           )}
           
-          <nav className="space-y-2 2xl:space-y-3">
+          <nav className="space-y-2 2xl:space-y-3 flex-1 min-h-0">
             <Link
               href="/"
               className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
@@ -203,7 +203,7 @@ export default function Header() {
           
           {/* Logout Button */}
           {user && (
-            <div className="mt-auto pt-6 2xl:pt-8 border-t border-sidebar-border">
+            <div className="mt-auto pt-4 2xl:pt-6 border-t border-sidebar-border flex-shrink-0">
               <button
                 onClick={() => setLogoutModalOpen(true)}
                 className="w-full flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
@@ -283,16 +283,16 @@ export default function Header() {
           onClick={() => setDrawerOpen(false)}
         >
           <div 
-            className="bg-sidebar w-72 h-full p-6 flex flex-col gap-4 shadow-2xl animate-slide-in-right border-l border-sidebar-border text-sidebar-foreground"
+            className="bg-sidebar w-72 h-full p-4 flex flex-col shadow-2xl animate-slide-in-right border-l border-sidebar-border text-sidebar-foreground overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex justify-center gap-2 ml-15">
+            <div className="flex justify-between items-center mb-4 flex-shrink-0">
+              <div className="flex justify-center gap-2">
                 <Image
                   src="/logo.png" 
                   alt="Logo" 
-                  width={120}
-                  height={120}
+                  width={80}
+                  height={80}
                   className="object-contain"
                 />
               </div>
@@ -302,13 +302,13 @@ export default function Header() {
             </div>
             
             {/* Language Selector Mobile - moved here */}
-            <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center">
+            <div className="mb-3 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center flex-shrink-0">
               <LanguageSelector />
             </div>
             
             {/* User Info Mobile */}
             {user && (
-              <div className="mb-4 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
+              <div className="mb-3 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm flex-shrink-0">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="h-4 w-4 text-sidebar-secondary-foreground" />
                   <span className="text-sm font-medium text-sidebar-foreground">{t('layout.user')}</span>
@@ -319,7 +319,7 @@ export default function Header() {
             
             {/* Estabelecimento Selecionado Mobile */}
             {isLoaded && nifSelecionado && (
-              <div className="mb-4 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border">
+              <div className="mb-3 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border flex-shrink-0">
                 <div className="flex items-center gap-2 mb-2">
                   <Building2 className="h-4 w-4 text-sidebar-secondary-foreground" />
                   <span className="text-sm font-medium text-sidebar-foreground">{t('layout.establishment')}</span>
@@ -340,7 +340,7 @@ export default function Header() {
               </div>
             )}
             
-            <nav className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-2 flex-1 min-h-0">
               <Link
                 href="/"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
@@ -418,7 +418,7 @@ export default function Header() {
 
             
             {/* Logout Button Mobile */}
-            <div className="mt-auto pt-6 border-t border-sidebar-border">
+            <div className="mt-auto pt-4 border-t border-sidebar-border flex-shrink-0">
               <button
                 onClick={() => setLogoutModalOpen(true)}
                 className="w-full flex items-center gap-3 py-2 px-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-all"
