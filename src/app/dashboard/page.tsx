@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
@@ -44,7 +44,7 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
   )
 }
 
-async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<FaturasResponse['dados']> {
+async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<any> {
   const cacheKey = `dashboard_data_${apiParams.nif}_${apiParams.filial || 'all'}_${filtro}`
   
   // Verificar cache apenas se não for um refresh
@@ -61,35 +61,22 @@ async function getData(filtro: string, apiParams: { nif: string; filial?: string
     }
   }
   
-  const urlPath = '/api/stats/resumo'
-  
-  // Verificar se a variável de ambiente está definida
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://13.48.69.154:8000'
-  
-  let url = `${apiBaseUrl}${urlPath}?nif=${apiParams.nif}&periodo=${filtro}`
+  // Usar a nova API local
+  let url = `/api/stats/resumo?nif=${apiParams.nif}&periodo=${filtro}`
   
   // Adicionar parâmetro de filial se existir
   if (apiParams.filial) {
     url += `&filial=${apiParams.filial}`
   }
   
-    try {
-    const response = await api.get(url)
+  try {
+    const response = await fetch(url)
     
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
     
-          // Verificar se a resposta tem a estrutura esperada
-      let dados
-      if (response && typeof response === 'object') {
-        // Se a resposta tem uma propriedade 'dados', usar ela
-        if ('dados' in response) {
-          dados = response.dados
-        } else {
-          // Se não tem 'dados', usar a resposta diretamente
-          dados = response
-        }
-      } else {
-        throw new Error('Resposta da API inválida')
-      }
+    const dados = await response.json()
     
     // Salvar no cache
     localStorage.setItem(cacheKey, JSON.stringify({
@@ -113,6 +100,8 @@ export default function Component() {
   const { isLoaded } = useEstabelecimento()
   const apiNif = useApiNif()
   const { t, getTranslatedPeriods } = useLanguage()
+  const lastCallRef = useRef<number>(0)
+  const isLoadingRef = useRef<boolean>(false)
 
   // Memoizar os dados do gráfico para evitar re-renders desnecessários
   const chartData = useMemo(() => {
@@ -123,11 +112,15 @@ export default function Component() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.comparativo_por_hora])
 
-  const getBadgeClass = (variation: string | undefined) => {
-    if (!variation) {
+  const getBadgeClass = (data: any) => {
+    if (!data || !data.variacao) {
       return 'bg-warning text-warning-foreground'; // Pendente
     }
-    const value = parseFloat(variation.replace('%', ''));
+    
+    // Extrair o valor numérico da variação (remover % e sinal)
+    const variationStr = data.variacao.replace(/[+-]/g, '').replace('%', '');
+    const value = parseFloat(variationStr);
+    
     if (value > 0) {
       return 'bg-muted text-foreground'; // Concluído (Positivo)
     }
@@ -145,10 +138,19 @@ export default function Component() {
       return
     }
 
-    // Evitar chamadas duplicadas apenas se não for um refresh
-    if (loading && !clearCache) {
+    // Prevenir múltiplas chamadas muito próximas (menos de 500ms)
+    const now = Date.now()
+    if (!clearCache && (now - lastCallRef.current < 500)) {
       return
     }
+
+    // Evitar chamadas duplicadas se já está carregando
+    if (isLoadingRef.current && !clearCache) {
+      return
+    }
+
+    lastCallRef.current = now
+    isLoadingRef.current = true
 
     // Se estamos fazendo refresh ou não está carregando, definir loading como true
     if (clearCache || !loading) {
@@ -165,6 +167,7 @@ export default function Component() {
     setError(null)
     
     try {
+      console.log(`[Dashboard] API call - NIF: ${apiNif.nif}, Filtro: ${filtro}, ClearCache: ${clearCache}`)
       const result = await getData(filtro, apiNif, clearCache)
       setData(result)
       setLastUpdate(new Date())
@@ -173,31 +176,22 @@ export default function Component() {
     } finally {
       setLoading(false)
       setRefreshing(false)
+      isLoadingRef.current = false
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro, apiNif, isLoaded])
 
+  // Efeito principal - consolidado para evitar múltiplas chamadas
   useEffect(() => {
     // Só fazer fetch se há apiNif disponível e isLoaded é true
-    if (apiNif && isLoaded) {
-      // Sempre fazer fetch quando entrar na página (sem cache)
+    if (apiNif && isLoaded && !isLoadingRef.current) {
       fetchData(true)
     } else {
       // Se não há apiNif, garantir que loading seja false
       setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiNif, isLoaded]) // Removido fetchData das dependências para evitar loops
-
-  // useEffect para reagir a mudanças no filtro
-  useEffect(() => {
-    if (apiNif && isLoaded) {
-      // Buscar dados quando o filtro mudar
-      fetchData(true)
-    }
-  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtro, apiNif, isLoaded])
+  }, [apiNif?.nif, apiNif?.filial, isLoaded, filtro]) // Consolidado: reage a mudanças de NIF, filial, carregamento E filtro
 
   // Detectar quando o usuário volta para a página
   useEffect(() => {
@@ -371,7 +365,7 @@ export default function Component() {
                 </div>
                 <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.consolidated_sales')}</span>
               </div>
-              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas)}`}>
                 {total_vendas?.variacao || '0%'}
               </span>
             </div>
@@ -394,7 +388,7 @@ export default function Component() {
                   </div>
                   <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.invoices')}</span>
                 </div>
-                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos)}`}>
                   {numero_recibos?.variacao || '0%'}
                 </span>
               </div>
@@ -418,7 +412,7 @@ export default function Component() {
                   </div>
                   <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.products_sold')}</span>
                 </div>
-                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos)}`}>
                   {itens_vendidos?.variacao || '0%'}
                 </span>
               </div>
