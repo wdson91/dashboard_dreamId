@@ -293,7 +293,7 @@ export default function Header() {
                   alt="Logo" 
                   width={120}
                   height={120}
-                  className="object-contain"
+                  className="object-contain ml-15"
                 />
               </div>
               <button className="-mr-2 p-2" onClick={() => setDrawerOpen(false)} aria-label={t('layout.close_menu')}>
