@@ -12,7 +12,7 @@ const languages = [
 ]
 
 export const LanguageSelector = () => {
-    const { currentLanguage, setLanguage, t } = useLanguage()
+    const { currentLanguage, setLanguage } = useLanguage()
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 

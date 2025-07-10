@@ -4,7 +4,7 @@ import Link from 'next/link' // Link do Next.js (evita reload da página)
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, LogOut, User, Building2, Home, Package, Receipt, Building, Store, Brain } from 'lucide-react'
+import { Menu, X, LogOut, User, Building2, Home, Package, Receipt, Building, Store} from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useEstabelecimento } from './EstabelecimentoContext'
 import { useLanguage } from './LanguageContext'
