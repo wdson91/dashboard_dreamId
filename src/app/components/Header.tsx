@@ -89,6 +89,11 @@ export default function Header() {
             </div>
           </div>
           
+          {/* Language Selector - moved here */}
+          <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center">
+            <LanguageSelector />
+          </div>
+          
           {/* User Info */}
           {user && (
             <div className="mb-6 2xl:mb-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
@@ -181,7 +186,7 @@ export default function Header() {
               <Store className="h-4 w-4 2xl:h-5 2xl:w-5" />
               <span className="text-sm 2xl:text-base">{t('menu.branches')}</span>
             </Link>
-            <Link 
+            {/* <Link 
               href="/analises" 
               className={`flex items-center gap-3 py-2 px-3 2xl:py-3 2xl:px-4 rounded-lg transition-all ${
                 isActiveLink('/analises') 
@@ -191,16 +196,10 @@ export default function Header() {
             >
               <Brain className="h-4 w-4 2xl:h-5 2xl:w-5" />
               <span className="text-sm 2xl:text-base">{t('menu.analysis')}</span>
-            </Link>
+            </Link> */}
           </nav>
           
-          {/* Language Selector in Sidebar */}
-          <div className="mt-6 2xl:mt-8 p-3 2xl:p-4 bg-sidebar-card rounded-lg border border-sidebar-card-border">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm 2xl:text-base font-medium text-white">{t('layout.language')}</span>
-            </div>
-            <LanguageSelector />
-          </div>
+
           
           {/* Logout Button */}
           {user && (
@@ -302,6 +301,11 @@ export default function Header() {
               </button>
             </div>
             
+            {/* Language Selector Mobile - moved here */}
+            <div className="mb-4 p-2 bg-sidebar-card rounded-lg border border-sidebar-card-border flex justify-center">
+              <LanguageSelector />
+            </div>
+            
             {/* User Info Mobile */}
             {user && (
               <div className="mb-4 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border shadow-sm">
@@ -397,7 +401,7 @@ export default function Header() {
                 <Store className="h-4 w-4" />
                 <span>{t('menu.branches')}</span>
               </Link>
-              <Link
+              {/* <Link
                 href="/analises"
                 className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all ${
                   isActiveLink('/analises') 
@@ -408,16 +412,10 @@ export default function Header() {
               >
                 <Brain className="h-4 w-4" />
                 <span>{t('menu.analysis')}</span>
-              </Link>
+              </Link> */}
             </nav>
             
-            {/* Language Selector in Mobile Drawer */}
-            <div className="mt-6 p-3 bg-sidebar-card rounded-lg border border-sidebar-card-border">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-medium text-white">{t('layout.language')}</span>
-              </div>
-              <LanguageSelector />
-            </div>
+
             
             {/* Logout Button Mobile */}
             <div className="mt-auto pt-6 border-t border-sidebar-border">
