@@ -76,13 +76,13 @@ export default function FaturasPage() {
       setRefreshing(false)
       isLoadingRef.current = false
     }
-  }, [periodo, apiNif?.nif, apiNif?.filial, fetchFaturas])
+  }, [periodo, apiNif, fetchFaturas])
 
   useEffect(() => {
     if (apiNif && !isLoadingRef.current) {
       fetchData()
     }
-  }, [apiNif?.nif, apiNif?.filial, periodo])
+  }, [apiNif, periodo, fetchData])
 
   const handleDownloadPDF = async (numeroFatura: string) => {
     setDownloadingPDF(numeroFatura)

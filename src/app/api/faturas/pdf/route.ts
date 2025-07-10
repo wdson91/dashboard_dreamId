@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
 // Função para gerar PDF simples (básico sem bibliotecas externas)
-function gerarPDFSimples(textoCompleto: string, qrcode?: string): Buffer {
+function gerarPDFSimples(textoCompleto: string): Buffer {
   // Esta é uma implementação muito básica
   // Para uma implementação completa, você deveria usar bibliotecas como jsPDF ou PDFKit
   
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
 
     // Gerar PDF
     try {
-      const pdfBuffer = gerarPDFSimples(textoCompleto, fatura.qrcode)
+      const pdfBuffer = gerarPDFSimples(textoCompleto)
       
       // Retornar PDF como resposta
       return new NextResponse(pdfBuffer, {

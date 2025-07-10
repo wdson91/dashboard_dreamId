@@ -5,7 +5,7 @@ import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar } fr
 import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { api } from "@/utils/api"
+
 import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
@@ -44,7 +44,7 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
   )
 }
 
-async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<any> {
+async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<FaturasResponse['dados']> {
   const cacheKey = `dashboard_data_${apiParams.nif}_${apiParams.filial || 'all'}_${filtro}`
   
   // Verificar cache apenas se não for um refresh
@@ -112,14 +112,22 @@ export default function Component() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.comparativo_por_hora])
 
-  const getBadgeClass = (data: any) => {
-    if (!data || !data.variacao) {
+  const getBadgeClass = (data: { variacao?: string } | string | undefined) => {
+    let variationStr: string | undefined
+    
+    if (typeof data === 'string') {
+      variationStr = data
+    } else if (data && typeof data === 'object' && data.variacao) {
+      variationStr = data.variacao
+    }
+    
+    if (!variationStr) {
       return 'bg-warning text-warning-foreground'; // Pendente
     }
     
     // Extrair o valor numérico da variação (remover % e sinal)
-    const variationStr = data.variacao.replace(/[+-]/g, '').replace('%', '');
-    const value = parseFloat(variationStr);
+    const cleanStr = variationStr.replace(/[+-]/g, '').replace('%', '');
+    const value = parseFloat(cleanStr);
     
     if (value > 0) {
       return 'bg-muted text-foreground'; // Concluído (Positivo)

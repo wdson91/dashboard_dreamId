@@ -27,9 +27,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Obter datas dos períodos
-    let dataInicio: Date, dataFim: Date, inicioAnterior: Date, fimAnterior: Date
+    let dataInicio: Date, dataFim: Date
     try {
-      [dataInicio, dataFim, inicioAnterior, fimAnterior] = get_periodo_datas(periodo)
+      [dataInicio, dataFim] = get_periodo_datas(periodo)
     } catch (e) {
       return NextResponse.json({ error: e instanceof Error ? e.message : 'Erro no período' }, { status: 400 })
     }

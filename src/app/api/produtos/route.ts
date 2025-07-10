@@ -3,8 +3,7 @@ import {
   is_valid_nif,
   get_periodo_datas,
   parse_periodo,
-  buscar_faturas_periodo,
-  type Fatura
+  buscar_faturas_periodo
 } from '../stats/utils'
 
 export async function GET(request: NextRequest) {
@@ -28,9 +27,9 @@ export async function GET(request: NextRequest) {
     }
     
     // Obter datas dos períodos
-    let di: Date, df: Date, dia: Date, dfan: Date
+    let di: Date, df: Date
     try {
-      [di, df, dia, dfan] = get_periodo_datas(p)
+      [di, df] = get_periodo_datas(p)
     } catch (e) {
       return NextResponse.json({ error: e instanceof Error ? e.message : 'Erro no período' }, { status: 400 })
     }

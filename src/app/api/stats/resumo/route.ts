@@ -5,10 +5,7 @@ import {
   parse_periodo,
   buscar_faturas_periodo,
   processar_faturas_otimizado,
-  calcular_variacao_dados,
-  type Fatura,
-  type DadosProcessados,
-  type VariacaoDados
+  calcular_variacao_dados
 } from '../utils'
 
 export async function GET(request: NextRequest) {

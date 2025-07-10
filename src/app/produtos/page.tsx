@@ -75,14 +75,14 @@ export default function ProdutosPage() {
       setRefreshing(false)
       isLoadingRef.current = false
     }
-  }, [periodo, apiNif?.nif, apiNif?.filial, fetchProdutos])
+  }, [periodo, apiNif, fetchProdutos])
 
   // Efeito para carregar dados quando apiNif ou período mudam
   useEffect(() => {
     if (apiNif && !isLoadingRef.current) {
       fetchData()
     }
-  }, [apiNif?.nif, apiNif?.filial, periodo])
+  }, [apiNif, periodo, fetchData])
 
   // Se não há NIF selecionado, mostrar mensagem
   if (!apiNif) {

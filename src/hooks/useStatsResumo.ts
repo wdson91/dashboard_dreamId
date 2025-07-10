@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/utils/api'
 import { useApiNif } from './useApiNif'
 
@@ -38,7 +38,7 @@ export function useStatsResumo(periodo: number = 0): UseStatsResumoReturn {
   
   const apiParams = useApiNif()
   
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!apiParams) {
       setData(null)
       setError(null)
@@ -63,11 +63,11 @@ export function useStatsResumo(periodo: number = 0): UseStatsResumoReturn {
     } finally {
       setLoading(false)
     }
-  }
+  }, [apiParams, periodo])
   
   useEffect(() => {
     fetchData()
-  }, [apiParams, periodo])
+  }, [apiParams, periodo, fetchData])
   
   return {
     data,

@@ -211,7 +211,7 @@ export function agrupar_por_hora_otimizado(
       } else if (data_inicio_anterior <= data_fatura && data_fatura <= data_fim_anterior) {
         vendas_por_hora_anterior.set(hora, (vendas_por_hora_anterior.get(hora) || 0) + total_fatura)
       }
-    } catch (error) {
+    } catch {
       // Ignorar horas inválidas
       continue
     }
