@@ -170,6 +170,17 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Produto Mais Vendido',
         'analysis.peak_time': 'Horário de Pico',
         'analysis.period_comparison': 'Comparação de Períodos',
+        
+        // Modal de Logout
+        'logout.modal_title': 'Confirmar Logout',
+        'logout.modal_message': 'Tem certeza que deseja sair da sua conta? Você será redirecionado para a página de login.',
+        'logout.cancel': 'Cancelar',
+        'logout.confirm': 'Sair',
+        'logout.close': 'Fechar',
+        
+        // Tela de Loading
+        'loading.checking_auth': 'Verificando autenticação...',
+        'loading.loading': 'Carregando...',
     },
     en: {
         // Layout geral
@@ -327,6 +338,17 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Best Seller',
         'analysis.peak_time': 'Peak Time',
         'analysis.period_comparison': 'Period Comparison',
+        
+        // Logout Modal
+        'logout.modal_title': 'Confirm Logout',
+        'logout.modal_message': 'Are you sure you want to log out of your account? You will be redirected to the login page.',
+        'logout.cancel': 'Cancel',
+        'logout.confirm': 'Logout',
+        'logout.close': 'Close',
+        
+        // Loading Screen
+        'loading.checking_auth': 'Checking authentication...',
+        'loading.loading': 'Loading...',
     },
     fr: {
         // Layout général
@@ -484,6 +506,17 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Meilleure Vente',
         'analysis.peak_time': 'Heure de Pointe',
         'analysis.period_comparison': 'Comparaison des Périodes',
+        
+        // Modal de Déconnexion
+        'logout.modal_title': 'Confirmer la Déconnexion',
+        'logout.modal_message': 'Êtes-vous sûr de vouloir vous déconnecter de votre compte ? Vous serez redirigé vers la page de connexion.',
+        'logout.cancel': 'Annuler',
+        'logout.confirm': 'Déconnexion',
+        'logout.close': 'Fermer',
+        
+        // Écran de Chargement
+        'loading.checking_auth': 'Vérification de l\'authentification...',
+        'loading.loading': 'Chargement...',
     },
     es: {
         // Layout general
@@ -641,6 +674,17 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Más Vendido',
         'analysis.peak_time': 'Hora Pico',
         'analysis.period_comparison': 'Comparación de Períodos',
+        
+        // Modal de Cierre de Sesión
+        'logout.modal_title': 'Confirmar Cierre de Sesión',
+        'logout.modal_message': '¿Estás seguro de que quieres cerrar sesión? Serás redirigido a la página de inicio de sesión.',
+        'logout.cancel': 'Cancelar',
+        'logout.confirm': 'Cerrar Sesión',
+        'logout.close': 'Cerrar',
+        
+        // Pantalla de Carga
+        'loading.checking_auth': 'Verificando autenticación...',
+        'loading.loading': 'Cargando...',
     }
 };
 

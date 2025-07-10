@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LogOut, X } from "lucide-react"
+import { useLanguage } from "./LanguageContext"
 
 interface LogoutModalProps {
   isOpen: boolean
@@ -11,6 +12,8 @@ interface LogoutModalProps {
 }
 
 export default function LogoutModal({ isOpen, onClose, onConfirm }: LogoutModalProps) {
+  const { t } = useLanguage()
+  
   if (!isOpen) return null
 
   return (
@@ -20,19 +23,19 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }: LogoutModalP
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <LogOut className="h-5 w-5 text-red-500" />
-              <h2 className="text-lg font-semibold text-gray-900">Confirmar Logout</h2>
+              <h2 className="text-lg font-semibold text-white">{t('logout.modal_title')}</h2>
             </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
-              aria-label="Fechar"
+              aria-label={t('logout.close')}
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           
-          <p className="text-gray-600 mb-6">
-            Tem certeza que deseja sair da sua conta? Você será redirecionado para a página de login.
+          <p className="text-white mb-6">
+            {t('logout.modal_message')}
           </p>
           
           <div className="flex gap-3">
@@ -41,13 +44,13 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }: LogoutModalP
               onClick={onClose}
               className="flex-1"
             >
-              Cancelar
+              {t('logout.cancel')}
             </Button>
             <Button
               onClick={onConfirm}
-              className="flex-1 bg-red-500 hover:bg-red-600 focus:ring-red-500"
+              className="flex-1 bg-red-500 hover:bg-red-600 focus:ring-red-500 text-black"
             >
-              Sair
+              {t('logout.confirm')}
             </Button>
           </div>
         </CardContent>
