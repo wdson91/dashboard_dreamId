@@ -26,8 +26,8 @@ export interface DadosProcessados {
   stats_anterior: [number, number, number, number]
   comparativo_por_hora: Array<{
     hora: string
-    atual: number
-    anterior: number
+    hoje: number
+    ontem: number
   }>
 }
 
@@ -227,18 +227,18 @@ export function agrupar_por_hora_otimizado(
 export function gerar_comparativo_por_hora(
   vendas_por_hora_atual: Map<number, number>,
   vendas_por_hora_anterior: Map<number, number>
-): Array<{ hora: string; atual: number; anterior: number }> {
+): Array<{ hora: string; hoje: number; ontem: number }> {
   const comparativo = []
   
   for (let hora = 0; hora < 24; hora++) {
     const hora_str = `${hora.toString().padStart(2, '0')}:00`
-    const atual = vendas_por_hora_atual.get(hora) || 0
-    const anterior = vendas_por_hora_anterior.get(hora) || 0
+    const hoje = vendas_por_hora_atual.get(hora) || 0
+    const ontem = vendas_por_hora_anterior.get(hora) || 0
     
     comparativo.push({
       hora: hora_str,
-      atual,
-      anterior
+      hoje,
+      ontem
     })
   }
   
