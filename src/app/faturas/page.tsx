@@ -8,6 +8,7 @@ import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import {  FaturasListResponse } from "@/app/types/faturas"
 import { useApiNif } from "@/hooks/useApiNif"
 import { UpdateButton } from "@/app/components/UpdateButton"
+import { useLanguage } from "../components/LanguageContext"
 
 async function getFaturas(periodo: string, apiParams: { nif: string; filial?: string }): Promise<FaturasListResponse> {
   const cacheKey = `faturas_data_${apiParams.nif}_${apiParams.filial || 'all'}_${periodo}`
@@ -121,6 +122,7 @@ export default function FaturasPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const apiNif = useApiNif()
+  const { t, getTranslatedPeriods } = useLanguage()
 
   const fetchData = useCallback(async (clearCache = false) => {
     if (!apiNif) {
@@ -169,22 +171,22 @@ export default function FaturasPage() {
     return (
       <div className="p-8 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-xl font-semibold text-white mb-4">Nenhum estabelecimento selecionado</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">{t('invoices.no_establishment')}</h2>
           <p className="text-white mb-6">
-            Para visualizar as faturas, você precisa selecionar um estabelecimento.
+            {t('invoices.no_establishment_message')}
           </p>
           <a 
             href="/estabelecimentos" 
             className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-gray-100 transition-colors"
           >
-            Ir para Estabelecimentos
+            {t('invoices.go_to_establishments')}
           </a>
         </div>
       </div>
     )
   }
 
-  if (loading) return <div className="p-8 text-center text-gray-600">Carregando...</div>
+  if (loading) return <div className="p-8 text-center text-gray-600">{t('invoices.loading')}</div>
   if (error) {
     // Verificar se é o erro específico de "Nenhuma fatura encontrada"
     if (error.includes("Nenhuma fatura encontrada")) {
@@ -193,7 +195,7 @@ export default function FaturasPage() {
           {/* Header */}
           <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
             <div className="flex flex-col gap-3">
-              <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Lista de Faturas</h1>
+              <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">{t('invoices.title')}</h1>
               
               {/* Dropdown de período */}
               <div className="flex items-center gap-3">
@@ -204,7 +206,7 @@ export default function FaturasPage() {
                     value={periodo}
                     onChange={e => setPeriodo(e.target.value)}
                   >
-                    {APP_CONFIG.periods.map(period => (
+                    {getTranslatedPeriods().map(period => (
                       <option key={period.value} value={period.value} className="bg-[var(--color-card-white)] text-[var(--color-card-text-green)]">
                         {period.label}
                       </option>
@@ -228,7 +230,7 @@ export default function FaturasPage() {
               {/* Informação da última atualização */}
               {lastUpdate && (
                 <div className="text-sm text-[var(--color-card-text-green-muted)]">
-                  Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+                  {t('invoices.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
                     hour: '2-digit', 
                     minute: '2-digit',
                     day: '2-digit',
@@ -243,13 +245,13 @@ export default function FaturasPage() {
           {/* Mensagem de erro */}
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma fatura encontrada</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('invoices.no_invoices_found')}</h3>
             <p className="text-gray-600 mb-4">
-              Não foram encontradas faturas para o período selecionado.
+              {t('invoices.no_invoices_message')}
             </p>
             <div className="bg-gray-100 border border-gray-200 rounded-lg p-4 max-w-md mx-auto">
               <p className="text-gray-700 text-sm">
-                Tente selecionar um período diferente ou verifique se há dados disponíveis.
+                {t('invoices.try_different_period')}
               </p>
             </div>
           </div>
@@ -257,7 +259,7 @@ export default function FaturasPage() {
       )
     }
     
-    return <div className="p-8 text-center text-red-500">Erro: {error}</div>
+    return <div className="p-8 text-center text-red-500">{t('invoices.error')}: {error}</div>
   }
   if (!data) return null
 
@@ -273,7 +275,7 @@ export default function FaturasPage() {
       {/* Header */}
       <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg shadow-sm px-6 py-4 mb-6">
         <div className="flex flex-col gap-3">
-          <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Lista de Faturas</h1>
+          <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">{t('invoices.title')}</h1>
           
           {/* Dropdown de período */}
           <div className="flex items-center gap-3">
@@ -284,7 +286,7 @@ export default function FaturasPage() {
                 value={periodo}
                 onChange={e => setPeriodo(e.target.value)}
               >
-                {APP_CONFIG.periods.map(period => (
+                {getTranslatedPeriods().map(period => (
                   <option key={period.value} value={period.value} className="bg-[var(--color-card-white)] text-[var(--color-card-text-green)]">
                     {period.label}
                   </option>
@@ -308,7 +310,7 @@ export default function FaturasPage() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+              {t('invoices.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 day: '2-digit',
@@ -324,7 +326,7 @@ export default function FaturasPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-[var(--color-card-text-green-muted)]">Total de Faturas</div>
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.total_invoices')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {data.faturas.length.toLocaleString('pt-BR')}
             </div>
@@ -333,7 +335,7 @@ export default function FaturasPage() {
         
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-[var(--color-card-text-green-muted)]">Total Montante</div>
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.total_amount')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0))}
             </div>
@@ -342,7 +344,7 @@ export default function FaturasPage() {
         
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
-            <div className="text-sm text-[var(--color-card-text-green-muted)]">Ticket Médio</div>
+            <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.average_ticket')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
               {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0) / data.faturas.length)}
             </div>
@@ -356,7 +358,7 @@ export default function FaturasPage() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[var(--color-card-text-green-muted)]" />
           <input
             type="text"
-            placeholder="Pesquisar por número, cliente ou data..."
+            placeholder={t('invoices.search_placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg text-[var(--color-card-text-green)] placeholder:text-[var(--color-card-text-green-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-card-border-green)] focus:border-[var(--color-card-border-green)]"
@@ -376,9 +378,9 @@ export default function FaturasPage() {
                       {index + 1}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">Fatura #{fatura.numero_fatura}</h3>
-                      <p className="text-[var(--color-card-text-green-muted)] text-sm">NIF Cliente: {fatura.nif_cliente}</p>
-                      <p className="text-[var(--color-card-text-green-muted)] text-sm">Data: {fatura.data}</p>
+                      <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">{t('invoices.invoice_number')} #{fatura.numero_fatura}</h3>
+                      <p className="text-[var(--color-card-text-green-muted)] text-sm">{t('invoices.client_nif')}: {fatura.nif_cliente}</p>
+                      <p className="text-[var(--color-card-text-green-muted)] text-sm">{t('invoices.date')}: {fatura.data}</p>
                     </div>
                   </div>
                 </div>
@@ -392,7 +394,7 @@ export default function FaturasPage() {
                     disabled={downloadingPDF === fatura.numero_fatura}
                     className="mt-2 px-4 py-2 bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {downloadingPDF === fatura.numero_fatura ? 'Baixando...' : 'Baixar PDF'}
+                    {downloadingPDF === fatura.numero_fatura ? t('invoices.downloading') : t('invoices.download_pdf')}
                   </button>
                 </div>
               </div>
@@ -403,9 +405,9 @@ export default function FaturasPage() {
         {filteredFaturas.length === 0 && (
           <div className="text-center py-8">
             <FileText className="h-12 w-12 text-[var(--color-card-text-green-muted)] mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-[var(--color-card-text-green)] mb-2">Nenhuma fatura encontrada</h3>
+            <h3 className="text-lg font-medium text-[var(--color-card-text-green)] mb-2">{t('invoices.no_invoices_found')}</h3>
             <p className="text-[var(--color-card-text-green-muted)]">
-              Tente ajustar os filtros de pesquisa.
+              {t('invoices.adjust_filters')}
             </p>
           </div>
         )}

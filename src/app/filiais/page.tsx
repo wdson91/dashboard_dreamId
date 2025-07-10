@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useEstabelecimento } from "../components/EstabelecimentoContext"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "../components/LanguageContext"
 
 interface Filial {
   id?: string
@@ -32,6 +33,7 @@ export default function FiliaisPage() {
   const { nifSelecionado, filialSelecionada, setFilialSelecionada } = useEstabelecimento()
   const router = useRouter()
   const supabase = createClient()
+  const { t } = useLanguage()
 
   const copyToClipboard = async (nif: string) => {
     try {
@@ -184,10 +186,10 @@ export default function FiliaisPage() {
       <div className="min-h-screen bg-white">
         <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-white text-2xl font-semibold">Filiais</h1>
+            <h1 className="text-white text-2xl font-semibold">{t('branches.title')}</h1>
           </div>
         </div>
-        <div className="text-center py-8 text-gray-600">Carregando filiais...</div>
+        <div className="text-center py-8 text-gray-600">{t('branches.loading')}</div>
       </div>
     )
   }
@@ -197,10 +199,10 @@ export default function FiliaisPage() {
       <div className="min-h-screen bg-white">
         <div className="bg-emerald-500 border border-emerald-400 rounded-lg shadow-sm px-6 py-4 mb-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-white text-2xl font-semibold">Filiais</h1>
+            <h1 className="text-white text-2xl font-semibold">{t('branches.title')}</h1>
           </div>
         </div>
-        <div className="text-center py-8 text-red-500">Erro: {error}</div>
+        <div className="text-center py-8 text-red-500">{t('branches.error')}: {error}</div>
       </div>
     )
   }
@@ -212,9 +214,9 @@ export default function FiliaisPage() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">Filiais</h1>
+              <h1 className="text-[var(--color-card-text-green)] text-2xl font-semibold">{t('branches.title')}</h1>
               <p className="text-[var(--color-card-text-green-muted)] text-sm">
-                {filiais.length} filial{filiais.length !== 1 ? 'is' : ''} encontrada{filiais.length !== 1 ? 's' : ''}
+                {filiais.length} {filiais.length === 1 ? t('branches.found_count') : t('branches.found_count_plural')}
               </p>
             </div>
             {filialSelecionada && (
@@ -223,7 +225,7 @@ export default function FiliaisPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green)] transition-colors border border-[var(--color-card-border-green)]"
               >
                 <Building2 className="h-4 w-4" />
-                Ver Dados Gerais
+                {t('branches.view_general_data')}
               </button>
             )}
           </div>
@@ -231,10 +233,10 @@ export default function FiliaisPage() {
             <div className="flex items-center gap-2 p-3 bg-[var(--color-card-border-green)] rounded-lg border border-[var(--color-card-border-green)]">
               <Store className="h-4 w-4 text-white" />
               <span className="text-white font-medium">
-                Filial selecionada: #{filialSelecionada}
+                {t('branches.selected_branch')}: #{filialSelecionada}
               </span>
               <span className="text-white text-sm">
-                (Visualizando dados específicos desta filial)
+                ({t('branches.viewing_specific_data')})
               </span>
             </div>
           )}
@@ -246,9 +248,9 @@ export default function FiliaisPage() {
         {filiais.length === 0 ? (
           <div className="text-center py-12">
             <Store className="h-12 w-12 text-white mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">Nenhuma filial encontrada</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('branches.no_branches')}</h3>
             <p className="text-white mb-4">
-              Não foram encontradas filiais associadas à sua conta.
+              {t('branches.no_branches_message')}
             </p>
           </div>
         ) : (
@@ -262,10 +264,10 @@ export default function FiliaisPage() {
                       <Building2 className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
                       <div className="flex flex-col min-w-0 flex-1">
                         <span className="truncate text-base text-white">
-                          Dados Gerais
+                          {t('branches.general_data')}
                         </span>
                         <span className="text-sm text-white font-semibold">
-                          Todas as Filiais
+                          {t('branches.all_branches')}
                         </span>
                       </div>
                     </div>
@@ -298,11 +300,11 @@ export default function FiliaisPage() {
                     </div>
 
                     <div className="text-sm text-white">
-                      Visualizando dados consolidados de todas as filiais deste estabelecimento.
+                      {t('branches.consolidated_data')}
                     </div>
 
                     <div className="text-sm text-white">
-                      Total de filiais: {filiais.length}
+                      {t('branches.total_branches')}: {filiais.length}
                     </div>
 
                     {/* Botão Selecionar */}
@@ -313,7 +315,7 @@ export default function FiliaisPage() {
                       >
                         <div className="flex items-center justify-center gap-2">
                           <CheckCircle className="h-4 w-4" />
-                          Dados Gerais Ativos
+                          {t('branches.general_data_active')}
                         </div>
                       </button>
                     </div>
@@ -347,7 +349,7 @@ export default function FiliaisPage() {
                           <span className={`text-sm font-semibold ${
                             filialSelecionada === filial.filial_id ? 'text-white' : 'text-[var(--color-card-text-green)]'
                           }`}>
-                            Filial #{filial.filial_numero}
+                            {t('branches.branch')} #{filial.filial_numero}
                           </span>
                         )}
                       </div>
@@ -402,7 +404,7 @@ export default function FiliaisPage() {
                       <div className="flex items-center justify-between">
                         <span className={`text-sm ${
                           filialSelecionada === filial.filial_id ? 'text-white' : 'text-[var(--color-card-text-green)]'
-                        }`}>Número da Filial:</span>
+                        }`}>{t('branches.branch_number')}:</span>
                         <span className={`font-semibold px-2 py-1 rounded ${
                           filialSelecionada === filial.filial_id 
                             ? 'text-[var(--color-card-border-green)] bg-white' 
@@ -474,7 +476,7 @@ export default function FiliaisPage() {
                       <div className={`text-sm ${
                         filialSelecionada === filial.filial_id ? 'text-white' : 'text-[var(--color-card-text-green)]'
                       }`}>
-                        Responsável: {filial.responsavel}
+                        {t('establishments.responsible')}: {filial.responsavel}
                       </div>
                     )}
 
@@ -494,12 +496,12 @@ export default function FiliaisPage() {
                         {filialSelecionada === filial.filial_id ? (
                           <div className="flex items-center justify-center gap-2">
                             <CheckCircle className="h-4 w-4" />
-                            Selecionada
+                            {t('branches.selected_branch_status')}
                           </div>
                         ) : (
                           <div className="flex items-center justify-center gap-2">
                             <CheckCircle className="h-4 w-4" />
-                            Selecionar Filial
+                            {t('branches.select_branch')}
                           </div>
                         )}
                       </button>

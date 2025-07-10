@@ -10,15 +10,16 @@ import { APP_CONFIG, formatCurrency } from "@/lib/constants"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
 import { UpdateButton } from "@/app/components/UpdateButton"
+import { useLanguage } from "@/app/components/LanguageContext"
 import Link from "next/link"
 //import HeatmapComponent from "@/app/components/HeatmapComponent"
 
 // Componente separado para o gráfico
 // eslint-disable-next-line
-const ChartComponent = ({ data }: { data: any[] }) => {
+const ChartComponent = ({ data, title }: { data: any[]; title: string }) => {
   return (
     <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm  mt-6">
-      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4 p-2">Comparativo por Hora</h2>
+      <h2 className="text-xl font-semibold text-[var(--color-card-text-green)] mb-4 p-2">{title}</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
@@ -111,6 +112,7 @@ export default function Component() {
   const [refreshing, setRefreshing] = useState(false)
   const { isLoaded } = useEstabelecimento()
   const apiNif = useApiNif()
+  const { t, getTranslatedPeriods } = useLanguage()
 
   // Memoizar os dados do gráfico para evitar re-renders desnecessários
   const chartData = useMemo(() => {
@@ -225,7 +227,7 @@ export default function Component() {
 
   // Se ainda não carregou, mostrar loading
   if (!isLoaded) {
-    return <div className="p-8 text-center text-white">Carregando...</div>
+    return <div className="p-8 text-center text-white">{t('dashboard.loading')}</div>
   }
 
   // Se não há NIF selecionado, mostrar mensagem
@@ -233,25 +235,25 @@ export default function Component() {
     return (
       <div className="p-8 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-xl font-semibold text-white mb-4">Nenhum estabelecimento selecionado</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">{t('dashboard.no_establishment')}</h2>
           <p className="text-white mb-6">
-            Para visualizar o dashboard, você precisa selecionar um estabelecimento.
+            {t('dashboard.no_establishment_message')}
           </p>
           <a 
             href="/estabelecimentos" 
             className="inline-flex items-center px-4 py-2 bg-white text-green-600 rounded-md hover:bg-gray-100 transition-colors"
           >
-            Ir para Estabelecimentos
+            {t('dashboard.go_to_establishments')}
           </a>
         </div>
       </div>
     )
   }
 
-  if (loading) return <div className="p-8 text-center text-white">Carregando dados...</div>
-  if (error) return <div className="p-8 text-center text-red-300">Erro: {error}</div>
+  if (loading) return <div className="p-8 text-center text-white">{t('dashboard.loading_data')}</div>
+  if (error) return <div className="p-8 text-center text-red-300">{t('dashboard.error')}: {error}</div>
   if (!data) {
-    return <div className="p-8 text-center text-white">Nenhum dado disponível</div>
+    return <div className="p-8 text-center text-white">{t('dashboard.no_data')}</div>
   }
 
   // Verificar se todos os dados necessários existem
@@ -270,8 +272,8 @@ export default function Component() {
   if (camposFaltando.length > 0) {
     return (
       <div className="p-8 text-center text-red-300">
-        <div>Dados incompletos recebidos da API</div>
-        <div className="text-sm mt-2">Campos faltando: {camposFaltando.join(', ')}</div>
+        <div>{t('dashboard.incomplete_data')}</div>
+        <div className="text-sm mt-2">{t('dashboard.missing_fields')}: {camposFaltando.join(', ')}</div>
       </div>
     )
   }
@@ -291,7 +293,7 @@ export default function Component() {
               {/* Header */}
         <div className="bg-[var(--color-card-white)] border-2 border-[var(--color-card-border-green)] rounded-lg shadow-sm px-2 sm:px-4 md:px-6 py-3 sm:py-4 mb-4 sm:mb-6">
         <div className="flex flex-col gap-3">
-        <h1 className="text-[var(--color-card-text-green)] text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-[var(--color-card-text-green)] text-xl font-semibold">{t('dashboard.title')}</h1>
 
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-[var(--color-card-text-green)]" />
@@ -301,7 +303,7 @@ export default function Component() {
                 value={filtro}
                 onChange={e => setFiltro(e.target.value)}
               >
-                {APP_CONFIG.periods.map(period => (
+                {getTranslatedPeriods().map(period => (
                   <option key={period.value} value={period.value} className="bg-[var(--color-card-white)] text-[var(--color-card-text-green)]">
                     {period.label}
                   </option>
@@ -325,7 +327,7 @@ export default function Component() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              Última atualização: {lastUpdate.toLocaleString('pt-BR', { 
+              {t('dashboard.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 day: '2-digit',
@@ -347,14 +349,14 @@ export default function Component() {
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)]">
                   <Umbrella className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">Vendas em Aberto</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base">{t('dashboard.open_sales')}</span>
               </div>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">
                 {formatCurrency(total_vendas?.valor || 0)}
               </div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Mesas em Aberto: 0</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.open_tables')}: 0</div>
             </div>
           </CardContent>
         </Card>
@@ -367,7 +369,7 @@ export default function Component() {
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Vendas Consolidadas</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.consolidated_sales')}</span>
               </div>
               <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
                 {total_vendas?.variacao || '0%'}
@@ -375,8 +377,8 @@ export default function Component() {
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(total_vendas?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(total_vendas?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Vendas do dia</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(total_vendas?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.daily_sales')}</div>
             </div>
           </CardContent>
         </Card>
@@ -390,7 +392,7 @@ export default function Component() {
                   <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                     <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Número de Faturas</span>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.invoices')}</span>
                 </div>
                 <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
                   {numero_recibos?.variacao || '0%'}
@@ -398,8 +400,8 @@ export default function Component() {
               </div>
               <div className="space-y-1 md:space-y-2">
                 <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{numero_recibos?.valor || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {numero_recibos?.ontem || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Transações realizadas</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {numero_recibos?.ontem || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.transactions')}</div>
               </div>
             </CardContent>
           </Card>
@@ -414,7 +416,7 @@ export default function Component() {
                   <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                     <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Produtos Vendidos</span>
+                  <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.products_sold')}</span>
                 </div>
                 <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
                   {itens_vendidos?.variacao || '0%'}
@@ -422,8 +424,8 @@ export default function Component() {
               </div>
               <div className="space-y-1 md:space-y-2">
                 <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{itens_vendidos?.valor || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {itens_vendidos?.ontem || 0}</div>
-                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Produtos vendidos</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {itens_vendidos?.ontem || 0}</div>
+                <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.products_sold_count')}</div>
               </div>
             </CardContent>
           </Card>
@@ -437,7 +439,7 @@ export default function Component() {
                 <div className="p-2 md:p-3 bg-[var(--color-card-border-green)] rounded-xl border border-[var(--color-card-border-green)] flex-shrink-0">
                   <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">Ticket Médio</span>
+                <span className="text-[var(--color-card-text-green)] font-semibold text-sm md:text-base truncate">{t('dashboard.average_ticket')}</span>
               </div>
               <span className={`text-xs md:text-sm font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(ticket_medio?.variacao)}`}>
                 {ticket_medio?.variacao || '0%'}
@@ -445,15 +447,15 @@ export default function Component() {
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl font-bold text-[var(--color-card-text-green)]">{formatCurrency(ticket_medio?.valor || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Período Anterior: {formatCurrency(ticket_medio?.ontem || 0)}</div>
-              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">Valor por recibo</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.previous_period')}: {formatCurrency(ticket_medio?.ontem || 0)}</div>
+              <div className="text-xs md:text-sm text-[var(--color-card-text-green-muted)]">{t('dashboard.value_per_receipt')}</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Gráfico de comparativo por hora */}
-      <ChartComponent data={chartData} />
+      <ChartComponent data={chartData} title={t('dashboard.hourly_comparison')} />
 
       {/* Heatmap de Horários */}
       {/* <div className="mt-6">
