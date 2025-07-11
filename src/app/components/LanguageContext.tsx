@@ -192,7 +192,6 @@ const translations: Record<Language, Record<string, string>> = {
         
         // Tela de Loading
         'loading.checking_auth': 'Verificando autenticação...',
-        'loading.loading': 'Carregando...',
     },
     en: {
         // Layout geral
@@ -369,9 +368,6 @@ const translations: Record<Language, Record<string, string>> = {
         'logout.confirm': 'Logout',
         'logout.close': 'Close',
         
-        // Loading Screen
-        'loading.checking_auth': 'Checking authentication...',
-        'loading.loading': 'Loading...',
     },
     fr: {
         // Layout général
@@ -550,9 +546,6 @@ const translations: Record<Language, Record<string, string>> = {
         'logout.close': 'Fermer',
         
         // Écran de Chargement
-        'loading.checking_auth': 'Vérification de l\'authentification...',
-        'loading.loading': 'Chargement...',
-
     },
     es: {
         // Layout general
@@ -731,9 +724,6 @@ const translations: Record<Language, Record<string, string>> = {
         'logout.close': 'Cerrar',
         
         // Pantalla de Carga
-        'loading.checking_auth': 'Verificando autenticación...',
-        'loading.loading': 'Cargando...',
-
     }
 };
 

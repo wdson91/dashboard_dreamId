@@ -108,20 +108,19 @@ export default function Component() {
     }
     
     if (!variationStr) {
-      return 'bg-warning text-warning-foreground'; // Pendente
+      return 'bg-yellow-100 text-yellow-800'; // Pendente
     }
-    
-    // Extrair o valor numérico da variação (remover % e sinal)
-    const cleanStr = variationStr.replace(/[+-]/g, '').replace('%', '');
-    const value = parseFloat(cleanStr);
-    
+
+    // Extrair o valor numérico da variação (manter o sinal)
+    const value = parseFloat(variationStr.replace('%', ''));
+
     if (value > 0) {
-      return 'bg-muted text-foreground'; // Concluído (Positivo)
+      return 'bg-green-100 text-green-800'; // Verde para valores positivos
     }
     if (value < 0) {
-      return 'bg-destructive-muted text-destructive-muted-foreground'; // Negativo
+      return 'bg-red-100 text-red-800'; // Vermelho para valores negativos
     }
-    return 'bg-warning text-warning-foreground'; // Pendente (Zero)
+    return 'bg-yellow-100 text-yellow-800'; // Amarelo para zero
   }
 
   const fetchData = useCallback(async (forceRefresh = false) => {
