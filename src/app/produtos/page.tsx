@@ -1,61 +1,16 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar} from "lucide-react"
-import { api } from "@/utils/api"
-import { APP_CONFIG } from "@/lib/constants"
-import { useApiNif } from "@/hooks/useApiNif"
+// APP_CONFIG removido - agora usamos CacheManager
+import { useProdutosApi, type ProdutosResponse } from "@/hooks/useApiNif"
+import { CacheManager } from "@/lib/cache"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "../components/LanguageContext"
+import { formatLastUpdate } from "@/lib/utils"
 
-// Tipo para a resposta da API de produtos
-interface ProdutosResponse {
-  data_inicio: string
-  data_fim: string
-  total_itens: number
-  total_montante: number
-  itens: Array<{
-    produto: string
-    quantidade: number
-    montante: number
-    porcentagem_montante?: number
-  }>
-}
-
-async function getProdutos(periodo: string, apiParams: { nif: string; filial?: string }): Promise<ProdutosResponse> {
-  const cacheKey = `produtos_data_${apiParams.nif}_${apiParams.filial || 'all'}_${periodo}`
-  
-  // Verificar cache
-  const cached = localStorage.getItem(cacheKey)
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-      return data
-    }
-  }
-  
-  const urlPath = '/api/products'
-  let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${apiParams.nif}&periodo=${periodo}`
-  
-  // Adicionar parâmetro de filial se existir
-  if (apiParams.filial) {
-    url += `&filial=${apiParams.filial}`
-  }
-  
-  const response = await api.get(url)
-  
-  const dados = response
-   
-  // Salvar no cache
-  localStorage.setItem(cacheKey, JSON.stringify({
-    data: dados,
-    timestamp: Date.now()
-  }))
-  
-  return dados
-}
+// Função removida - agora usamos CacheManager diretamente
 
 export default function ProdutosPage() {
   const [periodo, setPeriodo] = useState("0") // Começa com "Hoje"
@@ -64,20 +19,20 @@ export default function ProdutosPage() {
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
-  const apiNif = useApiNif()
+  const { apiNif, fetchProdutos } = useProdutosApi()
   const { t, getTranslatedPeriods } = useLanguage()
+  const isLoadingRef = useRef(false)
 
-  const fetchData = useCallback(async (clearCache = false) => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     // Se não há NIF selecionado, não fazer a chamada da API
-    if (!apiNif) {
+    if (!apiNif || isLoadingRef.current) {
       setLoading(false)
       return
     }
 
-    if (clearCache) {
-      // Limpar cache específico para este período e NIF
-      const cacheKey = `produtos_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
-      localStorage.removeItem(cacheKey)
+    isLoadingRef.current = true
+
+    if (forceRefresh) {
       setRefreshing(true)
     } else {
       setLoading(true)
@@ -86,20 +41,32 @@ export default function ProdutosPage() {
     setError(null)
     
     try {
-      const result = await getProdutos(periodo, apiNif)
-      setData(result)
-      setLastUpdate(new Date())
+      const cacheKey = `produtos_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => fetchProdutos(periodo),
+        forceRefresh,
+        periodo
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {
       setLoading(false)
       setRefreshing(false)
+      isLoadingRef.current = false
     }
-  }, [periodo, apiNif])
+  }, [periodo, apiNif, fetchProdutos])
 
+  // Efeito para carregar dados quando apiNif ou período mudam
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    if (apiNif && !isLoadingRef.current) {
+      fetchData()
+    }
+  }, [apiNif, periodo, fetchData])
 
   // Se não há NIF selecionado, mostrar mensagem
   if (!apiNif) {
@@ -125,8 +92,8 @@ export default function ProdutosPage() {
   if (error) return <div className="p-8 text-center text-red-300">{t('products.error')}: {error}</div>
   if (!data) return null
 
-  // Ordenar produtos por montante (maior para menor)
-  const produtosOrdenados = [...data.itens].sort((a, b) => b.montante - a.montante)
+  // Produtos já vêm ordenados da API
+  const produtosOrdenados = data.itens
 
   // Função para formatar valores monetários
   const formatCurrency = (value: number) => {
@@ -196,13 +163,7 @@ export default function ProdutosPage() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              {t('products.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-              })}
+              {t('products.last_update')}: {formatLastUpdate(lastUpdate)}
             </div>
           )}
         </div>
@@ -265,11 +226,9 @@ export default function ProdutosPage() {
                     <div className="text-2xl font-bold text-gray-900">
                       {formatCurrency(produto.montante)}
                     </div>
-                    {produto.porcentagem_montante && (
-                      <div className="text-sm text-gray-600">
-                        {formatPercentage(produto.porcentagem_montante)} {t('products.of_total')}
-                      </div>
-                    )}
+                    <div className="text-sm text-gray-600">
+                      {formatPercentage(produto.porcentagem_montante)} {t('products.of_total')}
+                    </div>
                   </div>
                 </div>
               </CardContent>

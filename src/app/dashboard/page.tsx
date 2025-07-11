@@ -1,18 +1,41 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import {  Umbrella, DollarSign, Receipt, ShoppingCart, TrendingUp, Calendar } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { FaturasResponse } from "../types/faturas"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { api } from "@/utils/api"
-import { APP_CONFIG, formatCurrency } from "@/lib/constants"
+
+import { formatCurrency } from "@/lib/constants"
+import { CacheManager } from "@/lib/cache"
+import { formatLastUpdate } from "@/lib/utils"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "@/app/components/LanguageContext"
 import Link from "next/link"
 //import HeatmapComponent from "@/app/components/HeatmapComponent"
+
+// Componente customizado para o tooltip
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; name: string; value: number }>; label?: string }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg p-3 shadow-lg">
+        <p className="text-[var(--color-card-text-green)] font-medium mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p 
+            key={index} 
+            className="text-sm"
+            style={{ color: entry.dataKey === 'hoje' ? 'var(--color-card-border-green)' : 'var(--color-chart-previous)' }}
+          >
+            {entry.name}: €{entry.value}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
 
 // Componente separado para o gráfico
 // eslint-disable-next-line
@@ -25,16 +48,7 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
           <XAxis dataKey="hora" stroke="var(--color-card-text-green)" />
           <YAxis tickFormatter={v => `€${v}`} stroke="var(--color-card-text-green)" />
-          <Tooltip 
-            formatter={(value) => [`€${value}`, '']}
-            contentStyle={{
-              backgroundColor: 'var(--color-card-white)',
-              border: '1px solid var(--color-card-border-green)',
-              borderRadius: '8px',
-            }}
-            labelStyle={{ color: 'var(--color-card-text-green)' }}
-            itemStyle={{ color: 'var(--color-card-border-green)' }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name={t('dashboard.chart_current')} strokeWidth={2} />
           <Line type="monotone" dataKey="ontem" stroke="var(--color-chart-previous)" name={t('dashboard.chart_previous')} strokeWidth={2} />
@@ -44,63 +58,22 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
   )
 }
 
-async function getData(filtro: string, apiParams: { nif: string; filial?: string }, clearCache = false): Promise<FaturasResponse['dados']> {
-  const cacheKey = `dashboard_data_${apiParams.nif}_${apiParams.filial || 'all'}_${filtro}`
-  
-  // Verificar cache apenas se não for um refresh
-  const cached = localStorage.getItem(cacheKey)
-  if (cached && !clearCache) {
-    try {
-      const { data, timestamp } = JSON.parse(cached)
-      const now = Date.now()
-      if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-        return data
-      }
-    } catch {
-      localStorage.removeItem(cacheKey)
-    }
-  }
-  
-  const urlPath = '/api/stats/resumo'
-  
-  // Verificar se a variável de ambiente está definida
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://13.48.69.154:8000'
-  
-  let url = `${apiBaseUrl}${urlPath}?nif=${apiParams.nif}&periodo=${filtro}`
+async function getData(filtro: string, apiParams: { nif: string; filial?: string }): Promise<FaturasResponse['dados']> {
+  // Usar a nova API local
+  let url = `/api/stats/resumo?nif=${apiParams.nif}&periodo=${filtro}`
   
   // Adicionar parâmetro de filial se existir
   if (apiParams.filial) {
     url += `&filial=${apiParams.filial}`
   }
   
-    try {
-    const response = await api.get(url)
-    
-    
-          // Verificar se a resposta tem a estrutura esperada
-      let dados
-      if (response && typeof response === 'object') {
-        // Se a resposta tem uma propriedade 'dados', usar ela
-        if ('dados' in response) {
-          dados = response.dados
-        } else {
-          // Se não tem 'dados', usar a resposta diretamente
-          dados = response
-        }
-      } else {
-        throw new Error('Resposta da API inválida')
-      }
-    
-    // Salvar no cache
-    localStorage.setItem(cacheKey, JSON.stringify({
-      data: dados,
-      timestamp: Date.now()
-    }))
-    
-    return dados
-  } catch (error) {
-    throw error
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
   }
+  
+  return response.json()
 }
 
 export default function Component() {
@@ -113,6 +86,8 @@ export default function Component() {
   const { isLoaded } = useEstabelecimento()
   const apiNif = useApiNif()
   const { t, getTranslatedPeriods } = useLanguage()
+  const lastCallRef = useRef<number>(0)
+  const isLoadingRef = useRef<boolean>(false)
 
   // Memoizar os dados do gráfico para evitar re-renders desnecessários
   const chartData = useMemo(() => {
@@ -123,11 +98,23 @@ export default function Component() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.comparativo_por_hora])
 
-  const getBadgeClass = (variation: string | undefined) => {
-    if (!variation) {
+  const getBadgeClass = (data: { variacao?: string } | string | undefined) => {
+    let variationStr: string | undefined
+    
+    if (typeof data === 'string') {
+      variationStr = data
+    } else if (data && typeof data === 'object' && data.variacao) {
+      variationStr = data.variacao
+    }
+    
+    if (!variationStr) {
       return 'bg-warning text-warning-foreground'; // Pendente
     }
-    const value = parseFloat(variation.replace('%', ''));
+    
+    // Extrair o valor numérico da variação (remover % e sinal)
+    const cleanStr = variationStr.replace(/[+-]/g, '').replace('%', '');
+    const value = parseFloat(cleanStr);
+    
     if (value > 0) {
       return 'bg-muted text-foreground'; // Concluído (Positivo)
     }
@@ -137,7 +124,7 @@ export default function Component() {
     return 'bg-warning text-warning-foreground'; // Pendente (Zero)
   }
 
-  const fetchData = useCallback(async (clearCache = false) => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     
     // Se não há NIF selecionado ou não carregou ainda, não fazer a chamada da API
     if (!apiNif || !isLoaded) {
@@ -145,77 +132,74 @@ export default function Component() {
       return
     }
 
-    // Evitar chamadas duplicadas apenas se não for um refresh
-    if (loading && !clearCache) {
+    // Prevenir múltiplas chamadas muito próximas (menos de 500ms)
+    const now = Date.now()
+    if (!forceRefresh && (now - lastCallRef.current < 500)) {
       return
     }
 
+    // Evitar chamadas duplicadas se já está carregando
+    if (isLoadingRef.current && !forceRefresh) {
+      return
+    }
+
+    lastCallRef.current = now
+    isLoadingRef.current = true
+
     // Se estamos fazendo refresh ou não está carregando, definir loading como true
-    if (clearCache || !loading) {
+    if (forceRefresh || !loading) {
       setLoading(true)
     }
 
-    if (clearCache) {
-      // Limpar cache específico para este filtro e NIF
-      const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
-      localStorage.removeItem(cacheKey)
+    if (forceRefresh) {
       setRefreshing(true)
     }
 
     setError(null)
     
     try {
-      const result = await getData(filtro, apiNif, clearCache)
-      setData(result)
-      setLastUpdate(new Date())
+      
+      const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => getData(filtro, apiNif),
+        forceRefresh,
+        filtro
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {
       setLoading(false)
       setRefreshing(false)
+      isLoadingRef.current = false
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtro, apiNif, isLoaded])
 
+  // Efeito principal - consolidado para evitar múltiplas chamadas
   useEffect(() => {
     // Só fazer fetch se há apiNif disponível e isLoaded é true
-    if (apiNif && isLoaded) {
-      // Sempre fazer fetch quando entrar na página (sem cache)
-      fetchData(true)
+    if (apiNif && isLoaded && !isLoadingRef.current) {
+      fetchData(false) // false = usar cache se disponível
     } else {
       // Se não há apiNif, garantir que loading seja false
       setLoading(false)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiNif, isLoaded]) // Removido fetchData das dependências para evitar loops
-
-  // useEffect para reagir a mudanças no filtro
-  useEffect(() => {
-    if (apiNif && isLoaded) {
-      // Buscar dados quando o filtro mudar
-      fetchData(true)
-    }
-  
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtro, apiNif, isLoaded])
+  }, [apiNif?.nif, apiNif?.filial, isLoaded, filtro]) // Consolidado: reage a mudanças de NIF, filial, carregamento E filtro
 
   // Detectar quando o usuário volta para a página
   useEffect(() => {
     const handleFocus = () => {
       if (apiNif && isLoaded && !loading) {
-        // Verificar se o cache está expirado
+        // Verificar se o cache está expirado usando o CacheManager
         const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
-        const cached = localStorage.getItem(cacheKey)
-        if (cached) {
-          try {
-            const { timestamp } = JSON.parse(cached)
-            const now = Date.now()
-            if (now - timestamp >= APP_CONFIG.api.cacheExpiry) {
-              fetchData(true)
-            }
-          } catch {
-            // Ignorar erro de cache
-          }
+        if (!CacheManager.isValidCache(cacheKey, filtro)) {
+          fetchData(true) // true = forçar refresh
         }
       }
     }
@@ -327,13 +311,7 @@ export default function Component() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              {t('dashboard.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-              })}
+              {t('dashboard.last_update')}: {formatLastUpdate(lastUpdate)}
             </div>
           )}
         </div>
@@ -371,7 +349,7 @@ export default function Component() {
                 </div>
                 <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.consolidated_sales')}</span>
               </div>
-              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas?.variacao)}`}>
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(total_vendas)}`}>
                 {total_vendas?.variacao || '0%'}
               </span>
             </div>
@@ -394,7 +372,7 @@ export default function Component() {
                   </div>
                   <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.invoices')}</span>
                 </div>
-                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(numero_recibos)}`}>
                   {numero_recibos?.variacao || '0%'}
                 </span>
               </div>
@@ -418,7 +396,7 @@ export default function Component() {
                   </div>
                   <span className="text-[var(--color-card-text-green)] font-semibold text-xs md:text-sm truncate">{t('dashboard.products_sold')}</span>
                 </div>
-                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos?.variacao)}`}>
+                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 ${getBadgeClass(itens_vendidos)}`}>
                   {itens_vendidos?.variacao || '0%'}
                 </span>
               </div>

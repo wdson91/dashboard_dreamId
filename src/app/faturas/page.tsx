@@ -1,139 +1,39 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Search, FileText } from "lucide-react"
-import { api } from "@/utils/api"
-import { APP_CONFIG, formatCurrency } from "@/lib/constants"
-import {  FaturasListResponse } from "@/app/types/faturas"
-import { useApiNif } from "@/hooks/useApiNif"
+import { formatCurrency } from "@/lib/constants"
+import { useFaturas, type FaturasResponse } from "@/hooks/useFaturas"
+import { CacheManager } from "@/lib/cache"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "../components/LanguageContext"
+import { formatLastUpdate } from "@/lib/utils"
 
-async function getFaturas(periodo: string, apiParams: { nif: string; filial?: string }): Promise<FaturasListResponse> {
-  const cacheKey = `faturas_data_${apiParams.nif}_${apiParams.filial || 'all'}_${periodo}`
-  
-  // // Verificar cache
-  const cached = localStorage.getItem(cacheKey)
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    if (now - timestamp < APP_CONFIG.api.cacheExpiry) {
-      return data
-    }
-  }
-  
-  
-  const urlPath = '/api/faturas'
-  let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${urlPath}?nif=${apiParams.nif}&periodo=${periodo}`
-  
-  // Adicionar parâmetro de filial se existir
-  if (apiParams.filial) {
-    url += `&filial=${apiParams.filial}`
-  }
-  
-  const response = await api.get(url)
-  
-  const dados = response
-  
-  // Salvar no cache
-  localStorage.setItem(cacheKey, JSON.stringify({
-    data: dados,
-    timestamp: Date.now()
-  }))
-  
-  return dados
-}
-
-// Função para fazer download do PDF
-async function downloadPDF(numeroFatura: string) {
-  try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/faturas/pdf?numero_fatura=${numeroFatura}`
-    
-    // Obter token de autenticação
-    const { createClient } = await import('@/utils/supabase/client')
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    
-    if (!session?.access_token) {
-      throw new Error('Usuário não autenticado')
-    }
-    
-    // Fazer a requisição para obter o PDF
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/pdf'
-      }
-    })
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Sessão expirada. Faça login novamente.')
-      }
-      throw new Error(`Erro ao baixar PDF: ${response.status} ${response.statusText}`)
-    }
-
-    // Verificar se a resposta é realmente um PDF
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('pdf')) {
-      throw new Error('Resposta não é um PDF válido')
-    }
-
-    // Obter o blob do PDF
-    const blob = await response.blob()
-    
-    // Criar URL do blob
-    const urlBlob = window.URL.createObjectURL(blob)
-    
-    // Criar link de download
-    const link = document.createElement('a')
-    link.href = urlBlob
-    link.download = `fatura_${numeroFatura}.pdf`
-    
-    // Simular clique para iniciar download
-    document.body.appendChild(link)
-    link.click()
-    
-    // Limpar
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(urlBlob)
-    
-    
-  } catch (error) {
-    if (error instanceof Error) {
-      alert(`Erro ao baixar o PDF: ${error.message}`)
-    } else {
-      alert('Erro ao baixar o PDF. Tente novamente.')
-    }
-  }
-}
-
-
+// Função removida - agora usamos CacheManager diretamente
 
 export default function FaturasPage() {
   const [periodo, setPeriodo] = useState("0")
   const [searchTerm, setSearchTerm] = useState("")
-  const [data, setData] = useState<FaturasListResponse | null>(null)
+  const [data, setData] = useState<FaturasResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [downloadingPDF, setDownloadingPDF] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
-  const apiNif = useApiNif()
+  const { apiNif, fetchFaturas, downloadPDF } = useFaturas()
   const { t, getTranslatedPeriods } = useLanguage()
+  const isLoadingRef = useRef(false)
 
-  const fetchData = useCallback(async (clearCache = false) => {
-    if (!apiNif) {
+  const fetchData = useCallback(async (forceRefresh = false) => {
+    if (!apiNif || isLoadingRef.current) {
       setLoading(false)
       return
     }
 
-    if (clearCache) {
-      // Limpar cache específico para este período e NIF
-      const cacheKey = `faturas_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
-      localStorage.removeItem(cacheKey)
+    isLoadingRef.current = true
+
+    if (forceRefresh) {
       setRefreshing(true)
     } else {
       setLoading(true)
@@ -142,25 +42,39 @@ export default function FaturasPage() {
     setError(null)
     
     try {
-      const result = await getFaturas(periodo, apiNif)
-      setData(result)
-      setLastUpdate(new Date())
+      const cacheKey = `faturas_data_${apiNif.nif}_${apiNif.filial || 'all'}_${periodo}`
+      
+      const result = await CacheManager.fetchWithCache(
+        cacheKey,
+        () => fetchFaturas(periodo),
+        forceRefresh,
+        periodo
+      )
+      
+      setData(result.data)
+      setLastUpdate(CacheManager.getGlobalLastUpdate() || result.lastUpdate)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro desconhecido')
     } finally {
       setLoading(false)
       setRefreshing(false)
+      isLoadingRef.current = false
     }
-  }, [periodo, apiNif])
+  }, [periodo, apiNif, fetchFaturas])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    if (apiNif && !isLoadingRef.current) {
+      fetchData()
+    }
+  }, [apiNif, periodo, fetchData])
 
   const handleDownloadPDF = async (numeroFatura: string) => {
     setDownloadingPDF(numeroFatura)
     try {
       await downloadPDF(numeroFatura)
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : 'Erro desconhecido ao baixar PDF'
+      alert(`Erro ao baixar PDF: ${errorMsg}`)
     } finally {
       setDownloadingPDF(null)
     }
@@ -226,22 +140,9 @@ export default function FaturasPage() {
                   refreshing={refreshing} 
                 />
               </div>
-              
-              {/* Informação da última atualização */}
-              {lastUpdate && (
-                <div className="text-sm text-[var(--color-card-text-green-muted)]">
-                  {t('invoices.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  })}
-                </div>
-              )}
             </div>
           </div>
-
+          
           {/* Mensagem de erro */}
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -261,7 +162,18 @@ export default function FaturasPage() {
     
     return <div className="p-8 text-center text-red-500">{t('invoices.error')}: {error}</div>
   }
+  
   if (!data) return null
+
+  // Garantir que estatisticas existe (fallback para dados antigos)
+  const estatisticas = data.estatisticas || {
+    total_faturas: data.faturas?.length || 0,
+    total_montante: data.faturas?.reduce((sum, f) => sum + f.total, 0) || 0,
+    ticket_medio: 0
+  }
+  if (estatisticas.total_faturas > 0 && estatisticas.ticket_medio === 0) {
+    estatisticas.ticket_medio = estatisticas.total_montante / estatisticas.total_faturas
+  }
 
   // Filtrar faturas baseado no termo de busca
   const filteredFaturas = data.faturas.filter(fatura =>
@@ -310,25 +222,19 @@ export default function FaturasPage() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              {t('invoices.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-              })}
+              {t('invoices.last_update')}: {formatLastUpdate(lastUpdate)}
             </div>
           )}
         </div>
       </div>
 
       {/* Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)]">
           <CardContent className="p-4">
             <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.total_invoices')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
-              {data.faturas.length.toLocaleString('pt-BR')}
+              {estatisticas.total_faturas.toLocaleString('pt-BR')}
             </div>
           </CardContent>
         </Card>
@@ -337,7 +243,7 @@ export default function FaturasPage() {
           <CardContent className="p-4">
             <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.total_amount')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
-              {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0))}
+              {formatCurrency(estatisticas.total_montante)}
             </div>
           </CardContent>
         </Card>
@@ -346,7 +252,7 @@ export default function FaturasPage() {
           <CardContent className="p-4">
             <div className="text-sm text-[var(--color-card-text-green-muted)]">{t('invoices.average_ticket')}</div>
             <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
-              {formatCurrency(data.faturas.reduce((sum, fatura) => sum + fatura.total, 0) / data.faturas.length)}
+              {formatCurrency(estatisticas.ticket_medio)}
             </div>
           </CardContent>
         </Card>
@@ -371,28 +277,29 @@ export default function FaturasPage() {
         {filteredFaturas.map((fatura, index) => (
           <Card key={index} className="bg-[var(--color-card-white)] border-[var(--color-card-border-green)] hover:bg-gray-50 transition-colors">
             <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 bg-[var(--color-card-border-green)] rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">{t('invoices.invoice_number')} #{fatura.numero_fatura}</h3>
-                      <p className="text-[var(--color-card-text-green-muted)] text-sm">{t('invoices.client_nif')}: {fatura.nif_cliente}</p>
-                      <p className="text-[var(--color-card-text-green-muted)] text-sm">{t('invoices.date')}: {fatura.data}</p>
-                    </div>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[var(--color-card-border-green)] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[var(--color-card-text-green)] text-lg">{t('invoices.invoice_number')} #{fatura.numero_fatura}</h3>
+                    <p className="text-[var(--color-card-text-green-muted)] text-sm">
+                      {t('invoices.client_nif')}: {fatura.nif_cliente}
+                    </p>
+                    <p className="text-[var(--color-card-text-green-muted)] text-sm">
+                      {t('invoices.date')}: {fatura.data}
+                    </p>
                   </div>
                 </div>
-                
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-[var(--color-card-text-green)]">
+                <div className="flex flex-row sm:flex-col items-end sm:items-end gap-2 sm:gap-3 min-w-[120px] sm:min-w-[140px]">
+                  <div className="text-2xl font-bold text-[var(--color-card-text-green)] text-right w-full">
                     {formatCurrency(fatura.total)}
                   </div>
                   <button
                     onClick={() => handleDownloadPDF(fatura.numero_fatura)}
                     disabled={downloadingPDF === fatura.numero_fatura}
-                    className="mt-2 px-4 py-2 bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 text-sm w-auto sm:px-4 sm:py-2 sm:text-base sm:w-auto bg-[var(--color-card-border-green)] text-white rounded-lg hover:bg-[var(--color-card-text-green-light)] border border-[var(--color-card-border-green)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {downloadingPDF === fatura.numero_fatura ? t('invoices.downloading') : t('invoices.download_pdf')}
                   </button>

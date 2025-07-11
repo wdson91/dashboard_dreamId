@@ -39,14 +39,18 @@ export default function LoadingScreen({ children }: LoadingScreenProps) {
             <Image
               src="/logo.png"
               alt="Logo"
-              width={300}
-              height={300}
-              className="mx-auto animate-pulse"
+              width={120}
+              height={120}
+              className="object-contain"
               priority
             />
           </div>
           <div className="text-white text-lg font-medium mb-4">
+
+            {authLoading ? t('loading.verifying_auth') : t('loading.loading')}
+
             {authLoading ? t('loading.checking_auth') : t('loading.loading')}
+
           </div>
           <div className="flex justify-center">
             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>

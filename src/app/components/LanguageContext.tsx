@@ -67,6 +67,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.chart_current': 'Atual',
         'dashboard.chart_previous': 'Anterior',
         
+        // Loading
+        'loading.loading': 'Carregando...',
+        'loading.verifying_auth': 'Verificando autenticação...',
+        
         // Produtos
         'products.title': 'Produtos Vendidos',
         'products.loading': 'Carregando...',
@@ -171,6 +175,14 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.peak_time': 'Horário de Pico',
         'analysis.period_comparison': 'Comparação de Períodos',
         
+
+        // Botão de Atualizar
+        'update_button.update': 'Atualizar',
+        'update_button.wait': 'Aguarde',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Aguarde {seconds}s para atualizar novamente',
+        'update_button.update_tooltip': 'Atualizar dados (mínimo 30s entre atualizações)',
+
         // Modal de Logout
         'logout.modal_title': 'Confirmar Logout',
         'logout.modal_message': 'Tem certeza que deseja sair da sua conta? Você será redirecionado para a página de login.',
@@ -209,6 +221,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.loading': 'Loading...',
         'dashboard.loading_data': 'Loading data...',
         'dashboard.no_data': 'No data available',
+        
+        // Loading
+        'loading.loading': 'Loading...',
+        'loading.verifying_auth': 'Verifying authentication...',
         'dashboard.error': 'Error',
         'dashboard.last_update': 'Last update',
         'dashboard.no_establishment': 'No establishment selected',
@@ -339,6 +355,13 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.peak_time': 'Peak Time',
         'analysis.period_comparison': 'Period Comparison',
         
+        // Update Button
+        'update_button.update': 'Update',
+        'update_button.wait': 'Wait',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Wait {seconds}s to update again',
+        'update_button.update_tooltip': 'Update data (minimum 30s between updates)',
+
         // Logout Modal
         'logout.modal_title': 'Confirm Logout',
         'logout.modal_message': 'Are you sure you want to log out of your account? You will be redirected to the login page.',
@@ -402,6 +425,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.previous': 'Précédent',
         'dashboard.chart_current': 'Actuel',
         'dashboard.chart_previous': 'Précédent',
+        
+        // Loading
+        'loading.loading': 'Chargement...',
+        'loading.verifying_auth': 'Vérification de l\'authentification...',
         
         // Produits
         'products.title': 'Produits Vendus',
@@ -507,6 +534,14 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.peak_time': 'Heure de Pointe',
         'analysis.period_comparison': 'Comparaison des Périodes',
         
+
+        // Bouton de Mise à Jour
+        'update_button.update': 'Mettre à Jour',
+        'update_button.wait': 'Attendez',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Attendez {seconds}s pour mettre à jour à nouveau',
+        'update_button.update_tooltip': 'Mettre à jour les données (minimum 30s entre les mises à jour)',
+
         // Modal de Déconnexion
         'logout.modal_title': 'Confirmer la Déconnexion',
         'logout.modal_message': 'Êtes-vous sûr de vouloir vous déconnecter de votre compte ? Vous serez redirigé vers la page de connexion.',
@@ -517,6 +552,7 @@ const translations: Record<Language, Record<string, string>> = {
         // Écran de Chargement
         'loading.checking_auth': 'Vérification de l\'authentification...',
         'loading.loading': 'Chargement...',
+
     },
     es: {
         // Layout general
@@ -570,6 +606,10 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.previous': 'Anterior',
         'dashboard.chart_current': 'Actual',
         'dashboard.chart_previous': 'Anterior',
+        
+        // Loading
+        'loading.loading': 'Cargando...',
+        'loading.verifying_auth': 'Verificando autenticación...',
         
         // Productos
         'products.title': 'Productos Vendidos',
@@ -675,6 +715,14 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.peak_time': 'Hora Pico',
         'analysis.period_comparison': 'Comparación de Períodos',
         
+
+        // Botón de Actualizar
+        'update_button.update': 'Actualizar',
+        'update_button.wait': 'Espere',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Espere {seconds}s para actualizar nuevamente',
+        'update_button.update_tooltip': 'Actualizar datos (mínimo 30s entre actualizaciones)',
+
         // Modal de Cierre de Sesión
         'logout.modal_title': 'Confirmar Cierre de Sesión',
         'logout.modal_message': '¿Estás seguro de que quieres cerrar sesión? Serás redirigido a la página de inicio de sesión.',
@@ -685,6 +733,7 @@ const translations: Record<Language, Record<string, string>> = {
         // Pantalla de Carga
         'loading.checking_auth': 'Verificando autenticación...',
         'loading.loading': 'Cargando...',
+
     }
 };
 
