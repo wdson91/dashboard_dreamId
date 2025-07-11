@@ -125,6 +125,29 @@ export default function ProdutosPage() {
     }
   }
 
+  // Função auxiliar para obter a data local formatada
+  const getLocalDateString = (offset = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() - offset);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Função para exibir o período corretamente
+  const renderPeriodo = (data_inicio: string, data_fim: string, periodo: string) => {
+    if (periodo === "0") { // Hoje
+      return getLocalDateString(0);
+    }
+    if (periodo === "1") { // Ontem
+      return getLocalDateString(1);
+    }
+    const inicio = formatDate(data_inicio);
+    const fim = formatDate(data_fim);
+    return inicio === fim ? inicio : `${inicio} - ${fim}`;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -176,7 +199,7 @@ export default function ProdutosPage() {
             <CardContent className="p-4">
               <div className="text-sm text-gray-600">{t('products.period')}</div>
               <div className="text-2xl font-bold text-gray-900">
-                {formatDate(data.data_inicio)} - {formatDate(data.data_fim)}
+                {renderPeriodo(data.data_inicio, data.data_fim, periodo)}
               </div>
             </CardContent>
           </Card>

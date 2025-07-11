@@ -51,7 +51,7 @@ export function is_valid_nif(nif: string): boolean {
  * Obtém as datas dos períodos baseado no código Python
  */
 export function get_periodo_datas(periodo: number): [Date, Date, Date, Date] {
-  const hoje = new Date()
+  const hoje = new Date(Date.now())
   const inicio_dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate())
   
   switch (periodo) {
