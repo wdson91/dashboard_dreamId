@@ -46,7 +46,11 @@ export default function LoadingScreen({ children }: LoadingScreenProps) {
             />
           </div>
           <div className="text-white text-lg font-medium mb-4">
+
             {authLoading ? t('loading.verifying_auth') : t('loading.loading')}
+
+            {authLoading ? t('loading.checking_auth') : t('loading.loading')}
+
           </div>
           <div className="flex justify-center">
             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
