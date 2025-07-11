@@ -1,24 +1,34 @@
 // Cache utilities para centralizar toda a lógica de cache
-import { APP_CONFIG } from './constants'
 
 export interface CacheData<T> {
   data: T
   timestamp: number
   lastUpdate: string // Armazenar como string para localStorage
+  periodo?: string // Adicionar período para controle de cache
 }
 
 export class CacheManager {
-  private static CACHE_DURATION = APP_CONFIG.api.cacheExpiry // 3 minutos
+  private static CACHE_DURATION_TODAY = 3 * 60 * 1000 // 3 minutos para hoje
+  private static CACHE_DURATION_OTHER_PERIODS = 24 * 60 * 60 * 1000 // 24 horas para outros períodos
+
+  // Obter duração do cache baseada no período
+  private static getCacheDuration(periodo?: string): number {
+    if (periodo === '0') {
+      return this.CACHE_DURATION_TODAY
+    }
+    return this.CACHE_DURATION_OTHER_PERIODS
+  }
 
   // Verificar se os dados em cache ainda são válidos
-  static isValidCache(cacheKey: string): boolean {
+  static isValidCache(cacheKey: string, periodo?: string): boolean {
     const cached = localStorage.getItem(cacheKey)
     if (!cached) return false
 
     try {
       const { timestamp } = JSON.parse(cached) as CacheData<unknown>
       const now = Date.now()
-      return (now - timestamp) < this.CACHE_DURATION
+      const cacheDuration = this.getCacheDuration(periodo)
+      return (now - timestamp) < cacheDuration
     } catch {
       localStorage.removeItem(cacheKey)
       return false
@@ -26,8 +36,8 @@ export class CacheManager {
   }
 
   // Obter dados do cache se válidos
-  static getCache<T>(cacheKey: string): CacheData<T> | null {
-    if (!this.isValidCache(cacheKey)) return null
+  static getCache<T>(cacheKey: string, periodo?: string): CacheData<T> | null {
+    if (!this.isValidCache(cacheKey, periodo)) return null
 
     try {
       const cached = localStorage.getItem(cacheKey)
@@ -42,11 +52,12 @@ export class CacheManager {
   }
 
   // Salvar dados no cache
-  static setCache<T>(cacheKey: string, data: T): void {
+  static setCache<T>(cacheKey: string, data: T, periodo?: string): void {
     const cacheData: CacheData<T> = {
       data,
       timestamp: Date.now(),
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
+      periodo
     }
 
     localStorage.setItem(cacheKey, JSON.stringify(cacheData))
@@ -92,11 +103,12 @@ export class CacheManager {
   static async fetchWithCache<T>(
     cacheKey: string,
     fetchFunction: () => Promise<T>,
-    forceRefresh = false
+    forceRefresh = false,
+    periodo?: string
   ): Promise<{ data: T; lastUpdate: Date }> {
     // Se não é refresh forçado, tentar usar cache
     if (!forceRefresh) {
-      const cached = this.getCache<T>(cacheKey)
+      const cached = this.getCache<T>(cacheKey, periodo)
       if (cached) {
         return {
           data: cached.data,
@@ -111,8 +123,8 @@ export class CacheManager {
     // Fazer fetch dos dados
     const data = await fetchFunction()
     
-    // Salvar no cache
-    this.setCache(cacheKey, data)
+    // Salvar no cache com período
+    this.setCache(cacheKey, data, periodo)
     
     // Atualizar última atualização global
     this.updateGlobalLastUpdate()

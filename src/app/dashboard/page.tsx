@@ -8,12 +8,34 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 import { formatCurrency } from "@/lib/constants"
 import { CacheManager } from "@/lib/cache"
+import { formatLastUpdate } from "@/lib/utils"
 import { useApiNif } from "@/hooks/useApiNif"
 import { useEstabelecimento } from "@/app/components/EstabelecimentoContext"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "@/app/components/LanguageContext"
 import Link from "next/link"
 //import HeatmapComponent from "@/app/components/HeatmapComponent"
+
+// Componente customizado para o tooltip
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; name: string; value: number }>; label?: string }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[var(--color-card-white)] border border-[var(--color-card-border-green)] rounded-lg p-3 shadow-lg">
+        <p className="text-[var(--color-card-text-green)] font-medium mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p 
+            key={index} 
+            className="text-sm"
+            style={{ color: entry.dataKey === 'hoje' ? 'var(--color-card-border-green)' : 'var(--color-chart-previous)' }}
+          >
+            {entry.name}: €{entry.value}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
 
 // Componente separado para o gráfico
 // eslint-disable-next-line
@@ -26,16 +48,7 @@ const ChartComponent = ({ data, title, t }: { data: any[]; title: string; t: any
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-card-border-green)" />
           <XAxis dataKey="hora" stroke="var(--color-card-text-green)" />
           <YAxis tickFormatter={v => `€${v}`} stroke="var(--color-card-text-green)" />
-          <Tooltip 
-            formatter={(value) => [`€${value}`, '']}
-            contentStyle={{
-              backgroundColor: 'var(--color-card-white)',
-              border: '1px solid var(--color-card-border-green)',
-              borderRadius: '8px',
-            }}
-            labelStyle={{ color: 'var(--color-card-text-green)' }}
-            itemStyle={{ color: 'var(--color-card-border-green)' }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line type="monotone" dataKey="hoje" stroke="var(--color-card-border-green)" name={t('dashboard.chart_current')} strokeWidth={2} />
           <Line type="monotone" dataKey="ontem" stroke="var(--color-chart-previous)" name={t('dashboard.chart_previous')} strokeWidth={2} />
@@ -151,7 +164,8 @@ export default function Component() {
       const result = await CacheManager.fetchWithCache(
         cacheKey,
         () => getData(filtro, apiNif),
-        forceRefresh
+        forceRefresh,
+        filtro
       )
       
       setData(result.data)
@@ -184,7 +198,7 @@ export default function Component() {
       if (apiNif && isLoaded && !loading) {
         // Verificar se o cache está expirado usando o CacheManager
         const cacheKey = `dashboard_data_${apiNif.nif}_${apiNif.filial || 'all'}_${filtro}`
-        if (!CacheManager.isValidCache(cacheKey)) {
+        if (!CacheManager.isValidCache(cacheKey, filtro)) {
           fetchData(true) // true = forçar refresh
         }
       }
@@ -297,13 +311,7 @@ export default function Component() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              {t('dashboard.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-              })}
+              {t('dashboard.last_update')}: {formatLastUpdate(lastUpdate)}
             </div>
           )}
         </div>

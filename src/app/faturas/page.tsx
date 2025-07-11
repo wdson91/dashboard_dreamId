@@ -8,6 +8,7 @@ import { useFaturas, type FaturasResponse } from "@/hooks/useFaturas"
 import { CacheManager } from "@/lib/cache"
 import { UpdateButton } from "@/app/components/UpdateButton"
 import { useLanguage } from "../components/LanguageContext"
+import { formatLastUpdate } from "@/lib/utils"
 
 // Função removida - agora usamos CacheManager diretamente
 
@@ -46,7 +47,8 @@ export default function FaturasPage() {
       const result = await CacheManager.fetchWithCache(
         cacheKey,
         () => fetchFaturas(periodo),
-        forceRefresh
+        forceRefresh,
+        periodo
       )
       
       setData(result.data)
@@ -220,13 +222,7 @@ export default function FaturasPage() {
           {/* Informação da última atualização */}
           {lastUpdate && (
             <div className="text-sm text-[var(--color-card-text-green-muted)]">
-              {t('invoices.last_update')}: {lastUpdate.toLocaleString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-              })}
+              {t('invoices.last_update')}: {formatLastUpdate(lastUpdate)}
             </div>
           )}
         </div>

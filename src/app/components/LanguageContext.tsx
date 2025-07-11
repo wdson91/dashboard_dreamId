@@ -174,6 +174,13 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Produto Mais Vendido',
         'analysis.peak_time': 'Horário de Pico',
         'analysis.period_comparison': 'Comparação de Períodos',
+        
+        // Botão de Atualizar
+        'update_button.update': 'Atualizar',
+        'update_button.wait': 'Aguarde',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Aguarde {seconds}s para atualizar novamente',
+        'update_button.update_tooltip': 'Atualizar dados (mínimo 30s entre atualizações)',
     },
     en: {
         // Layout geral
@@ -335,6 +342,13 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Best Seller',
         'analysis.peak_time': 'Peak Time',
         'analysis.period_comparison': 'Period Comparison',
+        
+        // Update Button
+        'update_button.update': 'Update',
+        'update_button.wait': 'Wait',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Wait {seconds}s to update again',
+        'update_button.update_tooltip': 'Update data (minimum 30s between updates)',
     },
     fr: {
         // Layout général
@@ -496,6 +510,13 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Meilleure Vente',
         'analysis.peak_time': 'Heure de Pointe',
         'analysis.period_comparison': 'Comparaison des Périodes',
+        
+        // Bouton de Mise à Jour
+        'update_button.update': 'Mettre à Jour',
+        'update_button.wait': 'Attendez',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Attendez {seconds}s pour mettre à jour à nouveau',
+        'update_button.update_tooltip': 'Mettre à jour les données (minimum 30s entre les mises à jour)',
     },
     es: {
         // Layout general
@@ -657,6 +678,13 @@ const translations: Record<Language, Record<string, string>> = {
         'analysis.best_seller': 'Más Vendido',
         'analysis.peak_time': 'Hora Pico',
         'analysis.period_comparison': 'Comparación de Períodos',
+        
+        // Botón de Actualizar
+        'update_button.update': 'Actualizar',
+        'update_button.wait': 'Espere',
+        'update_button.wait_seconds': 's',
+        'update_button.wait_message': 'Espere {seconds}s para actualizar nuevamente',
+        'update_button.update_tooltip': 'Actualizar datos (mínimo 30s entre actualizaciones)',
     }
 };
 
